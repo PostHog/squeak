@@ -2,17 +2,14 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import type {GetServerSideProps, NextPage} from 'next'
+import {GetStaticPropsResult} from "next";
 
 import styles from '../../styles/Home.module.css'
 
 interface Props {
-    supabase: {
-        anonKey: string,
-        url: string,
-    }
 }
 
-const PreflightWelcome: NextPage<Props> = ({supabase}) => {
+const PreflightWelcome: NextPage<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
@@ -35,7 +32,8 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
                 <div style={{border: "1px solid grey"}}>
                     <h5>Set it up for me (recommended)</h5>
 
-                    <p>Oops, to let us take care of this, there's some extra config we need, <a href="#">[read the docs]</a></p>
+                    <p>Oops, to let us take care of this, there's some extra config we need, <a href="#">[read the
+                        docs]</a></p>
                     <button disabled>Setup Supabase</button>
 
                     <h5>I can handle the setup</h5>
@@ -55,14 +53,9 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     return {
-        props: {
-            supabase: {
-                url: process.env.SUPABASE_URL,
-                anonKey: process.env.SUPABASE_ANON_KEY,
-            },
-        },
+        props: {},
     }
 }
 

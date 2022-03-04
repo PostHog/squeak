@@ -2,6 +2,7 @@ import Head from 'next/head'
 
 import {createClient} from '@supabase/supabase-js'
 import type {GetServerSideProps, NextPage} from 'next'
+import {GetStaticPropsResult} from "next";
 
 import styles from '../styles/Home.module.css'
 
@@ -30,19 +31,19 @@ const Home: NextPage<Props> = () => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     const supabaseUrl = process.env.SUPABASE_URL as string;
     const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-    let {data} = await supabaseClient
+    const {data: config} = await supabaseClient
         .from<Config>('config')
         .select(`preflightComplete`)
         .eq('id', 1)
         .single()
 
-    if (!data || !data?.preflightComplete) {
+    if (!config || !config?.preflightComplete) {
         return {
             redirect: {
                 destination: '/preflight',
@@ -52,12 +53,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     }
 
     return {
-        props: {
-            supabase: {
-                url: supabaseUrl,
-                anonKey: supabaseAnonKey,
-            },
-        },
+        props: {},
     }
 }
 
