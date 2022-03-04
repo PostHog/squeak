@@ -1,23 +1,26 @@
 {
-  "name": "squeak",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "12.1.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
-  },
-  "devDependencies": {
-    "@types/node": "17.0.21",
-    "@types/react": "17.0.39",
-    "eslint": "8.10.0",
-    "eslint-config-next": "12.1.0",
-    "typescript": "4.6.2"
-  }
+    "name": "squeak",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "next": "12.1.0",
+        "react": "17.0.2",
+        "react-dom": "17.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "17.0.21",
+        "@types/react": "17.0.39",
+        "@typescript-eslint/eslint-plugin": "^5.13.0",
+        "eslint": "8.10.0",
+        "eslint-config-next": "12.1.0",
+        "eslint-config-prettier": "^8.5.0",
+        "prettier": "^2.5.1",
+        "typescript": "4.6.2"
+    }
 }

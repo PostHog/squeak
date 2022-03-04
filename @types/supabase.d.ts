@@ -4,588 +4,588 @@
  */
 
 export interface paths {
-  "/": {
-    get: {
-      responses: {
-        /** OK */
-        200: unknown;
-      };
-    };
-  };
-  "/config": {
-    get: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.config.id"];
-          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
-          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
-          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
-          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
-          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
-          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
-          /** Filtering Columns */
-          select?: parameters["select"];
-          /** Ordering */
-          order?: parameters["order"];
-          /** Limiting and Pagination */
-          offset?: parameters["offset"];
-          /** Limiting and Pagination */
-          limit?: parameters["limit"];
-        };
-        header: {
-          /** Limiting and Pagination */
-          Range?: parameters["range"];
-          /** Limiting and Pagination */
-          "Range-Unit"?: parameters["rangeUnit"];
-          /** Preference */
-          Prefer?: parameters["preferCount"];
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          schema: definitions["config"][];
-        };
-        /** Partial Content */
-        206: unknown;
-      };
-    };
-    post: {
-      parameters: {
-        body: {
-          /** config */
-          config?: definitions["config"];
-        };
-        query: {
-          /** Filtering Columns */
-          select?: parameters["select"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** Created */
-        201: unknown;
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.config.id"];
-          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
-          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
-          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
-          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
-          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
-          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.config.id"];
-          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
-          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
-          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
-          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
-          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
-          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
-        };
-        body: {
-          /** config */
-          config?: definitions["config"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-  };
-  "/messages": {
-    get: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.messages.id"];
-          created_at?: parameters["rowFilter.messages.created_at"];
-          subject?: parameters["rowFilter.messages.subject"];
-          slug?: parameters["rowFilter.messages.slug"];
-          published?: parameters["rowFilter.messages.published"];
-          slack_timestamoy?: parameters["rowFilter.messages.slack_timestamoy"];
-          /** Filtering Columns */
-          select?: parameters["select"];
-          /** Ordering */
-          order?: parameters["order"];
-          /** Limiting and Pagination */
-          offset?: parameters["offset"];
-          /** Limiting and Pagination */
-          limit?: parameters["limit"];
-        };
-        header: {
-          /** Limiting and Pagination */
-          Range?: parameters["range"];
-          /** Limiting and Pagination */
-          "Range-Unit"?: parameters["rangeUnit"];
-          /** Preference */
-          Prefer?: parameters["preferCount"];
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          schema: definitions["messages"][];
-        };
-        /** Partial Content */
-        206: unknown;
-      };
-    };
-    post: {
-      parameters: {
-        body: {
-          /** messages */
-          messages?: definitions["messages"];
-        };
-        query: {
-          /** Filtering Columns */
-          select?: parameters["select"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** Created */
-        201: unknown;
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.messages.id"];
-          created_at?: parameters["rowFilter.messages.created_at"];
-          subject?: parameters["rowFilter.messages.subject"];
-          slug?: parameters["rowFilter.messages.slug"];
-          published?: parameters["rowFilter.messages.published"];
-          slack_timestamoy?: parameters["rowFilter.messages.slack_timestamoy"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.messages.id"];
-          created_at?: parameters["rowFilter.messages.created_at"];
-          subject?: parameters["rowFilter.messages.subject"];
-          slug?: parameters["rowFilter.messages.slug"];
-          published?: parameters["rowFilter.messages.published"];
-          slack_timestamoy?: parameters["rowFilter.messages.slack_timestamoy"];
-        };
-        body: {
-          /** messages */
-          messages?: definitions["messages"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-  };
-  "/profiles": {
-    get: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.profiles.id"];
-          first_name?: parameters["rowFilter.profiles.first_name"];
-          last_name?: parameters["rowFilter.profiles.last_name"];
-          avatar?: parameters["rowFilter.profiles.avatar"];
-          /** Filtering Columns */
-          select?: parameters["select"];
-          /** Ordering */
-          order?: parameters["order"];
-          /** Limiting and Pagination */
-          offset?: parameters["offset"];
-          /** Limiting and Pagination */
-          limit?: parameters["limit"];
-        };
-        header: {
-          /** Limiting and Pagination */
-          Range?: parameters["range"];
-          /** Limiting and Pagination */
-          "Range-Unit"?: parameters["rangeUnit"];
-          /** Preference */
-          Prefer?: parameters["preferCount"];
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          schema: definitions["profiles"][];
-        };
-        /** Partial Content */
-        206: unknown;
-      };
-    };
-    post: {
-      parameters: {
-        body: {
-          /** profiles */
-          profiles?: definitions["profiles"];
-        };
-        query: {
-          /** Filtering Columns */
-          select?: parameters["select"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** Created */
-        201: unknown;
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.profiles.id"];
-          first_name?: parameters["rowFilter.profiles.first_name"];
-          last_name?: parameters["rowFilter.profiles.last_name"];
-          avatar?: parameters["rowFilter.profiles.avatar"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.profiles.id"];
-          first_name?: parameters["rowFilter.profiles.first_name"];
-          last_name?: parameters["rowFilter.profiles.last_name"];
-          avatar?: parameters["rowFilter.profiles.avatar"];
-        };
-        body: {
-          /** profiles */
-          profiles?: definitions["profiles"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-  };
-  "/replies": {
-    get: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.replies.id"];
-          created_at?: parameters["rowFilter.replies.created_at"];
-          body?: parameters["rowFilter.replies.body"];
-          message_id?: parameters["rowFilter.replies.message_id"];
-          profile_id?: parameters["rowFilter.replies.profile_id"];
-          /** Filtering Columns */
-          select?: parameters["select"];
-          /** Ordering */
-          order?: parameters["order"];
-          /** Limiting and Pagination */
-          offset?: parameters["offset"];
-          /** Limiting and Pagination */
-          limit?: parameters["limit"];
-        };
-        header: {
-          /** Limiting and Pagination */
-          Range?: parameters["range"];
-          /** Limiting and Pagination */
-          "Range-Unit"?: parameters["rangeUnit"];
-          /** Preference */
-          Prefer?: parameters["preferCount"];
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          schema: definitions["replies"][];
-        };
-        /** Partial Content */
-        206: unknown;
-      };
-    };
-    post: {
-      parameters: {
-        body: {
-          /** replies */
-          replies?: definitions["replies"];
-        };
-        query: {
-          /** Filtering Columns */
-          select?: parameters["select"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** Created */
-        201: unknown;
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.replies.id"];
-          created_at?: parameters["rowFilter.replies.created_at"];
-          body?: parameters["rowFilter.replies.body"];
-          message_id?: parameters["rowFilter.replies.message_id"];
-          profile_id?: parameters["rowFilter.replies.profile_id"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.replies.id"];
-          created_at?: parameters["rowFilter.replies.created_at"];
-          body?: parameters["rowFilter.replies.body"];
-          message_id?: parameters["rowFilter.replies.message_id"];
-          profile_id?: parameters["rowFilter.replies.profile_id"];
-        };
-        body: {
-          /** replies */
-          replies?: definitions["replies"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-  };
+    '/': {
+        get: {
+            responses: {
+                /** OK */
+                200: unknown
+            }
+        }
+    }
+    '/config': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.config.id']
+                    preflightComplete?: parameters['rowFilter.config.preflightComplete']
+                    slackApiKey?: parameters['rowFilter.config.slackApiKey']
+                    slackQuestionChannel?: parameters['rowFilter.config.slackQuestionChannel']
+                    slackSigningSecret?: parameters['rowFilter.config.slackSigningSecret']
+                    mailgunApiKey?: parameters['rowFilter.config.mailgunApiKey']
+                    mailgunDomain?: parameters['rowFilter.config.mailgunDomain']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['config'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** config */
+                    config?: definitions['config']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.config.id']
+                    preflightComplete?: parameters['rowFilter.config.preflightComplete']
+                    slackApiKey?: parameters['rowFilter.config.slackApiKey']
+                    slackQuestionChannel?: parameters['rowFilter.config.slackQuestionChannel']
+                    slackSigningSecret?: parameters['rowFilter.config.slackSigningSecret']
+                    mailgunApiKey?: parameters['rowFilter.config.mailgunApiKey']
+                    mailgunDomain?: parameters['rowFilter.config.mailgunDomain']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.config.id']
+                    preflightComplete?: parameters['rowFilter.config.preflightComplete']
+                    slackApiKey?: parameters['rowFilter.config.slackApiKey']
+                    slackQuestionChannel?: parameters['rowFilter.config.slackQuestionChannel']
+                    slackSigningSecret?: parameters['rowFilter.config.slackSigningSecret']
+                    mailgunApiKey?: parameters['rowFilter.config.mailgunApiKey']
+                    mailgunDomain?: parameters['rowFilter.config.mailgunDomain']
+                }
+                body: {
+                    /** config */
+                    config?: definitions['config']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
+    '/messages': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.messages.id']
+                    created_at?: parameters['rowFilter.messages.created_at']
+                    subject?: parameters['rowFilter.messages.subject']
+                    slug?: parameters['rowFilter.messages.slug']
+                    published?: parameters['rowFilter.messages.published']
+                    slack_timestamoy?: parameters['rowFilter.messages.slack_timestamoy']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['messages'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** messages */
+                    messages?: definitions['messages']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.messages.id']
+                    created_at?: parameters['rowFilter.messages.created_at']
+                    subject?: parameters['rowFilter.messages.subject']
+                    slug?: parameters['rowFilter.messages.slug']
+                    published?: parameters['rowFilter.messages.published']
+                    slack_timestamoy?: parameters['rowFilter.messages.slack_timestamoy']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.messages.id']
+                    created_at?: parameters['rowFilter.messages.created_at']
+                    subject?: parameters['rowFilter.messages.subject']
+                    slug?: parameters['rowFilter.messages.slug']
+                    published?: parameters['rowFilter.messages.published']
+                    slack_timestamoy?: parameters['rowFilter.messages.slack_timestamoy']
+                }
+                body: {
+                    /** messages */
+                    messages?: definitions['messages']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
+    '/profiles': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.profiles.id']
+                    first_name?: parameters['rowFilter.profiles.first_name']
+                    last_name?: parameters['rowFilter.profiles.last_name']
+                    avatar?: parameters['rowFilter.profiles.avatar']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['profiles'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** profiles */
+                    profiles?: definitions['profiles']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.profiles.id']
+                    first_name?: parameters['rowFilter.profiles.first_name']
+                    last_name?: parameters['rowFilter.profiles.last_name']
+                    avatar?: parameters['rowFilter.profiles.avatar']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.profiles.id']
+                    first_name?: parameters['rowFilter.profiles.first_name']
+                    last_name?: parameters['rowFilter.profiles.last_name']
+                    avatar?: parameters['rowFilter.profiles.avatar']
+                }
+                body: {
+                    /** profiles */
+                    profiles?: definitions['profiles']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
+    '/replies': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.replies.id']
+                    created_at?: parameters['rowFilter.replies.created_at']
+                    body?: parameters['rowFilter.replies.body']
+                    message_id?: parameters['rowFilter.replies.message_id']
+                    profile_id?: parameters['rowFilter.replies.profile_id']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['replies'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** replies */
+                    replies?: definitions['replies']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.replies.id']
+                    created_at?: parameters['rowFilter.replies.created_at']
+                    body?: parameters['rowFilter.replies.body']
+                    message_id?: parameters['rowFilter.replies.message_id']
+                    profile_id?: parameters['rowFilter.replies.profile_id']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.replies.id']
+                    created_at?: parameters['rowFilter.replies.created_at']
+                    body?: parameters['rowFilter.replies.body']
+                    message_id?: parameters['rowFilter.replies.message_id']
+                    profile_id?: parameters['rowFilter.replies.profile_id']
+                }
+                body: {
+                    /** replies */
+                    replies?: definitions['replies']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
 }
 
 export interface definitions {
-  config: {
-    /**
-     * Format: bigint
-     * @description Note:
-     * This is a Primary Key.<pk/>
-     */
-    id: number;
-    /** Format: boolean */
-    preflightComplete: boolean;
-    /** Format: text */
-    slackApiKey?: string;
-    /** Format: text */
-    slackQuestionChannel?: string;
-    /** Format: text */
-    slackSigningSecret?: string;
-    /** Format: text */
-    mailgunApiKey?: string;
-    /** Format: text */
-    mailgunDomain?: string;
-  };
-  messages: {
-    /**
-     * Format: bigint
-     * @description Note:
-     * This is a Primary Key.<pk/>
-     */
-    id: number;
-    /**
-     * Format: timestamp with time zone
-     * @default now()
-     */
-    created_at?: string;
-    /** Format: text */
-    subject?: string;
-    /** Format: ARRAY */
-    slug?: unknown[];
-    /** Format: boolean */
-    published?: boolean;
-    /** Format: text */
-    slack_timestamoy?: string;
-  };
-  profiles: {
-    /**
-     * Format: uuid
-     * @description Note:
-     * This is a Primary Key.<pk/>
-     */
-    id: string;
-    /** Format: text */
-    first_name?: string;
-    /** Format: text */
-    last_name?: string;
-    /** Format: text */
-    avatar?: string;
-  };
-  replies: {
-    /**
-     * Format: bigint
-     * @description Note:
-     * This is a Primary Key.<pk/>
-     */
-    id: number;
-    /**
-     * Format: timestamp with time zone
-     * @default now()
-     */
-    created_at?: string;
-    /** Format: text */
-    body?: string;
-    /**
-     * Format: bigint
-     * @description Note:
-     * This is a Foreign Key to `messages.id`.<fk table='messages' column='id'/>
-     */
-    message_id?: number;
-    /**
-     * Format: uuid
-     * @description Note:
-     * This is a Foreign Key to `profiles.id`.<fk table='profiles' column='id'/>
-     */
-    profile_id?: string;
-  };
+    config: {
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Primary Key.<pk/>
+         */
+        id: number
+        /** Format: boolean */
+        preflightComplete: boolean
+        /** Format: text */
+        slackApiKey?: string
+        /** Format: text */
+        slackQuestionChannel?: string
+        /** Format: text */
+        slackSigningSecret?: string
+        /** Format: text */
+        mailgunApiKey?: string
+        /** Format: text */
+        mailgunDomain?: string
+    }
+    messages: {
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Primary Key.<pk/>
+         */
+        id: number
+        /**
+         * Format: timestamp with time zone
+         * @default now()
+         */
+        created_at?: string
+        /** Format: text */
+        subject?: string
+        /** Format: ARRAY */
+        slug?: unknown[]
+        /** Format: boolean */
+        published?: boolean
+        /** Format: text */
+        slack_timestamoy?: string
+    }
+    profiles: {
+        /**
+         * Format: uuid
+         * @description Note:
+         * This is a Primary Key.<pk/>
+         */
+        id: string
+        /** Format: text */
+        first_name?: string
+        /** Format: text */
+        last_name?: string
+        /** Format: text */
+        avatar?: string
+    }
+    replies: {
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Primary Key.<pk/>
+         */
+        id: number
+        /**
+         * Format: timestamp with time zone
+         * @default now()
+         */
+        created_at?: string
+        /** Format: text */
+        body?: string
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `messages.id`.<fk table='messages' column='id'/>
+         */
+        message_id?: number
+        /**
+         * Format: uuid
+         * @description Note:
+         * This is a Foreign Key to `profiles.id`.<fk table='profiles' column='id'/>
+         */
+        profile_id?: string
+    }
 }
 
 export interface parameters {
-  /**
-   * @description Preference
-   * @enum {string}
-   */
-  preferParams: "params=single-object";
-  /**
-   * @description Preference
-   * @enum {string}
-   */
-  preferReturn: "return=representation" | "return=minimal" | "return=none";
-  /**
-   * @description Preference
-   * @enum {string}
-   */
-  preferCount: "count=none";
-  /** @description Filtering Columns */
-  select: string;
-  /** @description On Conflict */
-  on_conflict: string;
-  /** @description Ordering */
-  order: string;
-  /** @description Limiting and Pagination */
-  range: string;
-  /**
-   * @description Limiting and Pagination
-   * @default items
-   */
-  rangeUnit: string;
-  /** @description Limiting and Pagination */
-  offset: string;
-  /** @description Limiting and Pagination */
-  limit: string;
-  /** @description config */
-  "body.config": definitions["config"];
-  /** Format: bigint */
-  "rowFilter.config.id": string;
-  /** Format: boolean */
-  "rowFilter.config.preflightComplete": string;
-  /** Format: text */
-  "rowFilter.config.slackApiKey": string;
-  /** Format: text */
-  "rowFilter.config.slackQuestionChannel": string;
-  /** Format: text */
-  "rowFilter.config.slackSigningSecret": string;
-  /** Format: text */
-  "rowFilter.config.mailgunApiKey": string;
-  /** Format: text */
-  "rowFilter.config.mailgunDomain": string;
-  /** @description messages */
-  "body.messages": definitions["messages"];
-  /** Format: bigint */
-  "rowFilter.messages.id": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.messages.created_at": string;
-  /** Format: text */
-  "rowFilter.messages.subject": string;
-  /** Format: ARRAY */
-  "rowFilter.messages.slug": string;
-  /** Format: boolean */
-  "rowFilter.messages.published": string;
-  /** Format: text */
-  "rowFilter.messages.slack_timestamoy": string;
-  /** @description profiles */
-  "body.profiles": definitions["profiles"];
-  /** Format: uuid */
-  "rowFilter.profiles.id": string;
-  /** Format: text */
-  "rowFilter.profiles.first_name": string;
-  /** Format: text */
-  "rowFilter.profiles.last_name": string;
-  /** Format: text */
-  "rowFilter.profiles.avatar": string;
-  /** @description replies */
-  "body.replies": definitions["replies"];
-  /** Format: bigint */
-  "rowFilter.replies.id": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.replies.created_at": string;
-  /** Format: text */
-  "rowFilter.replies.body": string;
-  /** Format: bigint */
-  "rowFilter.replies.message_id": string;
-  /** Format: uuid */
-  "rowFilter.replies.profile_id": string;
+    /**
+     * @description Preference
+     * @enum {string}
+     */
+    preferParams: 'params=single-object'
+    /**
+     * @description Preference
+     * @enum {string}
+     */
+    preferReturn: 'return=representation' | 'return=minimal' | 'return=none'
+    /**
+     * @description Preference
+     * @enum {string}
+     */
+    preferCount: 'count=none'
+    /** @description Filtering Columns */
+    select: string
+    /** @description On Conflict */
+    on_conflict: string
+    /** @description Ordering */
+    order: string
+    /** @description Limiting and Pagination */
+    range: string
+    /**
+     * @description Limiting and Pagination
+     * @default items
+     */
+    rangeUnit: string
+    /** @description Limiting and Pagination */
+    offset: string
+    /** @description Limiting and Pagination */
+    limit: string
+    /** @description config */
+    'body.config': definitions['config']
+    /** Format: bigint */
+    'rowFilter.config.id': string
+    /** Format: boolean */
+    'rowFilter.config.preflightComplete': string
+    /** Format: text */
+    'rowFilter.config.slackApiKey': string
+    /** Format: text */
+    'rowFilter.config.slackQuestionChannel': string
+    /** Format: text */
+    'rowFilter.config.slackSigningSecret': string
+    /** Format: text */
+    'rowFilter.config.mailgunApiKey': string
+    /** Format: text */
+    'rowFilter.config.mailgunDomain': string
+    /** @description messages */
+    'body.messages': definitions['messages']
+    /** Format: bigint */
+    'rowFilter.messages.id': string
+    /** Format: timestamp with time zone */
+    'rowFilter.messages.created_at': string
+    /** Format: text */
+    'rowFilter.messages.subject': string
+    /** Format: ARRAY */
+    'rowFilter.messages.slug': string
+    /** Format: boolean */
+    'rowFilter.messages.published': string
+    /** Format: text */
+    'rowFilter.messages.slack_timestamoy': string
+    /** @description profiles */
+    'body.profiles': definitions['profiles']
+    /** Format: uuid */
+    'rowFilter.profiles.id': string
+    /** Format: text */
+    'rowFilter.profiles.first_name': string
+    /** Format: text */
+    'rowFilter.profiles.last_name': string
+    /** Format: text */
+    'rowFilter.profiles.avatar': string
+    /** @description replies */
+    'body.replies': definitions['replies']
+    /** Format: bigint */
+    'rowFilter.replies.id': string
+    /** Format: timestamp with time zone */
+    'rowFilter.replies.created_at': string
+    /** Format: text */
+    'rowFilter.replies.body': string
+    /** Format: bigint */
+    'rowFilter.replies.message_id': string
+    /** Format: uuid */
+    'rowFilter.replies.profile_id': string
 }
 
 export interface operations {}
