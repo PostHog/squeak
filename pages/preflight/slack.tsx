@@ -91,7 +91,7 @@ const PreflightWelcome: NextPage<Props> = ({
 
                 <button onClick={handleSave}>Save and next</button>
 
-                <Link href="/preflight/mailgun">
+                <Link href="/preflight/mailgun" passHref>
                     <button>Skip this step</button>
                 </Link>
             </main>
@@ -105,7 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
-    const { data: config, error } = await supabaseClient
+    const { data: config } = await supabaseClient
         .from<Config>('config')
         .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
         .eq('id', 1)
