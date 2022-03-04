@@ -3,7 +3,6 @@ import Head from 'next/head'
 import type {GetServerSideProps, NextPage} from 'next'
 
 import styles from '../../styles/Home.module.css'
-import Link from "next/link";
 
 interface Props {
     supabase: {
@@ -26,10 +25,13 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
                     Preflight
                 </h1>
 
-                <p>Welcome to Squeak! Let's get you setup.</p>
-                <Link href="/preflight/supabase">
-                    <button>Let's go!</button>
-                </Link>
+                <p>Step 4. Let's create your account</p>
+
+                <p>Some spill about what we need to do here...</p>
+
+                <p>GitHub auth button here</p>
+
+                <button>Complete</button>
             </main>
         </div>
     )

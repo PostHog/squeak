@@ -1,9 +1,9 @@
 import Head from 'next/head'
+import Link from 'next/link'
 
 import type {GetServerSideProps, NextPage} from 'next'
 
 import styles from '../../styles/Home.module.css'
-import Link from "next/link";
 
 interface Props {
     supabase: {
@@ -26,9 +26,16 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
                     Preflight
                 </h1>
 
-                <p>Welcome to Squeak! Let's get you setup.</p>
-                <Link href="/preflight/supabase">
-                    <button>Let's go!</button>
+                <p>Step 3. Let's setup Mailgun (optional)</p>
+
+                <p>Some spill about what we need to do here...</p>
+
+                <p>Enter your Mailgun credentials</p>
+                <input type="text" placeholder="Mailgun API Key"/>
+
+                <button>Save and next</button>
+                <Link href="/preflight/user">
+                    <button>Skip this step</button>
                 </Link>
             </main>
         </div>
