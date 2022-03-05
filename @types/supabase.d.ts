@@ -12,6 +12,96 @@ export interface paths {
       };
     };
   };
+  "/config": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.config.id"];
+          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["config"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** config */
+          config?: definitions["config"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.config.id"];
+          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.config.id"];
+          preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+        };
+        body: {
+          /** config */
+          config?: definitions["config"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/messages": {
     get: {
       parameters: {
@@ -312,6 +402,16 @@ export interface paths {
 }
 
 export interface definitions {
+  config: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: boolean */
+    preflightComplete?: boolean;
+  };
   messages: {
     /**
      * Format: bigint
@@ -327,7 +427,7 @@ export interface definitions {
     /** Format: text */
     subject?: string;
     /** Format: ARRAY */
-    slug?: string[];
+    slug?: unknown[];
     /** Format: boolean */
     published?: boolean;
     /** Format: text */
@@ -409,6 +509,12 @@ export interface parameters {
   offset: string;
   /** @description Limiting and Pagination */
   limit: string;
+  /** @description config */
+  "body.config": definitions["config"];
+  /** Format: bigint */
+  "rowFilter.config.id": string;
+  /** Format: boolean */
+  "rowFilter.config.preflightComplete": string;
   /** @description messages */
   "body.messages": definitions["messages"];
   /** Format: bigint */
