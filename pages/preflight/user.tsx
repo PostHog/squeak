@@ -1,26 +1,23 @@
 import Head from 'next/head'
 
-import type {GetServerSideProps, NextPage} from 'next'
-import {GetStaticPropsResult} from "next";
+import type { GetServerSideProps, NextPage } from 'next'
+import { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
 
-interface Props {
-}
+interface Props {}
 
 const PreflightWelcome: NextPage<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
                 <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..."/>
-                <link rel="icon" href="/favicon.ico"/>
+                <meta name="description" content="Something about Squeak here..." />
+                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Preflight
-                </h1>
+                <h1 className={styles.title}>Preflight</h1>
 
                 <p>Step 4. Let's create your account</p>
 

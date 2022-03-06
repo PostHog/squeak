@@ -1,43 +1,40 @@
 import Head from 'next/head'
 
-import {createClient} from '@supabase/supabase-js'
-import type {GetServerSideProps, NextPage} from 'next'
-import {GetStaticPropsResult} from "next";
+import { createClient } from '@supabase/supabase-js'
+import type { GetServerSideProps, NextPage } from 'next'
+import { GetStaticPropsResult } from 'next'
 
 import styles from '../styles/Home.module.css'
 
-import {definitions} from "../@types/supabase";
+import { definitions } from '../@types/supabase'
 
-type Config = definitions['config'];
+type Config = definitions['config']
 
-interface Props {
-}
+interface Props {}
 
 const Home: NextPage<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
                 <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..."/>
-                <link rel="icon" href="/favicon.ico"/>
+                <meta name="description" content="Something about Squeak here..." />
+                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Home
-                </h1>
+                <h1 className={styles.title}>Home</h1>
             </main>
         </div>
     )
 }
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.SUPABASE_URL as string;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
+    const supabaseUrl = process.env.SUPABASE_URL as string
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
-    const {data: config} = await supabaseClient
+    const { data: config } = await supabaseClient
         .from<Config>('config')
         .select(`preflightComplete`)
         .eq('id', 1)
@@ -57,4 +54,4 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
     }
 }
 
-export default Home;
+export default Home
