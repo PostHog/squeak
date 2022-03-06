@@ -2,7 +2,7 @@
 
 Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak&env=SUPABASE_URL,SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,DATABASE_URL&envDescription=Environment%20variables%20to%20configure%20Squeak&envLink=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak%23configuration&project-name=squeak&repository-name=squeak)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,DATABASE_URL&envDescription=Environment%20variables%20to%20configure%20Squeak&envLink=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak%23configuration&project-name=squeak&repository-name=squeak)
 
 ## Getting Started
 
@@ -10,12 +10,12 @@ Once you have access to the [environment variables](#configuration) you'll need,
 
 ## Configuration
 
-| Key                       | Required | Description                                                                                                                             |
-|---------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| SUPABASE_URL              | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
-| SUPABASE_ANON_KEY         | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
-| SUPABASE_SERVICE_ROLE_KEY | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
-| DATABASE_URL              | No       | The Postgresql connection string, if provided, will automatically run migrations on start, found at `/settings/database`, in URI format |
+| Key                           | Required | Description                                                                                                                             |
+|-------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
+| SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
+| DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations on start, found at `/settings/database`, in URI format |
 
 
 ## Local Development
@@ -46,8 +46,8 @@ yarn dev
 3. Run the container: 
 ```shell
 docker run \
-  -e "SUPABASE_URL=<YOUR URL>" \
-  -e "SUPABASE_ANON_KEY=<YOUR ANON KEY>" \
+  -e "NEXT_PUBLIC_SUPABASE_URL=<YOUR URL>" \
+  -e "NEXT_PUBLIC_SUPABASE_ANON_KEY=<YOUR ANON KEY>" \
   -e "SUPABASE_SERVICE_ROLE_KEY=<YOUR SERVICE ROLE KEY>" \
   -e "DATABASE_URL=<YOUR DATABASE_URL>" \
   -p 3000:3000 squeak
@@ -58,5 +58,5 @@ docker run \
 After running a migration, you can generate typescript types for the database schema:
 
 ```shell
-npx openapi-typescript "https://htzqlrrygnqeebaspzln.supabase.co/rest/v1/?apikey=<YOUR_SUPABASE_ANON_KEY>" --output @types/supabase.d.ts
+npx openapi-typescript "https://htzqlrrygnqeebaspzln.supabase.co/rest/v1/?apikey=<YOUR_NEXT_PUBLIC_SUPABASE_ANON_KEY>" --output @types/supabase.d.ts
 ```

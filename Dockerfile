@@ -19,7 +19,10 @@ COPY . .
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+
+# Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
+ENV NEXT_PUBLIC_SUPABASE_URL=APP_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPBASE_ANON_KEY=APP_PUBLIC_SUPABASE_ANON_KEY
 
 RUN yarn build
 
@@ -44,10 +47,11 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# DB Migrations
-COPY --from=builder /app/node_modules ./node_modules
+# Entrypoint files
 COPY ./bin/docker ./bin/docker
-COPY ./bin/migrate ./bin/migrate
+
+## Database migrations
+COPY --from=builder /app/node_modules ./node_modules
 COPY ./migrations ./migrations
 
 USER nextjs
@@ -56,4 +60,6 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["./bin/docker"]
+ENTRYPOINT ["./bin/docker"]
+
+CMD ["node", "server.js"]
