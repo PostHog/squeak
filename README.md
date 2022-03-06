@@ -20,7 +20,7 @@ Once you have access to the [environment variables](#configuration) you'll need,
 
 ## Local Development
 
-### With NextJS Dev (Recommended)
+#### With NextJS Dev (Recommended)
 
 1. Setup your environment configuration:
 ```shell
@@ -52,3 +52,11 @@ docker run \
   -e "DATABASE_URL=<YOUR DATABASE_URL>" \
   -p 3000:3000 squeak
 ````
+
+### Generating Typescript Types
+
+After running a migration, you can generate typescript types for the database schema:
+
+```shell
+npx openapi-typescript "https://htzqlrrygnqeebaspzln.supabase.co/rest/v1/?apikey=<YOUR_SUPABASE_ANON_KEY>" --output @types/supabase.d.ts
+```

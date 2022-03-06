@@ -10,7 +10,7 @@ import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
 import Router from 'next/router'
 
-type Config = definitions['config']
+type Config = definitions['squeak_config']
 
 interface Props {
     supabaseUrl: string

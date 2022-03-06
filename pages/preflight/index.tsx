@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 
-type Config = definitions['config']
+type Config = definitions['squeak_config']
 
 interface Props {}
 
