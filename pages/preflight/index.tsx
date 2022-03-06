@@ -35,19 +35,15 @@ const PreflightWelcome: NextPage<Props> = () => {
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     const supabaseUrl = process.env.SUPABASE_URL as string
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-    const { data: config } = await supabaseClient
-        .from<Config>('config')
-        .select(`preflightComplete`)
-        .eq('id', 1)
-        .single()
+    const { data: config } = await supabaseClient.from<Config>('squeak_config').select(`id`).eq('id', 1).single()
 
     // If we don't have data at all, we need to create a config row
     if (!config) {
-        await supabaseClient.from<Config>('config').insert({
+        await supabaseClient.from<Config>('squeak_config').insert({
             id: 1,
             preflightComplete: false,
         })
