@@ -8,7 +8,7 @@ import styles from '../styles/Home.module.css'
 
 import { definitions } from '../@types/supabase'
 
-type Config = definitions['config']
+type Config = definitions['squeak_config']
 
 interface Props {}
 

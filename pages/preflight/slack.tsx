@@ -10,7 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
 
-type Config = definitions['config']
+type Config = definitions['squeak_config']
 
 interface Props {
     supabaseUrl: string
