@@ -1,10 +1,16 @@
 #!/bin/sh
 set -e
 
-# If we have a DATABASE_URL, run any DB migrations
+echo "Checking DB migrations..."
 if [[ -n "${DATABASE_URL}" ]]; then
    yarn migrate up
 fi
 
-# Start the server
-node server.js
+echo "Check that we have NEXT_PUBLIC_ vars..."
+test -n "$NEXT_PUBLIC_SUPABASE_URL"
+test -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
+find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_PUBLIC_SUPABASE_URL#$NEXT_PUBLIC_SUPABASE_URL#g"
+find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_PUBLIC_SUPABASE_ANON_KEY#$NEXT_PUBLIC_SUPABASE_ANON_KEY#g"
+
+exec "$@"

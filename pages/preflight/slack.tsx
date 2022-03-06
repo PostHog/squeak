@@ -13,16 +13,12 @@ import { useState } from 'react'
 type Config = definitions['squeak_config']
 
 interface Props {
-    supabaseUrl: string
-    supabaseAnonKey: string
     slackApiKey: string | undefined
     slackQuestionChannel: string | undefined
     slackSigningSecret: string | undefined
 }
 
 const PreflightWelcome: NextPage<Props> = ({
-    supabaseUrl,
-    supabaseAnonKey,
     slackApiKey: serverApiKey,
     slackQuestionChannel: serverSlackQuestionChannel,
     slackSigningSecret: serverSlackSigningSecret,
@@ -33,7 +29,10 @@ const PreflightWelcome: NextPage<Props> = ({
 
     const handleSave = async () => {
         // TODO(JS): This needs to be refactored to an API route so we can use the PG service_role on the server
-        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+        const supabaseClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+        )
 
         await supabaseClient
             .from<Config>('sqeak_config')
@@ -101,8 +100,7 @@ const PreflightWelcome: NextPage<Props> = ({
 }
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.SUPABASE_URL as string
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
@@ -117,8 +115,6 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     return {
         props: {
-            supabaseUrl,
-            supabaseAnonKey,
             slackApiKey: config?.slackApiKey,
             slackQuestionChannel: config?.slackQuestionChannel,
             slackSigningSecret: config?.slackSigningSecret,

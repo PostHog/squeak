@@ -13,15 +13,11 @@ import Router from 'next/router'
 type Config = definitions['squeak_config']
 
 interface Props {
-    supabaseUrl: string
-    supabaseAnonKey: string
     mailgunApiKey: string | undefined
     mailgunDomain: string | undefined
 }
 
 const PreflightWelcome: NextPage<Props> = ({
-    supabaseUrl,
-    supabaseAnonKey,
     mailgunApiKey: serverMailgunApiKey,
     mailgunDomain: serverMailgunDomain,
 }) => {
@@ -30,7 +26,10 @@ const PreflightWelcome: NextPage<Props> = ({
 
     const handleSave = async () => {
         // TODO(JS): This needs to be refactored to an API route so we can use the PG service_role on the server
-        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+        const supabaseClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+        )
 
         await supabaseClient.from<Config>('config').update({ mailgunApiKey, mailgunDomain }).match({ id: 1 })
 
@@ -88,8 +87,7 @@ const PreflightWelcome: NextPage<Props> = ({
 }
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.SUPABASE_URL as string
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
@@ -104,8 +102,6 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     return {
         props: {
-            supabaseUrl,
-            supabaseAnonKey,
             mailgunApiKey: config?.mailgunApiKey,
             mailgunDomain: config?.mailgunDomain,
         },
