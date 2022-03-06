@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# If we have a DATABASE_URL, run any DB migrations
+if [[ -n "${DATABASE_URL}" ]]; then
+   yarn migrate up
+fi
+
+# Start the server
+node server.js
