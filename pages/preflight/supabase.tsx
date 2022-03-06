@@ -1,10 +1,11 @@
 import Head from 'next/head'
 import Link from 'next/link'
 
-import type { GetServerSideProps, NextPage } from 'next'
-import { GetStaticPropsResult } from 'next'
+import type { NextPage } from 'next'
 
 import styles from '../../styles/Home.module.css'
+import { withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { GetStaticPropsResult } from 'next'
 
 interface Props {}
 
@@ -55,10 +56,13 @@ const PreflightWelcome: NextPage<Props> = () => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    return {
-        props: {},
-    }
-}
+export const getServerSideProps = withAuthRequired({
+    redirectTo: '/preflight',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        return {
+            props: {},
+        }
+    },
+})
 
 export default PreflightWelcome

@@ -1,18 +1,36 @@
 import Head from 'next/head'
 
-import type { GetServerSideProps, NextPage } from 'next'
+import type { NextPage } from 'next'
 import { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { useUser, Auth } from '@supabase/supabase-auth-helpers/react'
 
 type Config = definitions['squeak_config']
 
 interface Props {}
 
 const PreflightWelcome: NextPage<Props> = () => {
+    const { user, error } = useUser()
+
+    if (!user)
+        return (
+            <>
+                {error && <p>{error.message}</p>}
+                <Auth
+                    supabaseClient={supabaseClient}
+                    redirectTo="/preflight"
+                    providers={['github']}
+                    onlyThirdPartyProviders
+                    magicLink
+                />
+            </>
+        )
+
     return (
         <div className={styles.container}>
             <Head>
@@ -33,11 +51,15 @@ const PreflightWelcome: NextPage<Props> = () => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
-
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
+    const supabaseClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+        process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+        {
+            autoRefreshToken: false,
+            persistSession: false,
+        }
+    )
 
     const { data: config } = await supabaseClient.from<Config>('squeak_config').select(`id`).eq('id', 1).single()
 

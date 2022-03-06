@@ -10,6 +10,7 @@
         "migrate": "node-pg-migrate"
     },
     "dependencies": {
+        "@supabase/supabase-auth-helpers": "^1.2.0",
         "@supabase/supabase-js": "^1.30.7",
         "next": "12.1.0",
         "node-pg-migrate": "^6.2.1",
