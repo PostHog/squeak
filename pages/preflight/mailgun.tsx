@@ -78,7 +78,7 @@ const PreflightWelcome: NextPage<Props> = ({
 
                 <button onClick={handleSave}>Save and next</button>
 
-                <Link href="/preflight/user">
+                <Link href="/preflight/user" passHref>
                     <button>Skip this step</button>
                 </Link>
             </main>
@@ -92,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
-    const { data: config, error } = await supabaseClient
+    const { data: config } = await supabaseClient
         .from<Config>('config')
         .select(`mailgunApiKey, mailgunDomain`)
         .eq('id', 1)

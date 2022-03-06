@@ -47,7 +47,7 @@ const PreflightWelcome: NextPage<Props> = () => {
 
                 <p>If the user does have the tables setup... show:</p>
                 <p>Nice UI here to indicate this step is complete</p>
-                <Link href="/preflight/slack">
+                <Link href="/preflight/slack" passHref>
                     <button>Next</button>
                 </Link>
             </main>

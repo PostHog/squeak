@@ -25,7 +25,7 @@ const PreflightWelcome: NextPage<Props> = () => {
                 <h1 className={styles.title}>Preflight</h1>
 
                 <p>Welcome to Squeak! Let's get you setup.</p>
-                <Link href="/preflight/supabase">
+                <Link href="/preflight/supabase" passHref>
                     <button>Let's go!</button>
                 </Link>
             </main>
@@ -39,7 +39,11 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
-    let { data: config } = await supabaseClient.from<Config>('config').select(`preflightComplete`).eq('id', 1).single()
+    const { data: config } = await supabaseClient
+        .from<Config>('config')
+        .select(`preflightComplete`)
+        .eq('id', 1)
+        .single()
 
     // If we don't have data at all, we need to create a config row
     if (!config) {
