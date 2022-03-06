@@ -320,6 +320,7 @@ export interface paths {
           first_name?: parameters["rowFilter.squeak_profiles.first_name"];
           last_name?: parameters["rowFilter.squeak_profiles.last_name"];
           avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          isAdmin?: parameters["rowFilter.squeak_profiles.isAdmin"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -374,6 +375,7 @@ export interface paths {
           first_name?: parameters["rowFilter.squeak_profiles.first_name"];
           last_name?: parameters["rowFilter.squeak_profiles.last_name"];
           avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          isAdmin?: parameters["rowFilter.squeak_profiles.isAdmin"];
         };
         header: {
           /** Preference */
@@ -392,6 +394,7 @@ export interface paths {
           first_name?: parameters["rowFilter.squeak_profiles.first_name"];
           last_name?: parameters["rowFilter.squeak_profiles.last_name"];
           avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          isAdmin?: parameters["rowFilter.squeak_profiles.isAdmin"];
         };
         body: {
           /** squeak_profiles */
@@ -576,6 +579,8 @@ export interface definitions {
     last_name?: string;
     /** Format: text */
     avatar?: string;
+    /** Format: boolean */
+    isAdmin: boolean;
   };
   squeak_replies: {
     /**
@@ -687,6 +692,8 @@ export interface parameters {
   "rowFilter.squeak_profiles.last_name": string;
   /** Format: text */
   "rowFilter.squeak_profiles.avatar": string;
+  /** Format: boolean */
+  "rowFilter.squeak_profiles.isAdmin": string;
   /** @description squeak_replies */
   "body.squeak_replies": definitions["squeak_replies"];
   /** Format: bigint */
