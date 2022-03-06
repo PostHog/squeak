@@ -30,12 +30,12 @@ const Home: NextPage<Props> = () => {
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     const supabaseUrl = process.env.SUPABASE_URL as string
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
     const { data: config } = await supabaseClient
-        .from<Config>('config')
+        .from<Config>('squeak_config')
         .select(`preflightComplete`)
         .eq('id', 1)
         .single()

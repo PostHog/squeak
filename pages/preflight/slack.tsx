@@ -32,10 +32,11 @@ const PreflightWelcome: NextPage<Props> = ({
     const [slackSigningSecret, setSlackSigningSecret] = useState(serverSlackSigningSecret)
 
     const handleSave = async () => {
+        // TODO(JS): This needs to be refactored to an API route so we can use the PG service_role on the server
         const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
         await supabaseClient
-            .from<Config>('config')
+            .from<Config>('sqeak_config')
             .update({ slackApiKey, slackQuestionChannel, slackSigningSecret })
             .match({ id: 1 })
 
@@ -102,16 +103,17 @@ const PreflightWelcome: NextPage<Props> = ({
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     const supabaseUrl = process.env.SUPABASE_URL as string
     const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
     const { data: config } = await supabaseClient
-        .from<Config>('config')
+        .from<Config>('squeak_config')
         .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
         .eq('id', 1)
         .single()
 
-    // TODO(JS): Handle errors here?
+    // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 
     return {
         props: {
