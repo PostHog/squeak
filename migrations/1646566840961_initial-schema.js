@@ -17,24 +17,24 @@ exports.up = (pgm) => {
                     precedence: 'BY DEFAULT',
                 },
             },
-            preflightComplete: {
+            preflight_complete: {
                 type: 'boolean',
                 notNull: true,
                 default: false,
             },
-            slackApiKey: {
+            slack_api_key: {
                 type: 'text',
             },
-            slackQuestionChannel: {
+            slack_question_channel: {
                 type: 'text',
             },
-            slackSigningSecret: {
+            slack_signing_secret: {
                 type: 'text',
             },
-            mailgunApiKey: {
+            mailgun_api_key: {
                 type: 'text',
             },
-            mailgunDomain: {
+            mailgun_domain: {
                 type: 'text',
             },
         }

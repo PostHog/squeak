@@ -37,7 +37,11 @@ const PreflightWelcome: NextPage<Props> = ({
 
         await supabaseClient
             .from<Config>('sqeak_config')
-            .update({ slackApiKey, slackQuestionChannel, slackSigningSecret })
+            .update({
+                slack_api_key: slackApiKey,
+                slack_question_channel: slackQuestionChannel,
+                slack_signing_secret: slackSigningSecret,
+            })
             .match({ id: 1 })
 
         // TODO(JS): Trigger toast?
@@ -110,7 +114,7 @@ export const getServerSideProps = withAuthRequired({
 
         const { data: config } = await supabaseClient
             .from<Config>('squeak_config')
-            .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
+            .select(`slack_api_key, slack_question_channel, slack_signing_secret`)
             .eq('id', 1)
             .single()
 
@@ -118,9 +122,9 @@ export const getServerSideProps = withAuthRequired({
 
         return {
             props: {
-                slackApiKey: config?.slackApiKey,
-                slackQuestionChannel: config?.slackQuestionChannel,
-                slackSigningSecret: config?.slackSigningSecret,
+                slackApiKey: config?.slack_api_key,
+                slackQuestionChannel: config?.slack_question_channel,
+                slackSigningSecret: config?.slack_signing_secret,
             },
         }
     },
