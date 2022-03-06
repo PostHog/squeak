@@ -3,12 +3,13 @@ import Link from 'next/link'
 
 import Router from 'next/router'
 
-import type { GetServerSideProps, GetStaticPropsResult, NextPage } from 'next'
+import type { GetStaticPropsResult, NextPage } from 'next'
 
 import styles from '../../styles/Home.module.css'
 import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
+import { withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
 
 type Config = definitions['squeak_config']
 
@@ -99,27 +100,30 @@ const PreflightWelcome: NextPage<Props> = ({
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+export const getServerSideProps = withAuthRequired({
+    redirectTo: '/preflight',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-    const { data: config } = await supabaseClient
-        .from<Config>('squeak_config')
-        .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
-        .eq('id', 1)
-        .single()
+        const { data: config } = await supabaseClient
+            .from<Config>('squeak_config')
+            .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
+            .eq('id', 1)
+            .single()
 
-    // TODO(JS): Handle errors here? I.e if config doesn't exist at all
+        // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 
-    return {
-        props: {
-            slackApiKey: config?.slackApiKey,
-            slackQuestionChannel: config?.slackQuestionChannel,
-            slackSigningSecret: config?.slackSigningSecret,
-        },
-    }
-}
+        return {
+            props: {
+                slackApiKey: config?.slackApiKey,
+                slackQuestionChannel: config?.slackQuestionChannel,
+                slackSigningSecret: config?.slackSigningSecret,
+            },
+        }
+    },
+})
 
 export default PreflightWelcome

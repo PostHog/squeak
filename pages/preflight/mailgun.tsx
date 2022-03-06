@@ -1,7 +1,6 @@
 import Head from 'next/head'
-import Link from 'next/link'
 
-import type { GetServerSideProps, NextPage } from 'next'
+import type { NextPage } from 'next'
 import { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
@@ -9,6 +8,7 @@ import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
 import Router from 'next/router'
+import { withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
 
 type Config = definitions['squeak_config']
 
@@ -78,34 +78,35 @@ const PreflightWelcome: NextPage<Props> = ({
 
                 <button onClick={handleSave}>Save and next</button>
 
-                <Link href="/preflight/user" passHref>
-                    <button>Skip this step</button>
-                </Link>
+                <button>Complete</button>
             </main>
         </div>
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+export const getServerSideProps = withAuthRequired({
+    redirectTo: '/preflight',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-    const { data: config } = await supabaseClient
-        .from<Config>('squeak_config')
-        .select(`mailgunApiKey, mailgunDomain`)
-        .eq('id', 1)
-        .single()
+        const { data: config } = await supabaseClient
+            .from<Config>('squeak_config')
+            .select(`mailgunApiKey, mailgunDomain`)
+            .eq('id', 1)
+            .single()
 
-    // TODO(JS): Handle errors here? I.e if config doesn't exist at all
+        // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 
-    return {
-        props: {
-            mailgunApiKey: config?.mailgunApiKey,
-            mailgunDomain: config?.mailgunDomain,
-        },
-    }
-}
+        return {
+            props: {
+                mailgunApiKey: config?.mailgunApiKey,
+                mailgunDomain: config?.mailgunDomain,
+            },
+        }
+    },
+})
 
 export default PreflightWelcome
