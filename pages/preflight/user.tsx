@@ -1,17 +1,14 @@
 import Head from 'next/head'
 
 import type {GetServerSideProps, NextPage} from 'next'
+import {GetStaticPropsResult} from "next";
 
 import styles from '../../styles/Home.module.css'
 
 interface Props {
-    supabase: {
-        anonKey: string,
-        url: string,
-    }
 }
 
-const PreflightWelcome: NextPage<Props> = ({supabase}) => {
+const PreflightWelcome: NextPage<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
@@ -37,14 +34,9 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     return {
-        props: {
-            supabase: {
-                url: process.env.SUPABASE_URL,
-                anonKey: process.env.SUPABASE_ANON_KEY,
-            },
-        },
+        props: {},
     }
 }
 

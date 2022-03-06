@@ -18,6 +18,11 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.config.id"];
           preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
+          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
+          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
+          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
+          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -70,6 +75,11 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.config.id"];
           preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
+          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
+          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
+          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
+          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
         };
         header: {
           /** Preference */
@@ -86,6 +96,11 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.config.id"];
           preflightComplete?: parameters["rowFilter.config.preflightComplete"];
+          slackApiKey?: parameters["rowFilter.config.slackApiKey"];
+          slackQuestionChannel?: parameters["rowFilter.config.slackQuestionChannel"];
+          slackSigningSecret?: parameters["rowFilter.config.slackSigningSecret"];
+          mailgunApiKey?: parameters["rowFilter.config.mailgunApiKey"];
+          mailgunDomain?: parameters["rowFilter.config.mailgunDomain"];
         };
         body: {
           /** config */
@@ -410,7 +425,17 @@ export interface definitions {
      */
     id: number;
     /** Format: boolean */
-    preflightComplete?: boolean;
+    preflightComplete: boolean;
+    /** Format: text */
+    slackApiKey?: string;
+    /** Format: text */
+    slackQuestionChannel?: string;
+    /** Format: text */
+    slackSigningSecret?: string;
+    /** Format: text */
+    mailgunApiKey?: string;
+    /** Format: text */
+    mailgunDomain?: string;
   };
   messages: {
     /**
@@ -515,6 +540,16 @@ export interface parameters {
   "rowFilter.config.id": string;
   /** Format: boolean */
   "rowFilter.config.preflightComplete": string;
+  /** Format: text */
+  "rowFilter.config.slackApiKey": string;
+  /** Format: text */
+  "rowFilter.config.slackQuestionChannel": string;
+  /** Format: text */
+  "rowFilter.config.slackSigningSecret": string;
+  /** Format: text */
+  "rowFilter.config.mailgunApiKey": string;
+  /** Format: text */
+  "rowFilter.config.mailgunDomain": string;
   /** @description messages */
   "body.messages": definitions["messages"];
   /** Format: bigint */

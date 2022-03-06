@@ -1,18 +1,50 @@
 import Head from 'next/head'
 import Link from 'next/link'
 
-import type {GetServerSideProps, NextPage} from 'next'
+import Router from 'next/router'
+
+import type {GetServerSideProps, GetStaticPropsResult, NextPage} from 'next'
 
 import styles from '../../styles/Home.module.css'
+import {createClient} from '@supabase/supabase-js'
+import {definitions} from "../../@types/supabase";
+import {useState} from "react";
+
+type Config = definitions['config'];
 
 interface Props {
-    supabase: {
-        anonKey: string,
-        url: string,
-    }
+    supabaseUrl: string;
+    supabaseAnonKey: string;
+    slackApiKey: string | undefined;
+    slackQuestionChannel: string | undefined;
+    slackSigningSecret: string | undefined;
 }
 
-const PreflightWelcome: NextPage<Props> = ({supabase}) => {
+const PreflightWelcome: NextPage<Props> = ({
+                                               supabaseUrl,
+                                               supabaseAnonKey,
+                                               slackApiKey: serverApiKey,
+                                               slackQuestionChannel: serverSlackQuestionChannel,
+                                               slackSigningSecret: serverSlackSigningSecret
+                                           }) => {
+    const [slackApiKey, setSlackApiKey] = useState(serverApiKey);
+    const [slackQuestionChannel, setSlackQuestionChannel] = useState(serverSlackQuestionChannel);
+    const [slackSigningSecret, setSlackSigningSecret] = useState(serverSlackSigningSecret);
+
+    const handleSave = async () => {
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+        await supabaseClient
+            .from<Config>('config')
+            .update({slackApiKey, slackQuestionChannel, slackSigningSecret})
+            .match({id: 1});
+
+        // TODO(JS): Trigger toast?
+        // TODO(JS): Handle errors here?
+
+        Router.push('/preflight/mailgun');
+    }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -30,12 +62,23 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
 
                 <p>Some spill about what we need to do here...</p>
 
-
+                {/* TODO(JS): Do we need a toggle here? Let's wait until the designs */}
+                <p>Toggle here that enables the credential section, and makes the fields required (if it's toggled to on?)</p>
 
                 <p>Enter your Slack credentials</p>
-                <input type="text" placeholder="Slack API Key"/>
+                <input type="text" placeholder="Slack API Key" value={slackApiKey}
+                       onChange={(event => setSlackApiKey(event.target.value))}/>
 
-                <button>Save and next</button>
+                <input type="password" placeholder="Slack Signing Secret" value={slackSigningSecret}
+                       onChange={(event => setSlackSigningSecret(event.target.value))}/>
+
+                {/* TODO(JS): Could we pull this from the Slack API and make it a dropdown? */}
+                <input type="text"
+                       placeholder="Slack Question Channel" value={slackQuestionChannel}
+                       onChange={(event => setSlackQuestionChannel(event.target.value))}/>
+
+                <button onClick={handleSave}>Save and next</button>
+
                 <Link href="/preflight/mailgun">
                     <button>Skip this step</button>
                 </Link>
@@ -44,13 +87,27 @@ const PreflightWelcome: NextPage<Props> = ({supabase}) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
+    const supabaseUrl = process.env.SUPABASE_URL as string;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+    let {data: config, error} = await supabaseClient
+        .from<Config>('config')
+        .select(`slackApiKey, slackQuestionChannel, slackSigningSecret`)
+        .eq('id', 1)
+        .single()
+
+    // TODO(JS): Handle errors here?
+
     return {
         props: {
-            supabase: {
-                url: process.env.SUPABASE_URL,
-                anonKey: process.env.SUPABASE_ANON_KEY,
-            },
+            supabaseUrl,
+            supabaseAnonKey,
+            slackApiKey: config?.slackApiKey,
+            slackQuestionChannel: config?.slackQuestionChannel,
+            slackSigningSecret: config?.slackSigningSecret
         },
     }
 }
