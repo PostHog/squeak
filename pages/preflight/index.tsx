@@ -67,7 +67,7 @@ export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>>
     if (!config) {
         await supabaseClient.from<Config>('squeak_config').insert({
             id: 1,
-            preflightComplete: false,
+            preflight_complete: false,
         })
 
         // TODO(JS): Handle errors here?

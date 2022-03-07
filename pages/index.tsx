@@ -36,11 +36,11 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
 
     const { data: config } = await supabaseClient
         .from<Config>('squeak_config')
-        .select(`preflightComplete`)
+        .select(`preflight_complete`)
         .eq('id', 1)
         .single()
 
-    if (!config || !config?.preflightComplete) {
+    if (!config || !config?.preflight_complete) {
         return {
             redirect: {
                 destination: '/preflight',

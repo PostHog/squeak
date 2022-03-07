@@ -31,7 +31,10 @@ const PreflightWelcome: NextPage<Props> = ({
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
         )
 
-        await supabaseClient.from<Config>('config').update({ mailgunApiKey, mailgunDomain }).match({ id: 1 })
+        await supabaseClient
+            .from<Config>('config')
+            .update({ mailgun_api_key: mailgunApiKey, mailgun_domain: mailgunDomain })
+            .match({ id: 1 })
 
         // TODO(JS): Trigger toast?
         // TODO(JS): Handle errors here?
@@ -94,7 +97,7 @@ export const getServerSideProps = withAuthRequired({
 
         const { data: config } = await supabaseClient
             .from<Config>('squeak_config')
-            .select(`mailgunApiKey, mailgunDomain`)
+            .select(`mailgun_api_key, mailgun_domain`)
             .eq('id', 1)
             .single()
 
@@ -102,8 +105,8 @@ export const getServerSideProps = withAuthRequired({
 
         return {
             props: {
-                mailgunApiKey: config?.mailgunApiKey,
-                mailgunDomain: config?.mailgunDomain,
+                mailgunApiKey: config?.mailgun_api_key,
+                mailgunDomain: config?.mailgun_api_key,
             },
         }
     },
