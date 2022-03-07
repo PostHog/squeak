@@ -4,11 +4,10 @@ import type { NextPage } from 'next'
 import { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
-import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
 import Router from 'next/router'
-import { withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
 
 type Config = definitions['squeak_config']
 
@@ -25,21 +24,15 @@ const PreflightWelcome: NextPage<Props> = ({
     const [mailgunDomain, setMailgunDomain] = useState(serverMailgunDomain)
 
     const handleSave = async () => {
-        // TODO(JS): This needs to be refactored to an API route so we can use the PG service_role on the server
-        const supabaseClient = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-        )
-
         await supabaseClient
-            .from<Config>('config')
+            .from<Config>('squeak_config')
             .update({ mailgun_api_key: mailgunApiKey, mailgun_domain: mailgunDomain })
             .match({ id: 1 })
 
         // TODO(JS): Trigger toast?
         // TODO(JS): Handle errors here?
 
-        Router.push('/preflight/user')
+        Router.push('/setup/alerts')
     }
 
     return (
@@ -51,51 +44,50 @@ const PreflightWelcome: NextPage<Props> = ({
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>Preflight</h1>
+                <h1 className={styles.title}>Thread notifications</h1>
 
-                <p>Step 3. Let's setup Mailgun (optional)</p>
-
-                <p>Some spill about what we need to do here...</p>
-
-                {/* TODO(JS): Do we need a toggle here? Let's wait until the designs */}
                 <p>
-                    Toggle here that enables the credential section, and makes the fields required (if it's toggled to
-                    on?)
+                    Send email notifications to users when a reply is posted to the question. This requires a
+                    transactional email service, and we use Mailgun.
                 </p>
 
-                <p>Enter your Mailgun credentials</p>
+                <p>
+                    Find the following information at{' '}
+                    <a href="https://app.mailgun.com/app/account/security/api_keys">
+                        https://app.mailgun.com/app/account/security/api_keys
+                    </a>
+                </p>
 
+                <label htmlFor="mailgunApiKey">Mailgun API Key</label>
                 <input
+                    name="mailgunApiKey"
                     type="text"
                     placeholder="Mailgun API Key"
                     value={mailgunApiKey}
                     onChange={(event) => setMailgunApiKey(event.target.value)}
                 />
 
+                <label htmlFor="mailgunDomain">Mailgun Domain</label>
                 <input
+                    name="mailgunDomain"
                     type="text"
                     placeholder="Mailgun Domain"
                     value={mailgunDomain}
                     onChange={(event) => setMailgunDomain(event.target.value)}
                 />
 
-                <button onClick={handleSave}>Save and next</button>
-
-                <button>Complete</button>
+                <button onClick={handleSave}>Continue</button>
             </main>
         </div>
     )
 }
 
 export const getServerSideProps = withAuthRequired({
-    redirectTo: '/preflight',
-    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    redirectTo: '/setup/administration',
+    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        // TODO(JS) Check the user is an admin
 
-        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
-
-        const { data: config } = await supabaseClient
+        const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`mailgun_api_key, mailgun_domain`)
             .eq('id', 1)

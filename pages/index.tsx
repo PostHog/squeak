@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async (): Promise<GetStati
     if (!config || !config?.preflight_complete) {
         return {
             redirect: {
-                destination: '/preflight',
+                destination: '/setup/welcome',
                 permanent: false,
             },
         }

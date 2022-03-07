@@ -6,10 +6,9 @@ import Router from 'next/router'
 import type { GetStaticPropsResult, NextPage } from 'next'
 
 import styles from '../../styles/Home.module.css'
-import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import { useState } from 'react'
-import { withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
 
 type Config = definitions['squeak_config']
 
@@ -29,14 +28,8 @@ const PreflightWelcome: NextPage<Props> = ({
     const [slackSigningSecret, setSlackSigningSecret] = useState(serverSlackSigningSecret)
 
     const handleSave = async () => {
-        // TODO(JS): This needs to be refactored to an API route so we can use the PG service_role on the server
-        const supabaseClient = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-        )
-
         await supabaseClient
-            .from<Config>('sqeak_config')
+            .from<Config>('squeak_config')
             .update({
                 slack_api_key: slackApiKey,
                 slack_question_channel: slackQuestionChannel,
@@ -47,7 +40,7 @@ const PreflightWelcome: NextPage<Props> = ({
         // TODO(JS): Trigger toast?
         // TODO(JS): Handle errors here?
 
-        Router.push('/preflight/mailgun')
+        Router.push('/setup/snippet')
     }
 
     return (
@@ -59,60 +52,57 @@ const PreflightWelcome: NextPage<Props> = ({
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>Preflight</h1>
+                <h1 className={styles.title}>Moderator alerts</h1>
 
-                <p>Step 2. Let's setup Slack (optional)</p>
+                <p>Let moderators receive alerts in Slack when new questions or replies are posted.</p>
 
-                <p>Some spill about what we need to do here...</p>
-
-                {/* TODO(JS): Do we need a toggle here? Let's wait until the designs */}
                 <p>
-                    Toggle here that enables the credential section, and makes the fields required (if it's toggled to
-                    on?)
+                    Find the following information at{' '}
+                    <a href="#">&#123;yourslack&#125;.slack.com/admin/not/sure/full/path</a>
                 </p>
 
-                <p>Enter your Slack credentials</p>
+                <label htmlFor="slackApiKey">Slack API Key</label>
                 <input
+                    name="slackApiKey"
                     type="text"
                     placeholder="Slack API Key"
                     value={slackApiKey}
                     onChange={(event) => setSlackApiKey(event.target.value)}
                 />
 
+                <label htmlFor="slackApiSecret">Slack API Secret</label>
                 <input
+                    name="slackApiSecret"
                     type="password"
-                    placeholder="Slack Signing Secret"
+                    placeholder="Slack API Secret"
                     value={slackSigningSecret}
                     onChange={(event) => setSlackSigningSecret(event.target.value)}
                 />
 
-                {/* TODO(JS): Could we pull this from the Slack API and make it a dropdown? */}
-                <input
-                    type="text"
-                    placeholder="Slack Question Channel"
+                <button>Authenticate with Slack</button>
+
+                <label htmlFor="slackQuestionChannel">Channel name (for alerts)</label>
+                <select
+                    name="slackQuestionChannel"
                     value={slackQuestionChannel}
                     onChange={(event) => setSlackQuestionChannel(event.target.value)}
-                />
+                    placeholder="Ex #questions"
+                >
+                    <option value="foo">#foo</option>
+                </select>
 
-                <button onClick={handleSave}>Save and next</button>
-
-                <Link href="/preflight/mailgun" passHref>
-                    <button>Skip this step</button>
-                </Link>
+                <button onClick={handleSave}>Continue</button>
             </main>
         </div>
     )
 }
 
 export const getServerSideProps = withAuthRequired({
-    redirectTo: '/preflight',
-    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    redirectTo: '/setup/administration',
+    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        // TODO(JS) Check the user is an admin
 
-        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
-
-        const { data: config } = await supabaseClient
+        const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`slack_api_key, slack_question_channel, slack_signing_secret`)
             .eq('id', 1)
