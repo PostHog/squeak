@@ -1,24 +1,22 @@
 import Head from 'next/head'
-
-import styles from '../../styles/Home.module.css'
 import Link from 'next/link'
 import { ReactElement } from 'react'
-import SetupLayout from '../../layout/SetupLayout'
 import { NextPageWithLayout } from '../../@types/types'
+import SetupLayout from '../../layout/SetupLayout'
 
 interface Props {}
 
 const Welcome: NextPageWithLayout<Props> = () => {
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Let's get to Squeakin!`</h1>
+            <main>
+                <h1>Let's get to Squeakin!`</h1>
 
                 <p>This wizard runs through the process of connecting to the services you’ll need to run Squeak!</p>
 

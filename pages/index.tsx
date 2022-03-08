@@ -1,15 +1,11 @@
-import Head from 'next/head'
-
 import { createClient } from '@supabase/supabase-js'
 import type { GetServerSideProps } from 'next'
 import { GetStaticPropsResult } from 'next'
-
-import styles from '../styles/Home.module.css'
-
-import { definitions } from '../@types/supabase'
-import AdminLayout from '../layout/AdminLayout'
-import type { NextPageWithLayout } from '../@types/types'
+import Head from 'next/head'
 import { ReactElement } from 'react'
+import { definitions } from '../@types/supabase'
+import type { NextPageWithLayout } from '../@types/types'
+import AdminLayout from '../layout/AdminLayout'
 
 type Config = definitions['squeak_config']
 
@@ -17,15 +13,15 @@ interface Props {}
 
 const Home: NextPageWithLayout<Props> = () => {
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Home</h1>
+            <main>
+                <h1>Home</h1>
             </main>
         </div>
     )

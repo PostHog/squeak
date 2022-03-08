@@ -1,11 +1,10 @@
-import type { GetStaticPropsResult } from 'next'
 import { supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
-import styles from '../../styles/Home.module.css'
+import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
-import { definitions } from '../../@types/supabase'
 import Link from 'next/link'
-import { NextPageWithLayout } from '../../@types/types'
 import { ReactElement } from 'react'
+import { definitions } from '../../@types/supabase'
+import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
@@ -14,15 +13,15 @@ interface Props {}
 
 const Snippet: NextPageWithLayout<Props> = () => {
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Install JS snippet</h1>
+            <main>
+                <h1>Install JS snippet</h1>
 
                 <p>
                     Add this code snippet on the page(s) where you want Squeak! to appear. Squeak! only looks at path

@@ -7,7 +7,6 @@ import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
-import styles from '../../styles/Home.module.css'
 
 type Config = definitions['squeak_config']
 
@@ -30,15 +29,15 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
     }
 
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Thread notifications</h1>
+            <main>
+                <h1>Thread notifications</h1>
 
                 <p>
                     Send email notifications to users when a reply is posted to the question. This requires a

@@ -7,7 +7,6 @@ import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
-import styles from '../../styles/Home.module.css'
 
 type Config = definitions['squeak_config']
 
@@ -35,15 +34,15 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
     }
 
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Moderator alerts</h1>
+            <main>
+                <h1>Moderator alerts</h1>
 
                 <p>Let moderators receive alerts in Slack when new questions or replies are posted.</p>
 

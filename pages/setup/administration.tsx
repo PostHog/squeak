@@ -6,7 +6,6 @@ import Router from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
-import styles from '../../styles/Home.module.css'
 
 interface Props {}
 
@@ -20,15 +19,15 @@ const Administration: NextPageWithLayout<Props> = () => {
     }, [user])
 
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Administration</h1>
+            <main>
+                <h1>Administration</h1>
 
                 <p>Squeak! uses GitHub authentication for access to the admin portal.</p>
 

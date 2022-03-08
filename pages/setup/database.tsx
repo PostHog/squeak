@@ -1,13 +1,11 @@
-import Head from 'next/head'
-
-import styles from '../../styles/Home.module.css'
-import { GetStaticPropsResult } from 'next'
-import Link from 'next/link'
-import { createClient } from '@supabase/supabase-js'
-import { ReactElement, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import SetupLayout from '../../layout/SetupLayout'
+import { createClient } from '@supabase/supabase-js'
+import { GetStaticPropsResult } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { ReactElement, useState } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
+import SetupLayout from '../../layout/SetupLayout'
 
 interface Props {
     initialDatabaseSetup: boolean
@@ -23,15 +21,15 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
     }
 
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Database</h1>
+            <main>
+                <h1>Database</h1>
 
                 {databaseSetup && (
                     <>
