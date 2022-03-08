@@ -1,19 +1,19 @@
 import Head from 'next/head'
 
-import type { NextPage } from 'next'
-
 import styles from '../../styles/Home.module.css'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import SetupLayout from '../../layout/SetupLayout'
+import { NextPageWithLayout } from '../../@types/types'
 
 interface Props {
     initialDatabaseSetup: boolean
 }
 
-const PreflightWelcome: NextPage<Props> = ({ initialDatabaseSetup }) => {
+const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
     const [databaseSetup, setDatabaseSetup] = useState(initialDatabaseSetup)
 
     const validateDatabaseSetup = async () => {
@@ -74,6 +74,10 @@ const PreflightWelcome: NextPage<Props> = ({ initialDatabaseSetup }) => {
     )
 }
 
+Database.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
 export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -89,4 +93,4 @@ export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>>
     }
 }
 
-export default PreflightWelcome
+export default Database

@@ -1,15 +1,18 @@
-import { GetStaticPropsResult, NextPage } from 'next'
+import type { GetStaticPropsResult } from 'next'
 import { supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
 import styles from '../../styles/Home.module.css'
 import Head from 'next/head'
 import { definitions } from '../../@types/supabase'
 import Link from 'next/link'
+import { NextPageWithLayout } from '../../@types/types'
+import { ReactElement } from 'react'
+import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
 
 interface Props {}
 
-const PreflightSuccess: NextPage<Props> = () => {
+const Snippet: NextPageWithLayout<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
@@ -45,6 +48,10 @@ const PreflightSuccess: NextPage<Props> = () => {
     )
 }
 
+Snippet.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
 export const getServerSideProps = withAuthRequired({
     redirectTo: '/setup',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
@@ -58,4 +65,4 @@ export const getServerSideProps = withAuthRequired({
     },
 })
 
-export default PreflightSuccess
+export default Snippet

@@ -1,14 +1,15 @@
 import Head from 'next/head'
-import Link from 'next/link'
 
 import Router from 'next/router'
 
-import type { GetStaticPropsResult, NextPage } from 'next'
+import type { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
 import { definitions } from '../../@types/supabase'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import SetupLayout from '../../layout/SetupLayout'
+import { NextPageWithLayout } from '../../@types/types'
 
 type Config = definitions['squeak_config']
 
@@ -18,7 +19,7 @@ interface Props {
     slackSigningSecret: string | undefined
 }
 
-const PreflightWelcome: NextPage<Props> = ({
+const Alerts: NextPageWithLayout<Props> = ({
     slackApiKey: serverApiKey,
     slackQuestionChannel: serverSlackQuestionChannel,
     slackSigningSecret: serverSlackSigningSecret,
@@ -97,6 +98,10 @@ const PreflightWelcome: NextPage<Props> = ({
     )
 }
 
+Alerts.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
 export const getServerSideProps = withAuthRequired({
     redirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
@@ -120,4 +125,4 @@ export const getServerSideProps = withAuthRequired({
     },
 })
 
-export default PreflightWelcome
+export default Alerts

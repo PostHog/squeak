@@ -1,18 +1,21 @@
 import Head from 'next/head'
 
 import { createClient } from '@supabase/supabase-js'
-import type { GetServerSideProps, NextPage } from 'next'
+import type { GetServerSideProps } from 'next'
 import { GetStaticPropsResult } from 'next'
 
 import styles from '../styles/Home.module.css'
 
 import { definitions } from '../@types/supabase'
+import AdminLayout from '../layout/AdminLayout'
+import type { NextPageWithLayout } from '../@types/types'
+import { ReactElement } from 'react'
 
 type Config = definitions['squeak_config']
 
 interface Props {}
 
-const Home: NextPage<Props> = () => {
+const Home: NextPageWithLayout<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
@@ -26,6 +29,10 @@ const Home: NextPage<Props> = () => {
             </main>
         </div>
     )
+}
+
+Home.getLayout = function getLayout(page: ReactElement) {
+    return <AdminLayout>{page}</AdminLayout>
 }
 
 export const getServerSideProps: GetServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
