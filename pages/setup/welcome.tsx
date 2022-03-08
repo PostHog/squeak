@@ -1,13 +1,14 @@
 import Head from 'next/head'
 
-import type { NextPage } from 'next'
-
 import styles from '../../styles/Home.module.css'
 import Link from 'next/link'
+import { ReactElement } from 'react'
+import SetupLayout from '../../layout/SetupLayout'
+import { NextPageWithLayout } from '../../@types/types'
 
 interface Props {}
 
-const PreflightWelcome: NextPage<Props> = () => {
+const Welcome: NextPageWithLayout<Props> = () => {
     return (
         <div className={styles.container}>
             <Head>
@@ -52,4 +53,8 @@ const PreflightWelcome: NextPage<Props> = () => {
     )
 }
 
-export default PreflightWelcome
+Welcome.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
+export default Welcome

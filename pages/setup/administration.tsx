@@ -1,16 +1,19 @@
 import Head from 'next/head'
 
-import type { NextPage } from 'next'
 import { GetStaticPropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
 import Link from 'next/link'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useUser, Auth } from '@supabase/supabase-auth-helpers/react'
+import { NextPageWithLayout } from '../../@types/types'
+import { ReactElement } from 'react'
+import AdminLayout from '../../layout/AdminLayout'
+import SetupLayout from '../../layout/SetupLayout'
 
 interface Props {}
 
-const PreflightWelcome: NextPage<Props> = () => {
+const Administration: NextPageWithLayout<Props> = () => {
     const { user } = useUser()
 
     return (
@@ -46,10 +49,14 @@ const PreflightWelcome: NextPage<Props> = () => {
     )
 }
 
+Administration.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
 export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
     return {
         props: {},
     }
 }
 
-export default PreflightWelcome
+export default Administration

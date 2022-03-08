@@ -1,13 +1,13 @@
 import Head from 'next/head'
 
-import type { NextPage } from 'next'
-import { GetStaticPropsResult } from 'next'
-
+import type { GetStaticPropsResult } from 'next'
 import styles from '../../styles/Home.module.css'
 import { definitions } from '../../@types/supabase'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Router from 'next/router'
 import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { NextPageWithLayout } from '../../@types/types'
+import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
 
@@ -16,7 +16,7 @@ interface Props {
     mailgunDomain: string | undefined
 }
 
-const PreflightWelcome: NextPage<Props> = ({
+const Notifications: NextPageWithLayout<Props> = ({
     mailgunApiKey: serverMailgunApiKey,
     mailgunDomain: serverMailgunDomain,
 }) => {
@@ -82,6 +82,10 @@ const PreflightWelcome: NextPage<Props> = ({
     )
 }
 
+Notifications.getLayout = function getLayout(page: ReactElement) {
+    return <SetupLayout>{page}</SetupLayout>
+}
+
 export const getServerSideProps = withAuthRequired({
     redirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
@@ -104,4 +108,4 @@ export const getServerSideProps = withAuthRequired({
     },
 })
 
-export default PreflightWelcome
+export default Notifications
