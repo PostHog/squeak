@@ -22,7 +22,7 @@ COPY . .
 
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_SUPABASE_URL=APP_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPBASE_ANON_KEY=APP_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=APP_PUBLIC_SUPABASE_ANON_KEY
 
 RUN yarn build
 
