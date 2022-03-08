@@ -15,7 +15,7 @@ exports.up = (pgm) => {
 
     pgm.createPolicy({ schema: 'public', name: 'squeak_profiles' }, 'Allow update with matching ID', {
         command: 'UPDATE',
-        check: 'auth.uid() = id',
+        using: 'auth.uid() = id',
     })
 
     pgm.sql('ALTER TABLE public.squeak_messages ENABLE ROW LEVEL SECURITY')

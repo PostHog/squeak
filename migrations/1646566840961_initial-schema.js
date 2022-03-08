@@ -49,13 +49,6 @@ exports.up = (pgm) => {
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_config_id_seq TO authenticated')
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_config_id_seq TO service_role')
 
-    pgm.sql('ALTER TABLE public.squeak_config ENABLE ROW LEVEL SECURITY')
-
-    pgm.createPolicy({ schema: 'public', name: 'squeak_config' }, 'Enable all access to service role', {
-        command: 'ALL',
-        using: "auth.role() = 'service_role'::text",
-    })
-
     pgm.createTable(
         { schema: 'public', name: 'squeak_messages' },
         {
@@ -173,4 +166,7 @@ exports.up = (pgm) => {
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO anon')
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO authenticated')
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO service_role')
+
+    // Create the initial config row
+    pgm.sql('INSERT INTO squeak_config(id, preflight_complete) VALUES (1, false)')
 }
