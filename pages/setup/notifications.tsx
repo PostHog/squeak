@@ -1,13 +1,12 @@
-import Head from 'next/head'
-
-import type { GetStaticPropsResult } from 'next'
-import styles from '../../styles/Home.module.css'
-import { definitions } from '../../@types/supabase'
-import { ReactElement, useState } from 'react'
-import Router from 'next/router'
 import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import type { GetStaticPropsResult } from 'next'
+import Head from 'next/head'
+import Router from 'next/router'
+import { ReactElement, useState } from 'react'
+import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
+import styles from '../../styles/Home.module.css'
 
 type Config = definitions['squeak_config']
 
@@ -101,8 +100,8 @@ export const getServerSideProps = withAuthRequired({
 
         return {
             props: {
-                mailgunApiKey: config?.mailgun_api_key,
-                mailgunDomain: config?.mailgun_api_key,
+                mailgunApiKey: config?.mailgun_api_key || '',
+                mailgunDomain: config?.mailgun_api_key || '',
             },
         }
     },
