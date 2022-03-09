@@ -50,18 +50,22 @@ const Home: NextPageWithLayout<Props> = () => {
                 <LogoutButton />
 
                 <table>
-                    <th>
-                        <td>First Name</td>
-                        <td>Last Name</td>
-                        <td>Role</td>
-                    </th>
-                    {profiles.map((profile) => (
-                        <tr key={profile.id}>
-                            <td>{profile.first_name}</td>
-                            <td>{profile.last_name}</td>
-                            <td>{profile.role}</td>
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Role</th>
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {profiles.map((profile) => (
+                            <tr key={profile.id}>
+                                <td>{profile.first_name}</td>
+                                <td>{profile.last_name}</td>
+                                <td>{profile.role}</td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </main>
         </div>
