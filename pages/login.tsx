@@ -1,4 +1,4 @@
-import { NextPage } from 'next'
+import { GetServerSidePropsContext, GetServerSidePropsResult, NextPage } from 'next'
 import styles from '../styles/Home.module.css'
 import Head from 'next/head'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
@@ -6,10 +6,13 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import Router from 'next/router'
 import { Auth } from '@supabase/ui'
 import { useEffect } from 'react'
+import absoluteUrl from 'next-absolute-url'
 
-interface Props {}
+interface Props {
+    baseUrl: string
+}
 
-const Login: NextPage<Props> = () => {
+const Login: NextPage<Props> = ({ baseUrl }) => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
@@ -33,10 +36,25 @@ const Login: NextPage<Props> = () => {
             <main className={styles.main}>
                 <h1 className={styles.title}>Login</h1>
 
-                <Auth supabaseClient={supabaseClient} providers={['github']} onlyThirdPartyProviders />
+                <Auth
+                    supabaseClient={supabaseClient}
+                    providers={['github']}
+                    onlyThirdPartyProviders
+                    redirectTo={`${baseUrl}/login`}
+                />
             </main>
         </div>
     )
+}
+
+export const getServerSideProps = ({ req }: GetServerSidePropsContext): GetServerSidePropsResult<Props> => {
+    const url = absoluteUrl(req)
+
+    return {
+        props: {
+            baseUrl: url.origin,
+        },
+    }
 }
 
 export default Login

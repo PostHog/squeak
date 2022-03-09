@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { GetStaticPropsResult } from 'next'
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 
 import styles from '../../styles/Home.module.css'
 import Link from 'next/link'
@@ -9,10 +9,13 @@ import { useUser, Auth } from '@supabase/supabase-auth-helpers/react'
 import { NextPageWithLayout } from '../../@types/types'
 import { ReactElement } from 'react'
 import SetupLayout from '../../layout/SetupLayout'
+import absoluteUrl from 'next-absolute-url'
 
-interface Props {}
+interface Props {
+    baseUrl: string
+}
 
-const Administration: NextPageWithLayout<Props> = () => {
+const Administration: NextPageWithLayout<Props> = ({ baseUrl }) => {
     const { user } = useUser()
 
     return (
@@ -31,7 +34,7 @@ const Administration: NextPageWithLayout<Props> = () => {
                 {!user && (
                     <Auth
                         supabaseClient={supabaseClient}
-                        redirectTo="/setup/administration"
+                        redirectTo={`${baseUrl}/setup/administration`}
                         providers={['github']}
                         onlyThirdPartyProviders
                         magicLink
@@ -52,9 +55,13 @@ Administration.getLayout = function getLayout(page: ReactElement) {
     return <SetupLayout>{page}</SetupLayout>
 }
 
-export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
+export const getServerSideProps = ({ req }: GetServerSidePropsContext): GetServerSidePropsResult<Props> => {
+    const url = absoluteUrl(req)
+
     return {
-        props: {},
+        props: {
+            baseUrl: url.origin,
+        },
     }
 }
 
