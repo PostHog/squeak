@@ -220,6 +220,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -276,6 +277,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 header: {
                     /** Preference */
@@ -296,6 +298,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 body: {
                     /** squeak_messages */
@@ -706,6 +709,12 @@ export interface definitions {
         published: boolean
         /** Format: text */
         slack_timestamp?: string
+        /**
+         * Format: uuid
+         * @description Note:
+         * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
+         */
+        profile_id?: string
     }
     squeak_profiles: {
         /**
@@ -850,6 +859,8 @@ export interface parameters {
     'rowFilter.squeak_messages.published': string
     /** Format: text */
     'rowFilter.squeak_messages.slack_timestamp': string
+    /** Format: uuid */
+    'rowFilter.squeak_messages.profile_id': string
     /** @description squeak_profiles */
     'body.squeak_profiles': definitions['squeak_profiles']
     /** Format: uuid */
