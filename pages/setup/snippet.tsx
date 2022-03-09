@@ -1,11 +1,11 @@
-import type { GetStaticPropsResult } from 'next'
 import { supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
-import styles from '../../styles/Home.module.css'
+import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
+import { ReactElement, useState } from 'react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
 import { definitions } from '../../@types/supabase'
-import Link from 'next/link'
 import { NextPageWithLayout } from '../../@types/types'
-import { ReactElement } from 'react'
+import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
@@ -13,43 +13,67 @@ type Config = definitions['squeak_config']
 interface Props {}
 
 const Snippet: NextPageWithLayout<Props> = () => {
+    const [snippetCopied, setSnippetCopied] = useState(false)
+    const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
+    <script>
+    (function() {
+        window.squeak = {
+            suapabase: {
+                apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
+                url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
+            },
+        };
+        var d = document,
+            s = d.createElement("script");
+        s.src = "//ajar-club.surge.sh/squeak.js";
+        (d.head || d.body).appendChild(s);
+    })();
+    </script>`
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(snippet)
+        setSnippetCopied(true)
+        setTimeout(() => {
+            setSnippetCopied(false)
+        }, 2000)
+    }
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Install JS snippet</h1>
+            <main>
+                <SyntaxHighlighter>{snippet}</SyntaxHighlighter>
+                <button onClick={copyToClipboard} className="mt-2 mb-12 text-orange-600 font-semibold flex space-x-2">
+                    <span>Copy to clipboard</span>
+                    {snippetCopied && <span className="text-green-600 font-normal">Copied</span>}
+                </button>
+                <hr className="mb-12" />
 
-                <p>
-                    Add this code snippet on the page(s) where you want Squeak! to appear. Squeak! only looks at path
-                    named - query parameters are ignored.
-                </p>
-
-                <label>Embed code</label>
-
-                <pre>
-                    <code>Code here...</code>
-                </pre>
-
-                <hr />
-
-                <h3>Setup complete</h3>
+                <h3 className="mt-4">Setup complete</h3>
                 <p>Now you can manage users and moderate content in the Squeak! admin portal.</p>
 
-                <Link href="/" passHref>
-                    <button>Go to Admin</button>
-                </Link>
+                <Button className="mt-4" href="/">
+                    Go to Admin
+                </Button>
             </main>
         </div>
     )
 }
 
 Snippet.getLayout = function getLayout(page: ReactElement) {
-    return <SetupLayout>{page}</SetupLayout>
+    return (
+        <SetupLayout
+            title="Install JS snippet"
+            subtitle="Add this code snippet on the page(s) where you want Squeak! to appear. Squeak! only looks at path
+    named - query parameters are ignored."
+        >
+            {page}
+        </SetupLayout>
+    )
 }
 
 export const getServerSideProps = withAuthRequired({
