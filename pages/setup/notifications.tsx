@@ -1,12 +1,12 @@
-import Head from 'next/head'
-
-import type { GetStaticPropsResult } from 'next'
-import styles from '../../styles/Home.module.css'
-import { definitions } from '../../@types/supabase'
-import { ReactElement, useState } from 'react'
-import Router from 'next/router'
 import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { Field, Form, Formik } from 'formik'
+import type { GetStaticPropsResult } from 'next'
+import Head from 'next/head'
+import Router from 'next/router'
+import { ReactElement } from 'react'
+import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
+import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
@@ -16,74 +16,93 @@ interface Props {
     mailgunDomain: string | undefined
 }
 
-const Notifications: NextPageWithLayout<Props> = ({
-    mailgunApiKey: serverMailgunApiKey,
-    mailgunDomain: serverMailgunDomain,
-}) => {
-    const [mailgunApiKey, setMailgunApiKey] = useState(serverMailgunApiKey)
-    const [mailgunDomain, setMailgunDomain] = useState(serverMailgunDomain)
-
-    const handleSave = async () => {
-        await supabaseClient
+const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain }) => {
+    const handleSave = async (values: Props) => {
+        const { error, data } = await supabaseClient
             .from<Config>('squeak_config')
-            .update({ mailgun_api_key: mailgunApiKey, mailgun_domain: mailgunDomain })
+            .update({ mailgun_api_key: values.mailgunApiKey, mailgun_domain: values.mailgunDomain })
             .match({ id: 1 })
+
+        if (!error) Router.push('/setup/alerts')
 
         // TODO(JS): Trigger toast?
         // TODO(JS): Handle errors here?
+    }
 
+    const handleSkip = () => {
         Router.push('/setup/alerts')
     }
 
     return (
-        <div className={styles.container}>
+        <div>
             <Head>
                 <title>Squeak</title>
                 <meta name="description" content="Something about Squeak here..." />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className={styles.main}>
-                <h1 className={styles.title}>Thread notifications</h1>
-
-                <p>
-                    Send email notifications to users when a reply is posted to the question. This requires a
-                    transactional email service, and we use Mailgun.
-                </p>
-
+            <main>
                 <p>
                     Find the following information at{' '}
-                    <a href="https://app.mailgun.com/app/account/security/api_keys">
+                    <a target="_blank" href="https://app.mailgun.com/app/account/security/api_keys">
                         https://app.mailgun.com/app/account/security/api_keys
                     </a>
                 </p>
 
-                <label htmlFor="mailgunApiKey">Mailgun API Key</label>
-                <input
-                    name="mailgunApiKey"
-                    type="text"
-                    placeholder="Mailgun API Key"
-                    value={mailgunApiKey}
-                    onChange={(event) => setMailgunApiKey(event.target.value)}
-                />
+                <Formik
+                    validateOnMount
+                    validate={(values) => {
+                        const errors: any = {}
+                        if (!values.mailgunApiKey) {
+                            errors.mailgunApiKey = 'Required'
+                        }
+                        if (!values.mailgunDomain) {
+                            errors.mailgunDomain = 'Required'
+                        }
+                        return errors
+                    }}
+                    initialValues={{
+                        mailgunApiKey,
+                        mailgunDomain,
+                    }}
+                    onSubmit={handleSave}
+                >
+                    {({ isValid }) => {
+                        return (
+                            <Form className="mt-6">
+                                <label htmlFor="mailgunApiKey">Mailgun API key</label>
+                                <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
 
-                <label htmlFor="mailgunDomain">Mailgun Domain</label>
-                <input
-                    name="mailgunDomain"
-                    type="text"
-                    placeholder="Mailgun Domain"
-                    value={mailgunDomain}
-                    onChange={(event) => setMailgunDomain(event.target.value)}
-                />
+                                <label htmlFor="mailgunDomain">Mailgun domain</label>
+                                <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
 
-                <button onClick={handleSave}>Continue</button>
+                                <div className="flex space-x-6 items-center mt-4">
+                                    <Button disabled={!isValid} type="submit">
+                                        Continue
+                                    </Button>
+                                    <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                                        Skip
+                                    </button>
+                                </div>
+                            </Form>
+                        )
+                    }}
+                </Formik>
             </main>
         </div>
     )
 }
 
 Notifications.getLayout = function getLayout(page: ReactElement) {
-    return <SetupLayout>{page}</SetupLayout>
+    return (
+        <SetupLayout
+            title="Thread notifications"
+            subtitle="Send email notifications to users when a reply is posted to the question. This requires a
+    transactional email service, and we use Mailgun."
+        >
+            {page}
+        </SetupLayout>
+    )
 }
 
 export const getServerSideProps = withAuthRequired({
@@ -101,8 +120,8 @@ export const getServerSideProps = withAuthRequired({
 
         return {
             props: {
-                mailgunApiKey: config?.mailgun_api_key,
-                mailgunDomain: config?.mailgun_api_key,
+                mailgunApiKey: config?.mailgun_api_key || '',
+                mailgunDomain: config?.mailgun_domain || '',
             },
         }
     },
