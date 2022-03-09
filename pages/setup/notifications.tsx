@@ -6,6 +6,7 @@ import Router from 'next/router'
 import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
+import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
@@ -28,6 +29,10 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
         // TODO(JS): Handle errors here?
     }
 
+    const handleSkip = () => {
+        Router.push('/setup/alerts')
+    }
+
     return (
         <div>
             <Head>
@@ -37,16 +42,9 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
             </Head>
 
             <main>
-                <h1>Thread notifications</h1>
-
-                <p>
-                    Send email notifications to users when a reply is posted to the question. This requires a
-                    transactional email service, and we use Mailgun.
-                </p>
-
                 <p>
                     Find the following information at{' '}
-                    <a href="https://app.mailgun.com/app/account/security/api_keys">
+                    <a target="_blank" href="https://app.mailgun.com/app/account/security/api_keys">
                         https://app.mailgun.com/app/account/security/api_keys
                     </a>
                 </p>
@@ -71,16 +69,21 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                 >
                     {({ isValid }) => {
                         return (
-                            <Form>
+                            <Form className="mt-6">
                                 <label htmlFor="mailgunApiKey">Mailgun API key</label>
                                 <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
 
                                 <label htmlFor="mailgunDomain">Mailgun domain</label>
                                 <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
 
-                                <button disabled={!isValid} type="submit">
-                                    Continue
-                                </button>
+                                <div className="flex space-x-6 items-center mt-4">
+                                    <Button disabled={!isValid} type="submit">
+                                        Continue
+                                    </Button>
+                                    <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                                        Skip
+                                    </button>
+                                </div>
                             </Form>
                         )
                     }}
@@ -91,7 +94,15 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
 }
 
 Notifications.getLayout = function getLayout(page: ReactElement) {
-    return <SetupLayout>{page}</SetupLayout>
+    return (
+        <SetupLayout
+            title="Thread notifications"
+            subtitle="Send email notifications to users when a reply is posted to the question. This requires a
+    transactional email service, and we use Mailgun."
+        >
+            {page}
+        </SetupLayout>
+    )
 }
 
 export const getServerSideProps = withAuthRequired({

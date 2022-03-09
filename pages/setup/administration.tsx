@@ -26,19 +26,20 @@ const Administration: NextPageWithLayout<Props> = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main>
-                <h1>Administration</h1>
-
-                <p>Squeak! uses GitHub authentication for access to the admin portal.</p>
-
-                {!user && <Auth supabaseClient={supabaseClient} redirectTo="/setup/administration" />}
-            </main>
+            {!user && <Auth view="sign_up" supabaseClient={supabaseClient} redirectTo="/setup/administration" />}
         </div>
     )
 }
 
 Administration.getLayout = function getLayout(page: ReactElement) {
-    return <SetupLayout>{page}</SetupLayout>
+    return (
+        <SetupLayout
+            title="Administration"
+            subtitle="Squeak! uses GitHub authentication for access to the admin portal."
+        >
+            {page}
+        </SetupLayout>
+    )
 }
 
 export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {

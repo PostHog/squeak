@@ -6,6 +6,7 @@ import Router from 'next/router'
 import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
+import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 
 type Config = definitions['squeak_config']
@@ -33,6 +34,10 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
         // TODO(JS): Handle errors here?
     }
 
+    const handleSkip = () => {
+        Router.push('/setup/snippet')
+    }
+
     return (
         <div>
             <Head>
@@ -42,10 +47,6 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
             </Head>
 
             <main>
-                <h1>Moderator alerts</h1>
-
-                <p>Let moderators receive alerts in Slack when new questions or replies are posted.</p>
-
                 <p>
                     Find the following information at{' '}
                     <a href="#">&#123;yourslack&#125;.slack.com/admin/not/sure/full/path</a>
@@ -74,7 +75,7 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
                 >
                     {({ isValid }) => {
                         return (
-                            <Form>
+                            <Form className="mt-6">
                                 <label htmlFor="slackApiKey">Slack API key</label>
                                 <Field id="slackApiKey" name="slackApiKey" placeholder="Slack API key" />
 
@@ -91,10 +92,14 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
                                     name="slackSigningSecret"
                                     placeholder="Slack signing secret"
                                 />
-
-                                <button disabled={!isValid} type="submit">
-                                    Continue
-                                </button>
+                                <div className="flex space-x-6 items-center mt-4">
+                                    <Button disabled={!isValid} type="submit">
+                                        Continue
+                                    </Button>
+                                    <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                                        Skip
+                                    </button>
+                                </div>
                             </Form>
                         )
                     }}
@@ -105,7 +110,14 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
 }
 
 Alerts.getLayout = function getLayout(page: ReactElement) {
-    return <SetupLayout>{page}</SetupLayout>
+    return (
+        <SetupLayout
+            subtitle="Let moderators receive alerts in Slack when new questions or replies are posted."
+            title="Moderator alerts"
+        >
+            {page}
+        </SetupLayout>
+    )
 }
 
 export const getServerSideProps = withAuthRequired({
