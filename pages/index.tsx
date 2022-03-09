@@ -12,6 +12,7 @@ import type { NextPageWithLayout } from '../@types/types'
 import { ReactElement, useEffect, useState } from 'react'
 import { getUser, supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import LogoutButton from '../components/LogoutButton'
+import ProfileTable from '../components/ProfileTable'
 
 type Config = definitions['squeak_config']
 type UserReadonlyProfile = definitions['squeak_profiles_readonly']
@@ -49,24 +50,7 @@ const Home: NextPageWithLayout<Props> = () => {
 
                 <LogoutButton />
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {profiles.map((profile) => (
-                            <tr key={profile.id}>
-                                <td>{profile.first_name}</td>
-                                <td>{profile.last_name}</td>
-                                <td>{profile.role}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <ProfileTable profiles={profiles} />
             </main>
         </div>
     )
