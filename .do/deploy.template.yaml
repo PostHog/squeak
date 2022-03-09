@@ -1,0 +1,21 @@
+spec:
+  name: squeak
+  services:
+    - name: web
+      image:
+        registry_type: "DOCKER_HUB"
+        registry: "joesaunderson"
+        repository: "squeak"
+        tag: "latest"
+      http_port: 3000
+      envs:
+        - key: NEXT_PUBLIC_SUPABASE_URL
+          scope: RUN_TIME
+        - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+          scope: RUN_TIME
+        - key: SUPABASE_SERVICE_ROLE_KEY
+          scope: RUN_TIME
+          type: SECRET
+        - key: DATABASE_URL
+          scope: RUN_TIME
+          type: SECRET
