@@ -1,8 +1,8 @@
 # Squeak
 
-Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Vercel:
+Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Digital Ocean:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,DATABASE_URL&envDescription=Environment%20variables%20to%20configure%20Squeak&envLink=https%3A%2F%2Fgithub.com%2Fjoesaunderson%2Fsqueak%23configuration&project-name=squeak&repository-name=squeak)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/joesaunderson/squeak/tree/master)
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ cp .env.example .env.local
 Enter the required config from Supabase
 2. Run the DB migrations:
 ```shell
-DATABASE_URL=<YOUR DATABASE URL> yarn run migrate up
+DATABASE_URL=<YOUR DATABASE URL> ya rn run migrate up
 ```
 3. Start the development server:
 ```bash
