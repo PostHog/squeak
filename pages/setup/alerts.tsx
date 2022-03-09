@@ -135,9 +135,9 @@ export const getServerSideProps = withAuthRequired({
 
         return {
             props: {
-                slackApiKey: config?.slack_api_key,
-                slackQuestionChannel: config?.slack_question_channel,
-                slackSigningSecret: config?.slack_signing_secret,
+                slackApiKey: config?.slack_api_key || '',
+                slackQuestionChannel: config?.slack_question_channel || '',
+                slackSigningSecret: config?.slack_signing_secret || '',
             },
         }
     },
