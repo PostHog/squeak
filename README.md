@@ -66,6 +66,14 @@ docker run \
   -p 3000:3000 squeak
 ```
 
+### Running DB migrations
+
+To run the database migrations, run:
+
+```shell
+DATABASE_URL=<YOUR_DATABASE_URL> yarn migrate up
+```
+
 ### Generating Typescript Types
 
 After running a migration, you can generate typescript types for the database schema:
