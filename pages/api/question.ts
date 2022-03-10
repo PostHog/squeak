@@ -14,6 +14,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { slug, subject, body, token } = req.body
 
+    if (!slug || !subject || !body || !token) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    }
+
     const { user } = await supabaseServerClient({ req, res }).auth.api.getUser(token)
 
     if (!user) {
