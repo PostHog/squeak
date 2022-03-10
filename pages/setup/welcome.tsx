@@ -23,10 +23,6 @@ const Welcome: NextPageWithLayout<Props> = () => {
                     <td>Database hosting</td>
                 </tr>
                 <tr>
-                    <td>Github</td>
-                    <td>App management, admin-y things</td>
-                </tr>
-                <tr>
                     <td>Mailgun</td>
                     <td>Email notifications for thread updates</td>
                 </tr>
