@@ -19,10 +19,10 @@ Once you have access to the [environment variables](#configuration) you'll need,
 
 ## API
 
-| Task                        | URL             | Docs                      |
-|-----------------------------|-----------------|---------------------------|
-| Adding a new question       | `/api/question` | [Docs](/docs/question.md) |
-| Adding a reply to a message | `/api/reply`    | [Docs](/docs/reply.md)    |
+| Task                        | URL             | Docs                          |
+|-----------------------------|-----------------|-------------------------------|
+| Adding a new question       | `/api/question` | [Docs](/docs/api/question.md) |
+| Adding a reply to a message | `/api/reply`    | [Docs](/docs/api/reply.md)    |
 
 
 ## Local Development
