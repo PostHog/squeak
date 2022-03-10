@@ -31,6 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .from<Message>('squeak_messages')
         .insert({
             slug: [slug],
+            profile_id: user.id,
             subject,
             published: true,
         })
@@ -75,7 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    res.status(200).json({ messageId: message.id, replyId: reply.id, subject, body, slug: [slug] })
+    res.status(200).json({ messageId: message.id, replyId: reply.id, profileId: user.id, subject, body, slug: [slug] })
 }
 
 export default handler
