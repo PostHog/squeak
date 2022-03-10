@@ -15,20 +15,20 @@ interface Props {}
 const Snippet: NextPageWithLayout<Props> = () => {
     const [snippetCopied, setSnippetCopied] = useState(false)
     const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
-    <script>
-    (function() {
-        window.squeak = {
-            suapabase: {
-                apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
-                url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
-            },
-        };
-        var d = document,
-            s = d.createElement("script");
-        s.src = "//ajar-club.surge.sh/squeak.js";
-        (d.head || d.body).appendChild(s);
-    })();
-    </script>`
+<script>
+(function() {
+    window.squeak = {
+        suapabase: {
+            apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
+            url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
+        },
+    };
+    var d = document,
+        s = d.createElement("script");
+    s.src = "//${typeof window !== 'undefined' && window.location.host}/snippet/squeak.js";
+    (d.head || d.body).appendChild(s);
+})();
+</script>`
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(snippet)
