@@ -24,6 +24,7 @@
     "devDependencies": {
         "@types/node": "17.0.21",
         "@types/react": "17.0.39",
+        "@types/react-syntax-highlighter": "^13.5.2",
         "@typescript-eslint/eslint-plugin": "^5.13.0",
         "autoprefixer": "^10.4.2",
         "eslint": "8.10.0",
