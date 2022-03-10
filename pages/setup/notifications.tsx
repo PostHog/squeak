@@ -18,7 +18,7 @@ interface Props {
 
 const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain }) => {
     const handleSave = async (values: Props) => {
-        const { error, data } = await supabaseClient
+        const { error } = await supabaseClient
             .from<Config>('squeak_config')
             .update({ mailgun_api_key: values.mailgunApiKey, mailgun_domain: values.mailgunDomain })
             .match({ id: 1 })
@@ -44,7 +44,7 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
             <main>
                 <p>
                     Find the following information at{' '}
-                    <a target="_blank" href="https://app.mailgun.com/app/account/security/api_keys">
+                    <a target="_blank" rel="noreferrer" href="https://app.mailgun.com/app/account/security/api_keys">
                         https://app.mailgun.com/app/account/security/api_keys
                     </a>
                 </p>
@@ -52,7 +52,7 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                 <Formik
                     validateOnMount
                     validate={(values) => {
-                        const errors: any = {}
+                        const errors: { mailgunApiKey?: string; mailgunDomain?: string } = {}
                         if (!values.mailgunApiKey) {
                             errors.mailgunApiKey = 'Required'
                         }

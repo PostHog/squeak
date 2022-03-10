@@ -54,7 +54,11 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
                 <Formik
                     validateOnMount
                     validate={(values) => {
-                        const errors: any = {}
+                        const errors: {
+                            slackApiKey?: string
+                            slackQuestionChannel?: string
+                            slackSigningSecret?: string
+                        } = {}
                         if (!values.slackApiKey) {
                             errors.slackApiKey = 'Required'
                         }
