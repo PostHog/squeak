@@ -11,7 +11,7 @@ Once you have access to the [environment variables](#configuration) you'll need,
 ## Configuration
 
 | Key                           | Required | Description                                                                                                                             |
-| ----------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
 | NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
 | SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
