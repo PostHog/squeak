@@ -18,7 +18,7 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
     const [sqlCopied, setSqlCopied] = useState(false)
 
     const validateDatabaseSetup = async () => {
-        const { error, data } = await supabaseClient.from('squeak_messages').select('*').single()
+        const { error } = await supabaseClient.from('squeak_messages').select('*').single()
         console.log(error)
         setDatabaseSetup(!(error && error.code === '42P01'))
     }
