@@ -11,7 +11,7 @@ type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 
-const sendReplyNotification = async (messageId: number, answerBody: string, domain: string) => {
+const sendReplyNotification = async (messageId: number, body: string) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -33,9 +33,9 @@ const sendReplyNotification = async (messageId: number, answerBody: string, doma
         return
     }
 
-    const { mailgun_api_key, mailgun_domain } = config ?? {}
+    const { company_name, company_domain, mailgun_api_key, mailgun_domain } = config
 
-    if (!mailgun_api_key || !mailgun_domain) {
+    if (!company_name || !company_domain || !mailgun_api_key || !mailgun_domain) {
         console.warn(`[📧 Mailgun] Mailgun credentials missing in config`)
         return
     }
@@ -73,7 +73,7 @@ const sendReplyNotification = async (messageId: number, answerBody: string, doma
         return
     }
 
-    const { email } = user ?? {}
+    const { email } = user
 
     if (!email) {
         console.warn(`[📧 Mailgun] Profile ID ${message?.profile_id} has no email`)
@@ -106,10 +106,10 @@ const sendReplyNotification = async (messageId: number, answerBody: string, doma
     })
 
     const mailgunData = {
-        from: `Squeak <noreply@${domain}>`,
+        from: `${company_name} <noreply@${company_domain}>`,
         to: email,
-        subject: `Someone answered your question on ${domain}!`,
-        text: `Hey,\n\nSomeone answered your question on ${domain}!\n\nQuestion:\n${question.body}\n\nReply:\n${answerBody}\n\nThanks,\n\nSqueak`,
+        subject: `Someone answered your question on ${company_domain}!`,
+        text: `Hey,\n\nSomeone answered your question on ${company_domain}!\n\nQuestion:\n${question.body}\n\nReply:\n${body}\n\nThanks,\n\n${company_name}`,
     }
 
     await mg.messages.create(mailgun_domain, mailgunData)

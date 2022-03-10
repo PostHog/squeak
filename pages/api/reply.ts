@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { messageId, body: answerBody, domain, token } = req.body
+    const { messageId, body, token } = req.body
 
     const { user } = await supabaseServerClient({ req, res }).auth.api.getUser(token)
 
@@ -23,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const { data, error } = await supabaseServerClient({ req, res }).from<Reply>('squeak_replies').insert({
-        body: answerBody,
+        body: body,
         message_id: messageId,
         profile_id: user?.id,
     })
@@ -36,7 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json({ ...data })
 
-    sendReplyNotification(messageId, answerBody, domain)
+    sendReplyNotification(messageId, body)
 }
 
 export default handler

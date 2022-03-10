@@ -116,6 +116,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -173,6 +175,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                 }
                 header: {
                     /** Preference */
@@ -194,6 +198,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                 }
                 body: {
                     /** squeak_config */
@@ -688,6 +694,10 @@ export interface definitions {
         mailgun_api_key?: string
         /** Format: text */
         mailgun_domain?: string
+        /** Format: text */
+        company_name?: string
+        /** Format: text */
+        company_domain?: string
     }
     squeak_messages: {
         /**
@@ -845,6 +855,10 @@ export interface parameters {
     'rowFilter.squeak_config.mailgun_api_key': string
     /** Format: text */
     'rowFilter.squeak_config.mailgun_domain': string
+    /** Format: text */
+    'rowFilter.squeak_config.company_name': string
+    /** Format: text */
+    'rowFilter.squeak_config.company_domain': string
     /** @description squeak_messages */
     'body.squeak_messages': definitions['squeak_messages']
     /** Format: bigint */
