@@ -116,6 +116,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -173,6 +175,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                 }
                 header: {
                     /** Preference */
@@ -194,6 +198,8 @@ export interface paths {
                     slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
                     mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
+                    company_name?: parameters['rowFilter.squeak_config.company_name']
+                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
                 }
                 body: {
                     /** squeak_config */
@@ -220,6 +226,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -276,6 +283,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 header: {
                     /** Preference */
@@ -296,6 +304,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 body: {
                     /** squeak_messages */
@@ -685,6 +694,10 @@ export interface definitions {
         mailgun_api_key?: string
         /** Format: text */
         mailgun_domain?: string
+        /** Format: text */
+        company_name?: string
+        /** Format: text */
+        company_domain?: string
     }
     squeak_messages: {
         /**
@@ -706,6 +719,12 @@ export interface definitions {
         published: boolean
         /** Format: text */
         slack_timestamp?: string
+        /**
+         * Format: uuid
+         * @description Note:
+         * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
+         */
+        profile_id?: string
     }
     squeak_profiles: {
         /**
@@ -836,6 +855,10 @@ export interface parameters {
     'rowFilter.squeak_config.mailgun_api_key': string
     /** Format: text */
     'rowFilter.squeak_config.mailgun_domain': string
+    /** Format: text */
+    'rowFilter.squeak_config.company_name': string
+    /** Format: text */
+    'rowFilter.squeak_config.company_domain': string
     /** @description squeak_messages */
     'body.squeak_messages': definitions['squeak_messages']
     /** Format: bigint */
@@ -850,6 +873,8 @@ export interface parameters {
     'rowFilter.squeak_messages.published': string
     /** Format: text */
     'rowFilter.squeak_messages.slack_timestamp': string
+    /** Format: uuid */
+    'rowFilter.squeak_messages.profile_id': string
     /** @description squeak_profiles */
     'body.squeak_profiles': definitions['squeak_profiles']
     /** Format: uuid */
