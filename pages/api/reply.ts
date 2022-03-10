@@ -27,11 +27,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    const { data, error } = await supabaseServerClient({ req, res }).from<Reply>('squeak_replies').insert({
-        body: body,
-        message_id: messageId,
-        profile_id: user?.id,
-    })
+    const { data, error } = await supabaseServerClient({ req, res })
+        .from<Reply>('squeak_replies')
+        .insert({
+            body: body,
+            message_id: messageId,
+            profile_id: user?.id,
+        })
+        .limit(1)
+        .single()
 
     if (error) {
         console.error(`[🧵 Reply] ${error.message}`)

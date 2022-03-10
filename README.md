@@ -2,7 +2,7 @@
 
 Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Digital Ocean:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/PostHog/squeak/tree/master)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
 
 ## Getting Started
 
@@ -16,6 +16,14 @@ Once you have access to the [environment variables](#configuration) you'll need,
 | NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
 | SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
 | DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations on start, found at `/settings/database`, in URI format |
+
+## API
+
+| Task                        | URL             | Docs                      |
+|-----------------------------|-----------------|---------------------------|
+| Adding a new question       | `/api/question` | [Docs](/docs/question.md) |
+| Adding a reply to a message | `/api/reply`    | [Docs](/docs/reply.md)    |
+
 
 ## Local Development
 
