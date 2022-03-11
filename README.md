@@ -42,7 +42,7 @@ Enter the required config from Supabase `.env.local`.
 2. Run the DB migrations:
 
 ```shell
-DATABASE_URL=<YOUR DATABASE URL> yarn run migrate up
+DATABASE_URL=<YOUR DATABASE URL> yarn migrate up
 ```
 
 3. Start the development server:
