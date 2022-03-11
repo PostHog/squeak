@@ -1,15 +1,28 @@
-# Squeak
+![image](https://user-images.githubusercontent.com/154479/157802608-64ec4809-21e7-412c-876b-888b97851859.png)
+
+# Squeak!
+
+Squeak! lets you answer questions, right in your docs. Even better: it lets your community support itself.
+
+After spinning up a server, grab the JavaScript embed code and place wherever you want it to appear on your site. (It works great at the end of your docs template - so visitors can ask questions without leaving the page. And because the questions & answers stay on your site, they'll be useful for others in the future.
+
+## Requirements
+
+Squeak! is currently self-hosted, but we make deployment simple using a Docker image.
+
+1. Host a Docker image - Runs client-side widget and connects to integrations
+1. A [Supabase](https://supabase.com) account (to host the Postgres database, and for authentication)
+1. Mailgun (optional) - Email notifications for users when someone answers their question
+1. Slack (optional) - Moderator notifications for new questions and community replies
+
+## Getting started
 
 1. Create a project in [Supabase](https://supabase.com).
-2. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
-
-Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Digital Ocean:
-
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
-
-## Getting Started
-
-...
+1. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
+1. Host the Docker image (easy with [Digital Ocean](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master))
+    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
+1. Look up environment variables in your Supabase project and add them to your Docker build
+1. Visit _yoursqueakinstance.com_`/setup` and follow the wizard!
 
 ## Configuration
 
