@@ -34,12 +34,7 @@ const Login: NextPage<Props> = ({ baseUrl }) => {
             <main>
                 <h1>Login</h1>
 
-                <Auth
-                    supabaseClient={supabaseClient}
-                    providers={['github']}
-                    onlyThirdPartyProviders
-                    redirectTo={`${baseUrl}/login`}
-                />
+                <Auth supabaseClient={supabaseClient} />
             </main>
         </div>
     )
