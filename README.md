@@ -34,7 +34,7 @@ Find the values for these keys in your Supabase project.
 | NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
 | NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
 | SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
-| DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations on start, found at `/settings/database`, in URI format |
+| DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations in Supabase on start, found at `/settings/database`, in URI format. (If not provided, we'll provide a SQL query you'll need to copy/paste into Supabase's SQL console.) |
 
 ## API
 
@@ -61,7 +61,7 @@ Enter the required config from Supabase `.env.local`.
 2. Run the DB migrations:
 
 ```shell
-DATABASE_URL=<YOUR DATABASE URL> yarn migrate up
+DATABASE_URL=postgresql://postgres:<YOUR_SUPABASE_DB_PASSWORD>@<YOUR_SUPABASE_DB_HOST>:5432/postgres yarn migrate up
 ```
 
 3. Start the development server:
