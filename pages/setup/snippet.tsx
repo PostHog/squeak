@@ -46,7 +46,7 @@ const Snippet: NextPageWithLayout<Props> = () => {
             </Head>
 
             <main>
-                <SyntaxHighlighter>{snippet}</SyntaxHighlighter>
+                <SyntaxHighlighter language="htmlbars">{snippet}</SyntaxHighlighter>
                 <button onClick={copyToClipboard} className="mt-2 mb-12 text-orange-600 font-semibold flex space-x-2">
                     <span>Copy to clipboard</span>
                     {snippetCopied && <span className="text-green-600 font-normal">Copied</span>}
