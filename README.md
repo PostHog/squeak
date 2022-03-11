@@ -1,5 +1,8 @@
 # Squeak
 
+1. Create a project in [Supabase](https://supabase.com).
+2. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
+
 Once you have access to the [environment variables](#configuration) you'll need, deploy the example using Digital Ocean:
 
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
