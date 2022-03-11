@@ -10,7 +10,7 @@ interface Props {
     baseUrl: string
 }
 
-const Login: NextPage<Props> = ({ baseUrl }) => {
+const Login: NextPage<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
