@@ -47,11 +47,11 @@ const Snippet: NextPageWithLayout<Props> = () => {
 
             <main>
                 <SyntaxHighlighter>{snippet}</SyntaxHighlighter>
-                <button onClick={copyToClipboard} className="mt-2 mb-12 text-orange-600 font-semibold flex space-x-2">
+                <button onClick={copyToClipboard} className="mt-2 mb-6 text-orange-600 font-semibold flex space-x-2">
                     <span>Copy to clipboard</span>
                     {snippetCopied && <span className="text-green-600 font-normal">Copied</span>}
                 </button>
-                <hr className="mb-12" />
+                <hr className="mb-6" />
 
                 <h3 className="mt-4">Setup complete</h3>
                 <p>Now you can manage users and moderate content in the Squeak! admin portal.</p>

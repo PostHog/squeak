@@ -3,7 +3,8 @@ import { Field, Form, Formik } from 'formik'
 import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
 import Router from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
@@ -18,6 +19,46 @@ interface Props {
 }
 
 const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, slackSigningSecret }) => {
+    const [manifestCopied, setManifestCopied] = useState(false)
+
+    const manifest = `display_information:
+  name: Squeak
+  description: A Q&A widget for your docs
+  background_color: "#F97316"
+features:
+  app_home:
+    home_tab_enabled: false
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: true
+  bot_user:
+    display_name: Squeak
+    always_online: true
+oauth_config:
+  scopes:
+    bot:
+      - channels:history
+      - channels:join
+      - channels:manage
+      - channels:read
+      - chat:write.customize
+      - chat:write.public
+      - chat:write
+settings:
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false
+`
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(manifest)
+        setManifestCopied(true)
+        setTimeout(() => {
+            setManifestCopied(false)
+        }, 2000)
+    }
+
     const handleSave = async (values: Props) => {
         const { error } = await supabaseClient
             .from<Config>('squeak_config')
@@ -48,9 +89,19 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
 
             <main>
                 <p>
-                    Find the following information at{' '}
-                    <a href="#">&#123;yourslack&#125;.slack.com/admin/not/sure/full/path</a>
+                    Create a Slack App at <a href="https://api.slack.com/apps?new_app=1">https://api.slack.com/apps</a>,
+                    from the following app manifest:
                 </p>
+
+                <SyntaxHighlighter className="max-h-40 overflow-scroll">{manifest}</SyntaxHighlighter>
+
+                <button onClick={copyToClipboard} className="mt-2 mb-6 text-orange-600 font-semibold flex space-x-2">
+                    <span>Copy to clipboard</span>
+                    {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
+                </button>
+
+                <hr className="mb-6" />
+
                 <Formik
                     validateOnMount
                     validate={(values) => {
@@ -80,22 +131,35 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, 
                     {({ isValid }) => {
                         return (
                             <Form className="mt-6">
-                                <label htmlFor="slackApiKey">Slack API key</label>
-                                <Field id="slackApiKey" name="slackApiKey" placeholder="Slack API key" />
+                                <label htmlFor="slackApiKey">Slack Bot User OAuth Token</label>
+                                <Field id="slackApiKey" name="slackApiKey" placeholder="xoxb-your-token" />
 
                                 <label htmlFor="slackQuestionChannel">Slack question channel</label>
+
                                 <Field
+                                    as="select"
                                     id="slackQuestionChannel"
                                     name="slackQuestionChannel"
-                                    placeholder="Slack question channel"
-                                />
+                                    className="inline"
+                                >
+                                    <option value="" disabled>
+                                        Select a channel
+                                    </option>
+                                    <option value="red">Red</option>
+                                    <option value="green">Green</option>
+                                    <option value="blue">Blue</option>
+                                </Field>
 
-                                <label htmlFor="slackSigningSecret">Slack signing secret</label>
-                                <Field
-                                    id="slackSigningSecret"
-                                    name="slackSigningSecret"
-                                    placeholder="Slack signing secret"
-                                />
+                                <Button className="inline ml-6 px-4 border border-orange-500 bg-transparent text-orange-500">
+                                    Reload
+                                </Button>
+
+                                {/*<label htmlFor="slackSigningSecret">Slack signing secret</label>*/}
+                                {/*<Field*/}
+                                {/*    id="slackSigningSecret"*/}
+                                {/*    name="slackSigningSecret"*/}
+                                {/*    placeholder="Slack signing secret"*/}
+                                {/*/>*/}
                                 <div className="flex space-x-6 items-center mt-4">
                                     <Button disabled={!isValid} type="submit">
                                         Continue

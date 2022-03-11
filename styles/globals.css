@@ -30,7 +30,7 @@ li {
     @apply my-2;
 }
 
-input {
+input, select {
     @apply block px-4 py-2 border-gray-300 border rounded-md;
 }
 
