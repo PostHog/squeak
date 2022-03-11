@@ -29,16 +29,20 @@ Once you have access to the [environment variables](#configuration) you'll need,
 
 #### With NextJS Dev (Recommended)
 
+1. `npm install`
+
 1. Setup your environment configuration:
 
 ```shell
 cp .env.example .env.local
 ```
 
-Enter the required config from Supabase 2. Run the DB migrations:
+Enter the required config from Supabase `.env.local`.
+
+2. Run the DB migrations:
 
 ```shell
-DATABASE_URL=<YOUR DATABASE URL> ya rn run migrate up
+DATABASE_URL=<YOUR DATABASE URL> yarn run migrate up
 ```
 
 3. Start the development server:
