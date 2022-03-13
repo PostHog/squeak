@@ -66,7 +66,7 @@ const withAdminAccess = <P>(arg: Arguments<P>) => {
                 return {
                     props: {
                         error: {
-                            message: 'You must be admin',
+                            message: 'You must be an admin to access this page',
                         },
                     },
                 }
