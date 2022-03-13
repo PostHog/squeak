@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 const nav = [
     {
-        title: 'Dashboard',
+        title: 'Snippet',
         url: '/',
     },
     {

@@ -7,7 +7,7 @@ import CodeSnippet from '../components/CodeSnippet'
 
 interface Props {}
 
-const Home: NextPageWithLayout<Props> = () => {
+const Snippet: NextPageWithLayout<Props> = () => {
     return (
         <div>
             <h3>Snippet</h3>
@@ -22,8 +22,8 @@ const Home: NextPageWithLayout<Props> = () => {
     )
 }
 
-Home.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title="Squeak">{page}</AdminLayout>
+Snippet.getLayout = function getLayout(page: ReactElement) {
+    return <AdminLayout title="Snippet">{page}</AdminLayout>
 }
 
 export const getServerSideProps = withAdminAccess<Props>({
@@ -35,4 +35,4 @@ export const getServerSideProps = withAdminAccess<Props>({
     },
 })
 
-export default Home
+export default Snippet
