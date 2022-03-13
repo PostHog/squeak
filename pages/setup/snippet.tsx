@@ -7,6 +7,7 @@ import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 type Config = definitions['squeak_config']
 
@@ -76,8 +77,10 @@ Snippet.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAuthRequired({
-    redirectTo: '/setup',
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    authCheck: true,
+    authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const supabaseClient = supabaseServerClient(context)
 

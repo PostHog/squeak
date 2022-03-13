@@ -6,6 +6,7 @@ import Router from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 interface Props {}
 
@@ -42,10 +43,13 @@ Administration.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    return {
-        props: {},
-    }
-}
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        return {
+            props: {},
+        }
+    },
+})
 
 export default Administration

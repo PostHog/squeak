@@ -1,4 +1,4 @@
-import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
@@ -8,6 +8,7 @@ import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 type Config = definitions['squeak_config']
 
@@ -135,11 +136,11 @@ Notifications.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAuthRequired({
-    redirectTo: '/setup/administration',
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    authCheck: true,
+    authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        // TODO(JS) Check the user is an admin
-
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
