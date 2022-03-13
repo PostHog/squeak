@@ -77,7 +77,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
                     </div>
                     <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                            {first_name && last_name ? `${first_name} ${last_name}` : 'Anonymous'}
+                            {first_name || last_name ? `${first_name ?? ''} ${last_name ?? ''}` : 'Anonymous'}
                         </div>
                         {/* <div className="text-sm text-gray-500">{person.email}</div> */}
                     </div>
