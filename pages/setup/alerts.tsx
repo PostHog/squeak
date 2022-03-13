@@ -1,9 +1,10 @@
 import { supabaseClient, supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
+import debounce from 'lodash.debounce'
 import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
 import Router from 'next/router'
-import { ReactElement, useState } from 'react'
+import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
@@ -13,9 +14,80 @@ import SetupLayout from '../../layout/SetupLayout'
 type Config = definitions['squeak_config']
 
 interface Props {
-    slackApiKey: string | undefined
-    slackQuestionChannel: string | undefined
-    slackSigningSecret: string | undefined
+    slackApiKey?: string | undefined
+    slackQuestionChannel?: string | undefined
+    slackSigningSecret?: string | undefined
+}
+
+const SlackForm = ({ setFieldValue, isValid, initialValues }: FormikComputedProps<Props> & FormikHelpers<Props>) => {
+    const [channels, setChannels] = useState([])
+
+    const getChannels = async (slackApiKey: string) => {
+        if (slackApiKey) {
+            const body = JSON.stringify({ token: slackApiKey })
+            const data = await fetch('/api/slack/channels', { method: 'POST', body }).then((res) => res.json())
+            if (data.error) {
+                setChannels([])
+            } else {
+                setChannels(data)
+                if (!initialValues.slackQuestionChannel) {
+                    setFieldValue('slackQuestionChannel', data[0].id)
+                }
+            }
+        }
+    }
+
+    const debouncedGetChannels = useCallback(
+        debounce((slackApiKey: string) => getChannels(slackApiKey), 1000),
+        []
+    )
+
+    const handleAPIKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        setFieldValue('slackApiKey', value)
+        debouncedGetChannels(value)
+    }
+
+    const handleSkip = () => {
+        Router.push('/setup/snippet')
+    }
+
+    useEffect(() => {
+        if (initialValues.slackApiKey) {
+            getChannels(initialValues.slackApiKey)
+        }
+    }, [])
+
+    return (
+        <Form className="mt-6">
+            <label htmlFor="slackApiKey">Slack Bot User OAuth Token</label>
+            <Field onChange={handleAPIKeyChange} id="slackApiKey" name="slackApiKey" placeholder="xoxb-your-token" />
+            {channels.length > 0 && (
+                <>
+                    <label htmlFor="slackSigningSecret">Slack signing secret</label>
+                    <Field id="slackSigningSecret" name="slackSigningSecret" placeholder="Slack signing secret" />
+                    <label htmlFor="slackQuestionChannel">Slack question channel</label>
+                    <Field as="select" id="slackQuestionChannel" name="slackQuestionChannel">
+                        {channels.map(({ name, id }) => {
+                            return (
+                                <option key={id} value={id}>
+                                    {name}
+                                </option>
+                            )
+                        })}
+                    </Field>
+                </>
+            )}
+            <div className="flex space-x-6 items-center mt-4">
+                <Button disabled={!isValid} type="submit">
+                    Continue
+                </Button>
+                <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                    Skip
+                </button>
+            </div>
+        </Form>
+    )
 }
 
 const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel, slackSigningSecret }) => {
@@ -75,10 +147,6 @@ settings:
         // TODO(JS): Handle errors here?
     }
 
-    const handleSkip = () => {
-        Router.push('/setup/snippet')
-    }
-
     return (
         <div>
             <Head>
@@ -89,8 +157,11 @@ settings:
 
             <main>
                 <p>
-                    Create a Slack App at <a href="https://api.slack.com/apps?new_app=1">https://api.slack.com/apps</a>,
-                    from the following app manifest:
+                    Create a Slack App at{' '}
+                    <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
+                        https://api.slack.com/apps
+                    </a>
+                    , from the following app manifest:
                 </p>
 
                 <SyntaxHighlighter className="max-h-40 overflow-scroll">{manifest}</SyntaxHighlighter>
@@ -105,11 +176,7 @@ settings:
                 <Formik
                     validateOnMount
                     validate={(values) => {
-                        const errors: {
-                            slackApiKey?: string
-                            slackQuestionChannel?: string
-                            slackSigningSecret?: string
-                        } = {}
+                        const errors: Props = {}
                         if (!values.slackApiKey) {
                             errors.slackApiKey = 'Required'
                         }
@@ -128,49 +195,7 @@ settings:
                     }}
                     onSubmit={handleSave}
                 >
-                    {({ isValid }) => {
-                        return (
-                            <Form className="mt-6">
-                                <label htmlFor="slackApiKey">Slack Bot User OAuth Token</label>
-                                <Field id="slackApiKey" name="slackApiKey" placeholder="xoxb-your-token" />
-
-                                <label htmlFor="slackQuestionChannel">Slack question channel</label>
-
-                                <Field
-                                    as="select"
-                                    id="slackQuestionChannel"
-                                    name="slackQuestionChannel"
-                                    className="inline"
-                                >
-                                    <option value="" disabled>
-                                        Select a channel
-                                    </option>
-                                    <option value="red">Red</option>
-                                    <option value="green">Green</option>
-                                    <option value="blue">Blue</option>
-                                </Field>
-
-                                <Button className="inline ml-6 px-4 border border-orange-500 bg-transparent text-orange-500">
-                                    Reload
-                                </Button>
-
-                                {/*<label htmlFor="slackSigningSecret">Slack signing secret</label>*/}
-                                {/*<Field*/}
-                                {/*    id="slackSigningSecret"*/}
-                                {/*    name="slackSigningSecret"*/}
-                                {/*    placeholder="Slack signing secret"*/}
-                                {/*/>*/}
-                                <div className="flex space-x-6 items-center mt-4">
-                                    <Button disabled={!isValid} type="submit">
-                                        Continue
-                                    </Button>
-                                    <button onClick={handleSkip} className="text-orange-600 font-semibold">
-                                        Skip
-                                    </button>
-                                </div>
-                            </Form>
-                        )
-                    }}
+                    {SlackForm}
                 </Formik>
             </main>
         </div>

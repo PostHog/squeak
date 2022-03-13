@@ -5,9 +5,8 @@ const { WebClient } = require('@slack/web-api')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const channels = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { token } = req.body
-
-    const client = new WebClient(token + 's')
+    const { token } = JSON.parse(req.body)
+    const client = new WebClient(token)
 
     try {
         const result = await client.conversations.list()
