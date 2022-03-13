@@ -170,6 +170,8 @@ CREATE POLICY "Enable access to all users" ON public.squeak_messages FOR SELECT 
 
 CREATE POLICY "Enable access to all users" ON public.squeak_profiles FOR SELECT USING (true);
 
+CREATE POLICY "Allow update to admins" ON public.squeak_profiles FOR UPDATE USING (((auth.role() = 'authenticated'::text) AND public.get_is_admin()));
+
 CREATE POLICY "Enable access to all users" ON public.squeak_profiles_readonly FOR SELECT USING (true);
 
 CREATE POLICY "Allow update to admins" ON public.squeak_profiles_readonly FOR UPDATE USING (((auth.role() = 'authenticated'::text) AND (auth.uid() <> id) AND public.get_is_admin()));
