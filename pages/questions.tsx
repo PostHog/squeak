@@ -236,7 +236,7 @@ Questions.getLayout = function getLayout(page) {
     return <AdminLayout title={'Questions'}>{page}</AdminLayout>
 }
 
-export const getServerSideProps = withAdminAccess<Props>({
+export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0

@@ -113,7 +113,7 @@ Settings.getLayout = function getLayout(page: ReactElement) {
     return <AdminLayout title="Settings">{page}</AdminLayout>
 }
 
-export const getServerSideProps = withAdminAccess<Props>({
+export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const { data: config } = await supabaseServerClient(context)

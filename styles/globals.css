@@ -35,7 +35,7 @@ input {
 }
 
 select {
-    @apply block px-2 py-2 border-gray-300 border rounded-md;
+    @apply block pl-2 pr-14 py-2 border-gray-300 border rounded-md;
 }
 
 label {
