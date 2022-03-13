@@ -54,7 +54,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
         </div>
     ) : (
         <Button onClick={() => setShowInput(true)} className={className} {...rest}>
-            Invite Admin User
+            Invite User
         </Button>
     )
 }
