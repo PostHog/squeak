@@ -12,16 +12,24 @@ interface TableProps {
 
 const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => {
     return (
-        <table>
-            <thead>
+        <table className="min-w-full divide-y divide-gray-300">
+            <thead className="bg-gray-50 h-16">
                 <tr>
-                    <th>User ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Role</th>
+                    <th scope="col" className="p-2 text-left font-semibold whitespace-nowrap">
+                        User ID
+                    </th>
+                    <th scope="col" className="p-2 text-left font-semibold whitespace-nowrap">
+                        First Name
+                    </th>
+                    <th scope="col" className="p-2 text-left font-semibold whitespace-nowrap">
+                        Last Name
+                    </th>
+                    <th scope="col" className="p-2 text-left font-semibold whitespace-nowrap">
+                        Role
+                    </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200 bg-white">
                 {profiles.map((profile) => (
                     <ProfileRow key={profile.id} profile={profile} />
                 ))}
@@ -50,16 +58,16 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
     }
 
     return (
-        <tr>
-            <td>{profile.id}</td>
-            <td>{profile.first_name ?? 'N/A'}</td>
-            <td>{profile.last_name ?? 'N/A'}</td>
-            <td>
+        <tr className="h-16">
+            <td className="p-2 text-left whitespace-nowrap">{profile.id}</td>
+            <td className="p-2 text-left whitespace-nowrap">{profile.first_name ?? 'N/A'}</td>
+            <td className="p-2 text-left whitespace-nowrap">{profile.last_name ?? 'N/A'}</td>
+            <td className="p-2 text-left whitespace-nowrap">
                 {user?.id !== profile.id ? (
                     <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
-                        <option value="admin">admin</option>
-                        <option value="moderator">moderator</option>
-                        <option value="user">user</option>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="user">User</option>
                     </select>
                 ) : (
                     profile.role
