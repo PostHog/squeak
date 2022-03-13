@@ -1,7 +1,12 @@
-const Logo: React.VoidFunctionComponent = () => {
+import { SVGProps } from 'react'
+import classNames from 'classnames'
+
+interface Props extends SVGProps<SVGElement> {}
+
+const Logo: React.VoidFunctionComponent<Props> = ({ className }) => {
     return (
         <svg
-            className="w-[100px]"
+            className={classNames(className, 'w-[100px]')}
             width="164"
             height="50"
             viewBox="0 0 164 50"

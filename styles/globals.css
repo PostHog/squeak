@@ -61,3 +61,17 @@ label {
         }
     }
 }
+
+.login {
+    #auth-sign-in {
+        @apply mt-0;
+    }
+
+    .sbui-btn {
+        @apply bg-orange-500 text-white;
+    }
+
+    .sbui-typography-link {
+        @apply text-orange-500;
+    }
+}
