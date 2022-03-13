@@ -2,6 +2,7 @@ import { definitions } from '../../@types/supabase'
 import NextCors from 'nextjs-cors'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import sendQuestionAlert from '../../util/sendQuestionAlert'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -77,6 +78,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     res.status(200).json({ messageId: message.id, profileId: user.id, subject, body, slug: [slug] })
+
+    sendQuestionAlert(message.id, subject, body, slug)
 }
 
 export default handler
