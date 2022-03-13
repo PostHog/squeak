@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { definitions } from '../@types/supabase'
 import { Field, Form, Formik } from 'formik'
+import CodeSnippet from '../components/CodeSnippet'
 
 type Config = definitions['squeak_config']
 
@@ -35,83 +36,81 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
 
     return (
         <div>
-            <div className="bg-white rounded-xl p-4">
-                <h3>Notifications</h3>
-                <p>Manage configuration for reply notifications via Mailgun</p>
-                <hr />
-                <Formik
-                    validateOnMount
-                    validate={(values) => {
-                        const errors: {
-                            mailgunApiKey?: string
-                            mailgunDomain?: string
-                            companyName?: string
-                            companyDomain?: string
-                        } = {}
-                        if (!values.mailgunApiKey) {
-                            errors.mailgunApiKey = 'Required'
-                        }
-                        if (!values.mailgunDomain) {
-                            errors.mailgunDomain = 'Required'
-                        }
-                        if (!values.companyName) {
-                            errors.companyName = 'Required'
-                        }
-                        if (!values.companyDomain) {
-                            errors.companyDomain = 'Required'
-                        }
-                        return errors
-                    }}
-                    initialValues={{
-                        mailgunApiKey,
-                        mailgunDomain,
-                        companyName,
-                        companyDomain,
-                    }}
-                    onSubmit={handleSaveNotifications}
-                >
-                    {({ isValid }) => {
-                        return (
-                            <Form className="mt-6">
-                                <label htmlFor="mailgunApiKey">Mailgun API key</label>
-                                <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
+            <h3>Snippet</h3>
+            <p>
+                Great news! You're all setup to receive questions on your site. Here's the snippet if you need to put it
+                on other pages.
+            </p>
+            <hr />
+            <CodeSnippet className="max-w-6xl" />
+            <h3>Notifications</h3>
+            <p>Manage configuration for reply notifications via Mailgun</p>
+            <hr />
+            <Formik
+                validateOnMount
+                validate={(values) => {
+                    const errors: {
+                        mailgunApiKey?: string
+                        mailgunDomain?: string
+                        companyName?: string
+                        companyDomain?: string
+                    } = {}
+                    if (!values.mailgunApiKey) {
+                        errors.mailgunApiKey = 'Required'
+                    }
+                    if (!values.mailgunDomain) {
+                        errors.mailgunDomain = 'Required'
+                    }
+                    if (!values.companyName) {
+                        errors.companyName = 'Required'
+                    }
+                    if (!values.companyDomain) {
+                        errors.companyDomain = 'Required'
+                    }
+                    return errors
+                }}
+                initialValues={{
+                    mailgunApiKey,
+                    mailgunDomain,
+                    companyName,
+                    companyDomain,
+                }}
+                onSubmit={handleSaveNotifications}
+            >
+                {({ isValid }) => {
+                    return (
+                        <Form className="mt-6">
+                            <label htmlFor="mailgunApiKey">Mailgun API key</label>
+                            <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
 
-                                <label htmlFor="mailgunDomain">Mailgun domain</label>
-                                <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
+                            <label htmlFor="mailgunDomain">Mailgun domain</label>
+                            <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
 
-                                <label htmlFor="companyName">Company name</label>
-                                <Field id="companyName" name="companyName" placeholder="Squeak" />
+                            <label htmlFor="companyName">Company name</label>
+                            <Field id="companyName" name="companyName" placeholder="Squeak" />
 
-                                <label htmlFor="companyDomain">Site URL (without protocol)</label>
-                                <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
+                            <label htmlFor="companyDomain">Site URL (without protocol)</label>
+                            <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
 
-                                <div className="flex space-x-6 items-center mt-4">
-                                    <Button disabled={!isValid} type="submit">
-                                        Save
-                                    </Button>
-                                </div>
-                            </Form>
-                        )
-                    }}
-                </Formik>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 mt-4">
-                <h3>Alerts</h3>
-                <p>Manage configuration for admin alerts via Slack</p>
-                <hr />
-                UPDATED SLACK FORM HERE
-            </div>
+                            <div className="flex space-x-6 items-center mt-4">
+                                <Button disabled={!isValid} type="submit">
+                                    Save
+                                </Button>
+                            </div>
+                        </Form>
+                    )
+                }}
+            </Formik>
+            <h3>Alerts</h3>
+            <p>Manage configuration for admin alerts via Slack</p>
+            <hr />
+            UPDATED SLACK FORM HERE
         </div>
     )
 }
 
 Settings.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <AdminLayout title="Settings" subtitle="Change your alert & notification config">
-            {page}
-        </AdminLayout>
-    )
+    return <AdminLayout title="Settings">{page}</AdminLayout>
 }
 
 export const getServerSideProps = withAdminAccess<Props>({

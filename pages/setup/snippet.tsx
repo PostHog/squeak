@@ -1,4 +1,4 @@
-import { supabaseServerClient, withAuthRequired } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Head from 'next/head'
 import { ReactElement } from 'react'

@@ -1,9 +1,14 @@
 import Link from 'next/link'
 
-export default function Button({ children, className = '', href = '', ...other }) {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    className?: string
+    href?: string
+}
+
+const Button: React.FunctionComponent<Props> = ({ children, className = '', href = '', ...other }) => {
     const classes = `bg-orange-500 px-8 py-2 text-white rounded-md ${className}`
     return href ? (
-        <Link href={href}>
+        <Link href={href} passHref>
             <button {...other} className={classes}>
                 {children}
             </button>
@@ -14,3 +19,5 @@ export default function Button({ children, className = '', href = '', ...other }
         </button>
     )
 }
+
+export default Button
