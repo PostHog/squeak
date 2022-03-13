@@ -14,7 +14,7 @@ interface Arguments<P> {
     getServerSideProps: GetServerSideProps<P>
 }
 
-const withAdminAccess = <P>(arg: Arguments<P>) => {
+const withPreflightCheck = <P>(arg: Arguments<P>) => {
     return async (context: GetServerSidePropsContext) => {
         try {
             const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
@@ -90,4 +90,4 @@ const withAdminAccess = <P>(arg: Arguments<P>) => {
     }
 }
 
-export default withAdminAccess
+export default withPreflightCheck
