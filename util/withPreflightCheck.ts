@@ -37,7 +37,7 @@ const withAdminAccess = <P>(arg: Arguments<P>) => {
                 }
             }
 
-            const { authCheck = false, authRedirectTo } = arg
+            const { authCheck = false, authRedirectTo = '/setup/administration' } = arg
 
             if (authCheck) {
                 const { user } = await getUser(context)
