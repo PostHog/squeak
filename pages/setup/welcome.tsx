@@ -3,6 +3,8 @@ import { ReactElement } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
+import { GetStaticPropsResult } from 'next'
 
 interface Props {}
 
@@ -51,5 +53,14 @@ Welcome.getLayout = function getLayout(page: ReactElement) {
         </SetupLayout>
     )
 }
+
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        return {
+            props: {},
+        }
+    },
+})
 
 export default Welcome
