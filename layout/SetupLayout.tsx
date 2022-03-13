@@ -1,5 +1,32 @@
 import { useRouter } from 'next/router'
 
+const nav = [
+    {
+        title: 'Welcome to Squeak!',
+        url: '/setup/welcome',
+    },
+    {
+        title: 'Database',
+        url: '/setup/database',
+    },
+    {
+        title: 'Administration',
+        url: '/setup/administration',
+    },
+    {
+        title: 'Thread notifications',
+        url: '/setup/notifications',
+    },
+    {
+        title: 'Moderator alerts',
+        url: '/setup/alerts',
+    },
+    {
+        title: 'Install JS snippet',
+        url: '/setup/snippet',
+    },
+]
+
 interface Props {
     title: string
     subtitle: string
@@ -7,32 +34,6 @@ interface Props {
 
 const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle }) => {
     const router = useRouter()
-    const nav = [
-        {
-            title: 'Welcome to Squeak!',
-            url: '/setup/welcome',
-        },
-        {
-            title: 'Database',
-            url: '/setup/database',
-        },
-        {
-            title: 'Administration',
-            url: '/setup/administration',
-        },
-        {
-            title: 'Thread notifications',
-            url: '/setup/notifications',
-        },
-        {
-            title: 'Moderator alerts',
-            url: '/setup/alerts',
-        },
-        {
-            title: 'Install JS snippet',
-            url: '/setup/snippet',
-        },
-    ]
 
     return (
         <main className="grid grid-cols-3 min-h-screen divide-x-2 divide-dashed divide-gray-300 setup-layout px-5">
