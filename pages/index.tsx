@@ -2,6 +2,9 @@ import { GetStaticPropsResult } from 'next'
 import { ReactElement } from 'react'
 import type { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
+
+type Config = definitions['squeak_config']
+type UserProfileView = definitions['squeak_profiles_view']
 import withAdminAccess from '../util/withAdminAccess'
 import CodeSnippet from '../components/CodeSnippet'
 
@@ -30,7 +33,10 @@ export const getServerSideProps = withAdminAccess<Props>({
     redirectTo: '/login',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         return {
-            props: {},
+            redirect: {
+                destination: '/questions',
+                permanent: false,
+            },
         }
     },
 })
