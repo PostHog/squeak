@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { definitions } from '../@types/supabase'
 import Avatar from './Avatar'
+import { useUser } from '@supabase/supabase-auth-helpers/react'
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 
 type Profile = definitions['squeak_profiles_view']
+type ProfileReadonly = definitions['squeak_profiles_readonly']
 
 interface TableProps {
     profiles: Array<Profile>
@@ -63,12 +66,14 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
         setRole(role)
     }
 
+    const { first_name, last_name, avatar } = profile
+
     return (
         <tr>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                        <Avatar image={profile.avatar} />
+                        <Avatar image={avatar} />
                     </div>
                     <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
@@ -79,15 +84,15 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {user?.id !== profile.id ? (
-                <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
-                  <option value="admin">Admin</option>
-                  <option value="moderator">Moderator</option>
-                  <option value="user">User</option>
-                </select>
-              ) : (
-                profile.role
-              )}
+                {user?.id !== profile.id ? (
+                    <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="user">User</option>
+                    </select>
+                ) : (
+                    profile.role
+                )}
             </td>
         </tr>
     )

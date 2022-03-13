@@ -1,4 +1,4 @@
-export default function Logo() {
+const Logo: React.VoidFunctionComponent = () => {
     return (
         <svg
             className="w-[100px]"
@@ -15,3 +15,5 @@ export default function Logo() {
         </svg>
     )
 }
+
+export default Logo

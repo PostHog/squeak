@@ -176,9 +176,13 @@ CREATE POLICY "Allow update to admins" ON public.squeak_profiles_readonly FOR UP
 
 CREATE POLICY "Enable access to all users" ON public.squeak_replies FOR SELECT USING (true);
 
+CREATE POLICY "Allow update to admins" ON public.squeak_replies FOR UPDATE USING (((auth.role() = 'authenticated'::text) AND public.get_is_admin()));
+
 CREATE POLICY "Enable insert access to all users" ON public.squeak_messages FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Enable insert access to all users" ON public.squeak_replies FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow update to admins" ON public.squeak_messages FOR UPDATE USING (((auth.role() = 'authenticated'::text) AND public.get_is_admin()));
 
 --
 -- Enable row level security
