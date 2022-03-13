@@ -34,6 +34,10 @@ input {
     @apply block px-4 py-2 border-gray-300 border rounded-md;
 }
 
+select {
+    @apply block px-2 py-2 border-gray-300 border rounded-md;
+}
+
 label {
     @apply my-2 block font-semibold;
 }
