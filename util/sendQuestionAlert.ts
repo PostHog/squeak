@@ -1,15 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
+/* eslint-enable @typescript-eslint/no-var-requires */
+import type { definitions } from '../@types/supabase'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { WebClient } = require('@slack/web-api')
-/* eslint-enable @typescript-eslint/no-var-requires */
-
-import type { definitions } from '../@types/supabase'
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
+type Profile = definitions['squeak_profiles']
 
-const sendReplyNotification = async (messageId: number, subject: string, body: string, slug: string) => {
+const sendReplyNotification = async (
+    messageId: number,
+    subject: string,
+    body: string,
+    slug: string,
+    userId: string
+) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -40,32 +46,62 @@ const sendReplyNotification = async (messageId: number, subject: string, body: s
 
     const client = new WebClient(slack_api_key)
 
+    const { data: profile, error: profileError } = await supabaseServiceUserClient
+        .from<Profile>('squeak_profiles')
+        .select(`first_name, avatar`)
+        .eq('id', userId)
+        .single()
+
+    if (!profile || profileError) {
+        console.warn(`[⚙️ Profiles] Failed to fetch profile`)
+
+        if (profileError) {
+            console.error(`[⚙️ Profiles] ${profileError.message}`)
+        }
+
+        return
+    }
+
+    const { first_name, avatar } = profile
+
     let result
     try {
         result = await client.chat.postMessage({
             channel: slack_question_channel,
             blocks: [
                 {
+                    type: 'header',
+                    text: {
+                        type: 'plain_text',
+                        text: `${first_name} on ${slug}`,
+                        emoji: true,
+                    },
+                    block_id: 'name_and_slug',
+                },
+                {
+                    type: 'header',
+                    text: {
+                        type: 'plain_text',
+                        text: subject,
+                        emoji: true,
+                    },
+                    block_id: 'subject',
+                },
+                {
                     type: 'section',
+                    block_id: 'question',
                     text: {
                         type: 'mrkdwn',
-                        text: `New question on ${slug}:\n\n*Subject*\n\n${subject}\n\n*Question*\n\n${body}`,
+                        text: body,
                     },
+                    ...(avatar && {
+                        accessory: {
+                            type: 'image',
+                            image_url: avatar,
+                            alt_text: first_name,
+                        },
+                    }),
                 },
-                // {
-                //     type: 'actions',
-                //     elements: [
-                //         {
-                //             type: 'button',
-                //             url: 'https://posthog.com',
-                //             text: {
-                //                 type: 'plain_text',
-                //                 text: 'View Question',
-                //                 emoji: true,
-                //             },
-                //         },
-                //     ],
-                // },
             ],
         })
     } catch (error) {
