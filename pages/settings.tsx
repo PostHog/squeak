@@ -1,13 +1,15 @@
-import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
+import NotificationForm from '../components/NotificationForm'
+import SlackForm from '../components/SlackForm'
+import SlackManifestSnippet from '../components/SlackManifestSnippet'
 
 type Config = definitions['squeak_config']
 
@@ -16,24 +18,18 @@ interface Props {
     mailgunDomain: string
     companyName: string
     companyDomain: string
+    slackApiKey: string
+    slackQuestionChannel: string
 }
 
-const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
-    const handleSaveNotifications = async (values: Props) => {
-        await supabaseClient
-            .from<Config>('squeak_config')
-            .update({
-                mailgun_api_key: values.mailgunApiKey,
-                mailgun_domain: values.mailgunDomain,
-                company_name: values.companyName,
-                company_domain: values.companyDomain,
-            })
-            .match({ id: 1 })
-
-        // TODO(JS): Trigger toast?
-        // TODO(JS): Handle errors here?
-    }
-
+const Settings: NextPageWithLayout<Props> = ({
+    mailgunApiKey,
+    mailgunDomain,
+    companyName,
+    companyDomain,
+    slackApiKey,
+    slackQuestionChannel,
+}) => {
     return (
         <div>
             <h3>Snippet</h3>
@@ -41,70 +37,37 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
                 Great news! You're all setup to receive questions on your site. Here's the snippet if you need to put it
                 on other pages.
             </p>
-            <hr />
             <CodeSnippet className="max-w-6xl" />
             <h3>Notifications</h3>
             <p>Manage configuration for reply notifications via Mailgun</p>
             <hr />
-            <Formik
-                validateOnMount
-                validate={(values) => {
-                    const errors: {
-                        mailgunApiKey?: string
-                        mailgunDomain?: string
-                        companyName?: string
-                        companyDomain?: string
-                    } = {}
-                    if (!values.mailgunApiKey) {
-                        errors.mailgunApiKey = 'Required'
-                    }
-                    if (!values.mailgunDomain) {
-                        errors.mailgunDomain = 'Required'
-                    }
-                    if (!values.companyName) {
-                        errors.companyName = 'Required'
-                    }
-                    if (!values.companyDomain) {
-                        errors.companyDomain = 'Required'
-                    }
-                    return errors
-                }}
-                initialValues={{
-                    mailgunApiKey,
-                    mailgunDomain,
-                    companyName,
-                    companyDomain,
-                }}
-                onSubmit={handleSaveNotifications}
-            >
-                {({ isValid }) => {
-                    return (
-                        <Form className="mt-6">
-                            <label htmlFor="mailgunApiKey">Mailgun API key</label>
-                            <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
-
-                            <label htmlFor="mailgunDomain">Mailgun domain</label>
-                            <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
-
-                            <label htmlFor="companyName">Company name</label>
-                            <Field id="companyName" name="companyName" placeholder="Squeak" />
-
-                            <label htmlFor="companyDomain">Site URL (without protocol)</label>
-                            <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
-
-                            <div className="flex space-x-6 items-center mt-4 mb-12">
-                                <Button disabled={!isValid} type="submit">
-                                    Save
-                                </Button>
-                            </div>
-                        </Form>
-                    )
-                }}
-            </Formik>
+            <NotificationForm
+                companyDomain={companyDomain}
+                companyName={companyName}
+                mailgunDomain={mailgunDomain}
+                mailgunApiKey={mailgunApiKey}
+                actionButtons={(isValid) => (
+                    <Button disabled={!isValid} type="submit">
+                        Save
+                    </Button>
+                )}
+            />
             <h3>Alerts</h3>
             <p>Manage configuration for admin alerts via Slack</p>
             <hr />
-            UPDATED SLACK FORM HERE
+
+            <p className="my-2 block font-semibold">Instructions</p>
+            <SlackManifestSnippet />
+
+            <SlackForm
+                slackApiKey={slackApiKey}
+                slackQuestionChannel={slackQuestionChannel}
+                actionButtons={(isValid) => (
+                    <Button disabled={!isValid} type="submit">
+                        Save
+                    </Button>
+                )}
+            />
         </div>
     )
 }
@@ -118,7 +81,9 @@ export const getServerSideProps = withAdminAccess({
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
-            .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
+            .select(
+                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel`
+            )
             .eq('id', 1)
             .single()
 
@@ -130,6 +95,8 @@ export const getServerSideProps = withAdminAccess({
                 mailgunDomain: config?.mailgun_domain || '',
                 companyName: config?.company_name || '',
                 companyDomain: config?.company_domain || '',
+                slackApiKey: config?.slack_api_key || '',
+                slackQuestionChannel: config?.slack_question_channel || '',
             },
         }
     },

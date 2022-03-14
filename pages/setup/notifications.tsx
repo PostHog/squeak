@@ -1,5 +1,4 @@
-import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import { ReactElement } from 'react'
@@ -8,6 +7,7 @@ import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
+import NotificationForm from '../../components/NotificationForm'
 
 type Config = definitions['squeak_config']
 
@@ -19,23 +19,6 @@ interface Props {
 }
 
 const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
-    const handleSave = async (values: Props) => {
-        const { error } = await supabaseClient
-            .from<Config>('squeak_config')
-            .update({
-                mailgun_api_key: values.mailgunApiKey,
-                mailgun_domain: values.mailgunDomain,
-                company_name: values.companyName,
-                company_domain: values.companyDomain,
-            })
-            .match({ id: 1 })
-
-        if (!error) Router.push('/setup/alerts')
-
-        // TODO(JS): Trigger toast?
-        // TODO(JS): Handle errors here?
-    }
-
     const handleSkip = () => {
         Router.push('/setup/alerts')
     }
@@ -50,68 +33,23 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                     </a>
                 </p>
 
-                <Formik
-                    validateOnMount
-                    validate={(values) => {
-                        const errors: {
-                            mailgunApiKey?: string
-                            mailgunDomain?: string
-                            companyName?: string
-                            companyDomain?: string
-                        } = {}
-                        if (!values.mailgunApiKey) {
-                            errors.mailgunApiKey = 'Required'
-                        }
-                        if (!values.mailgunDomain) {
-                            errors.mailgunDomain = 'Required'
-                        }
-                        if (!values.companyName) {
-                            errors.companyName = 'Required'
-                        }
-                        if (!values.companyDomain) {
-                            errors.companyDomain = 'Required'
-                        }
-                        return errors
-                    }}
-                    initialValues={{
-                        mailgunApiKey,
-                        mailgunDomain,
-                        companyName,
-                        companyDomain,
-                    }}
-                    onSubmit={handleSave}
-                >
-                    {({ isValid }) => {
-                        return (
-                            <Form className="mt-6">
-                                <label htmlFor="mailgunApiKey">Mailgun API key</label>
-                                <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
-
-                                <label htmlFor="mailgunDomain">Mailgun domain</label>
-                                <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
-
-                                <hr className="my-6" />
-
-                                <p className="mb-6">The following information is used in email notifications</p>
-
-                                <label htmlFor="companyName">Company name</label>
-                                <Field id="companyName" name="companyName" placeholder="Squeak" />
-
-                                <label htmlFor="companyDomain">Site URL (without protocol)</label>
-                                <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
-
-                                <div className="flex space-x-6 items-center mt-4">
-                                    <Button disabled={!isValid} type="submit">
-                                        Continue
-                                    </Button>
-                                    <button onClick={handleSkip} className="text-orange-600 font-semibold">
-                                        Skip
-                                    </button>
-                                </div>
-                            </Form>
-                        )
-                    }}
-                </Formik>
+                <NotificationForm
+                    mailgunApiKey={mailgunApiKey}
+                    mailgunDomain={mailgunDomain}
+                    companyName={companyName}
+                    companyDomain={companyDomain}
+                    redirect="/setup/alerts"
+                    actionButtons={(isValid) => (
+                        <>
+                            <Button disabled={!isValid} type="submit">
+                                Continue
+                            </Button>
+                            <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                                Skip
+                            </button>
+                        </>
+                    )}
+                />
             </main>
         </div>
     )
