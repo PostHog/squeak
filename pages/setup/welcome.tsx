@@ -3,6 +3,8 @@ import { ReactElement } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
+import { GetStaticPropsResult } from 'next'
 
 interface Props {}
 
@@ -21,10 +23,6 @@ const Welcome: NextPageWithLayout<Props> = () => {
                 <tr>
                     <td>Supabase</td>
                     <td>Database hosting</td>
-                </tr>
-                <tr>
-                    <td>Github</td>
-                    <td>App management, admin-y things</td>
                 </tr>
                 <tr>
                     <td>Mailgun</td>
@@ -55,5 +53,14 @@ Welcome.getLayout = function getLayout(page: ReactElement) {
         </SetupLayout>
     )
 }
+
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        return {
+            props: {},
+        }
+    },
+})
 
 export default Welcome

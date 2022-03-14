@@ -8,6 +8,7 @@ import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import { sql } from '../../components/SQLSnippet'
 import SetupLayout from '../../layout/SetupLayout'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 interface Props {
     initialDatabaseSetup: boolean
@@ -87,19 +88,22 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
     )
 }
 
-export const getServerSideProps = async (): Promise<GetStaticPropsResult<Props>> => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+export const getServerSideProps = withPreflightCheck({
+    redirectTo: '/',
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-    const { error } = await supabaseClient.from('squeak_messages').select('*').single()
+        const { error } = await supabaseClient.from('squeak_messages').select('*').single()
 
-    return {
-        props: {
-            initialDatabaseSetup: !(error && error.code === '42P01'),
-        },
-    }
-}
+        return {
+            props: {
+                initialDatabaseSetup: !(error && error.code === '42P01'),
+            },
+        }
+    },
+})
 
 export default Database

@@ -35,6 +35,10 @@ select {
     @apply block px-4 py-2 border-gray-300 border rounded-md w-full;
 }
 
+select {
+    @apply block pl-2 pr-14 py-2 border-gray-300 border rounded-md;
+}
+
 label {
     @apply my-2 block font-semibold;
 }
@@ -56,5 +60,19 @@ label {
         > td:first-of-type {
             @apply font-bold;
         }
+    }
+}
+
+.login {
+    #auth-sign-in {
+        @apply mt-0;
+    }
+
+    .sbui-btn {
+        @apply bg-orange-500 text-white;
+    }
+
+    .sbui-typography-link {
+        @apply text-orange-500;
     }
 }
