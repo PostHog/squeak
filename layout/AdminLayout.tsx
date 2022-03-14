@@ -1,12 +1,13 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { ChatAlt2Icon, CogIcon, MenuIcon, UsersIcon, XIcon } from '@heroicons/react/outline'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
 import Logo from '../components/Logo'
-import Link from 'next/link'
 
 const navigation = [
-    { name: 'Questions', href: '/questions', icon: ChatAlt2Icon, current: true },
-    { name: 'Profiles', href: '/profiles', icon: UsersIcon, current: false },
+    { name: 'Questions', href: '/questions', icon: ChatAlt2Icon },
+    { name: 'Profiles', href: '/profiles', icon: UsersIcon },
 ]
 
 function classNames(...classes: Array<unknown>) {
@@ -19,7 +20,7 @@ interface Props {
 
 const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
-
+    const router = useRouter()
     return (
         <>
             <div>
@@ -76,7 +77,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                                                 key={item.name}
                                                 href={item.href}
                                                 className={classNames(
-                                                    item.current
+                                                    router.pathname === item.href
                                                         ? 'bg-gray-900 text-white'
                                                         : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                     'group flex items-center px-2 py-2 text-base font-medium rounded-md'
@@ -84,7 +85,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                                             >
                                                 <item.icon
                                                     className={classNames(
-                                                        item.current
+                                                        router.pathname === item.href
                                                             ? 'text-gray-300'
                                                             : 'text-gray-400 group-hover:text-gray-300',
                                                         'mr-4 flex-shrink-0 h-6 w-6'
@@ -96,24 +97,31 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                                         ))}
                                     </nav>
                                 </div>
-                                <div className="flex-shrink-0 flex bg-gray-700 p-4">
-                                    <a href="#" className="flex-shrink-0 group block">
-                                        <div className="flex items-center">
-                                            <div>
-                                                <img
-                                                    className="inline-block h-10 w-10 rounded-full"
-                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                    alt=""
+                                <div className="flex-shrink-0 flex p-4">
+                                    <Link href="/settings" passHref>
+                                        <a href="#" className="flex-shrink-0 w-full group block">
+                                            <div
+                                                className={classNames(
+                                                    router.pathname === '/settings'
+                                                        ? 'bg-gray-900 text-white'
+                                                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                    'group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                                                )}
+                                            >
+                                                <CogIcon
+                                                    className={classNames(
+                                                        router.pathname === '/settings'
+                                                            ? 'text-gray-300'
+                                                            : 'text-gray-400 group-hover:text-gray-300',
+                                                        'mr-4 flex-shrink-0 h-6 w-6'
+                                                    )}
                                                 />
+                                                <a className="text-sm font-medium text-gray-400 group-hover:text-gray-600">
+                                                    Settings
+                                                </a>
                                             </div>
-                                            <div className="ml-3">
-                                                <p className="text-base font-medium text-white">Tom Cook</p>
-                                                <p className="text-sm font-medium text-gray-400 group-hover:text-gray-300">
-                                                    View profile
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
+                                        </a>
+                                    </Link>
                                 </div>
                             </div>
                         </Transition.Child>
@@ -134,13 +142,13 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                                     <Link key={item.name} href={item.href} passHref>
                                         <a
                                             className={classNames(
-                                                item.current ? 'text-gray-700' : 'hover:text-gray-600',
+                                                router.pathname === item.href ? 'text-gray-700' : 'hover:text-gray-600',
                                                 'group flex items-center px-2 py-2 text-sm font-medium text-gray-500'
                                             )}
                                         >
                                             <item.icon
                                                 className={classNames(
-                                                    item.current
+                                                    router.pathname === item.href
                                                         ? 'text-gray-700'
                                                         : 'text-gray-400 group-hover:text-gray-600',
                                                     'mr-3 flex-shrink-0 h-6 w-6'
@@ -158,13 +166,15 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                                 <a href="#" className="flex-shrink-0 w-full group block">
                                     <div
                                         className={classNames(
-                                            false ? 'text-gray-700' : 'hover:text-gray-600',
+                                            router.pathname === '/settings' ? 'text-gray-700' : 'hover:text-gray-600',
                                             'group flex items-center px-2 py-2 text-sm font-medium text-gray-500'
                                         )}
                                     >
                                         <CogIcon
                                             className={classNames(
-                                                false ? 'text-gray-700' : 'text-gray-400 group-hover:text-gray-600',
+                                                router.pathname === '/settings'
+                                                    ? 'text-gray-700'
+                                                    : 'text-gray-400 group-hover:text-gray-600',
                                                 'mr-3 flex-shrink-0 h-6 w-6'
                                             )}
                                         />
@@ -191,7 +201,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                     <main className="flex-1">
                         <div className="py-6">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <h1 className="text-2xl font-semibold text-gray-900 mb-6">{title}</h1>
+                                <h1 className="text-4xl font-semibold text-gray-900 mb-6">{title}</h1>
                             </div>
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">{children}</div>
                         </div>

@@ -1,13 +1,13 @@
-import { GetStaticPropsResult } from 'next'
-import withAdminAccess from '../util/withAdminAccess'
-import { NextPageWithLayout } from '../@types/types'
-import { ReactElement } from 'react'
-import AdminLayout from '../layout/AdminLayout'
-import Button from '../components/Button'
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
 import { Field, Form, Formik } from 'formik'
+import { GetStaticPropsResult } from 'next'
+import { ReactElement } from 'react'
+import { definitions } from '../@types/supabase'
+import { NextPageWithLayout } from '../@types/types'
+import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
+import AdminLayout from '../layout/AdminLayout'
+import withAdminAccess from '../util/withAdminAccess'
 
 type Config = definitions['squeak_config']
 
@@ -92,7 +92,7 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
                             <label htmlFor="companyDomain">Site URL (without protocol)</label>
                             <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
 
-                            <div className="flex space-x-6 items-center mt-4">
+                            <div className="flex space-x-6 items-center mt-4 mb-12">
                                 <Button disabled={!isValid} type="submit">
                                     Save
                                 </Button>
