@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { ReactElement } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
@@ -11,12 +10,6 @@ interface Props {}
 const Welcome: NextPageWithLayout<Props> = () => {
     return (
         <div>
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <p className="mb-0 font-semibold opacity-70">Accounts you'll need:</p>
 
             <table>

@@ -2,7 +2,6 @@ import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-he
 import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
 import debounce from 'lodash.debounce'
 import type { GetStaticPropsResult } from 'next'
-import Head from 'next/head'
 import Router from 'next/router'
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
@@ -150,12 +149,6 @@ settings:
 
     return (
         <div>
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main>
                 <p>
                     Create a Slack App at{' '}

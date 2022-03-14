@@ -1,6 +1,5 @@
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
-import Head from 'next/head'
 import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
@@ -16,12 +15,6 @@ interface Props {}
 const Snippet: NextPageWithLayout<Props> = () => {
     return (
         <div>
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main>
                 <CodeSnippet />
 

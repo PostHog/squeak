@@ -1,7 +1,6 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Auth, useUser } from '@supabase/supabase-auth-helpers/react'
 import { GetStaticPropsResult } from 'next'
-import Head from 'next/head'
 import Router from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
@@ -20,15 +19,7 @@ const Administration: NextPageWithLayout<Props> = () => {
     }, [user])
 
     return (
-        <div>
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
-            <Auth view="sign_up" supabaseClient={supabaseClient} redirectTo="/setup/administration" />
-        </div>
+        <div>{!user && <Auth view="sign_up" supabaseClient={supabaseClient} redirectTo="/setup/administration" />}</div>
     )
 }
 

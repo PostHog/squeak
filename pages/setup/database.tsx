@@ -1,7 +1,6 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { createClient } from '@supabase/supabase-js'
 import { GetStaticPropsResult } from 'next'
-import Head from 'next/head'
 import { useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { NextPageWithLayout } from '../../@types/types'
@@ -41,12 +40,6 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
         run this SQL in your Supabase project.`
             }
         >
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main>
                 {databaseSetup && (
                     <>

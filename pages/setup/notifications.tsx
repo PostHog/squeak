@@ -1,7 +1,6 @@
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import type { GetStaticPropsResult } from 'next'
-import Head from 'next/head'
 import Router from 'next/router'
 import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
@@ -43,12 +42,6 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
 
     return (
         <div>
-            <Head>
-                <title>Squeak</title>
-                <meta name="description" content="Something about Squeak here..." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main>
                 <p>
                     Find the following information at{' '}

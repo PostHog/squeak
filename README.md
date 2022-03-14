@@ -2,13 +2,13 @@
 
 # Squeak!
 
-Squeak! lets you answer questions, right in your docs. Even better: it lets your community support itself.
+_Squeak!_ lets you answer user questions, right in your docs. Even better: it lets your community support itself.
 
-After spinning up a server, grab the JavaScript embed code and place wherever you want it to appear on your site. (It works great at the end of your docs template - so visitors can ask questions without leaving the page. And because the questions & answers stay on your site, they'll be useful for others in the future.
+After spinning up a server, grab the JavaScript embed code and place wherever you want it to appear on your site. (It works great at the end of your docs template - so visitors can ask questions without leaving the page. And because the questions & answers stay on your site, they'll be useful for others in the future.)
 
 ## Requirements
 
-Squeak! is currently self-hosted, but we make deployment simple using a Docker image.
+_Squeak!_ is currently self-hosted, but we make deployment simple using a Docker image.
 
 1. Host a Docker image - Runs client-side widget and connects to integrations
 1. A [Supabase](https://supabase.com) account (to host the Postgres database, and for authentication)
@@ -19,9 +19,9 @@ Squeak! is currently self-hosted, but we make deployment simple using a Docker i
 
 1. Create a project in [Supabase](https://supabase.com).
 1. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
-1. Host the Docker image (easy with [Digital Ocean](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master))
+1. Host the Docker image (easy with [Digital Ocean](https://www.digitalocean.com/?refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge))
 
-    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
+    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master&refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 1. Look up environment variables in your Supabase project and add them to your Docker build
 1. Visit _yoursqueakinstance.com_`/setup` and follow the wizard!
 
