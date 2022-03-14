@@ -4,8 +4,8 @@ import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
-import SetupLayout from '../../layout/SetupLayout'
 import CodeSnippet from '../../components/CodeSnippet'
+import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 
 type Config = definitions['squeak_config']

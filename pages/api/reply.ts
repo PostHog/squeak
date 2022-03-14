@@ -1,7 +1,7 @@
-import { definitions } from '../../@types/supabase'
-import NextCors from 'nextjs-cors'
-import { NextApiRequest, NextApiResponse } from 'next'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
+import { definitions } from '../../@types/supabase'
 import sendReplyNotification from '../../util/sendReplyNotification'
 
 type Reply = definitions['squeak_replies']
@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { messageId, body, token } = req.body
+    const { messageId, body, token } = JSON.parse(req.body)
 
     if (!messageId || !body || !token) {
         res.status(400).json({ error: 'Missing required fields' })
