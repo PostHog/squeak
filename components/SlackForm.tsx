@@ -50,7 +50,7 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
     return (
         <Form className="mt-6">
             <label htmlFor="slackApiKey">Slack Bot User OAuth Token</label>
-            <Field onChange={handleAPIKeyChange} id="slackApiKey" name="slackApiKey" placeholder="xoxb-your-token" />
+            <Field onChange={handleAPIKeyChange} id="slackApiKey" name="slackApiKey" placeholder="xxxx-your-token" />
             {channels.length > 0 && (
                 <>
                     <label htmlFor="slackQuestionChannel">Slack question channel</label>
