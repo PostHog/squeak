@@ -19,9 +19,9 @@ Squeak! is currently self-hosted, but we make deployment simple using a Docker i
 
 1. Create a project in [Supabase](https://supabase.com).
 1. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
-1. Host the Docker image (easy with [Digital Ocean](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master))
+1. Host the Docker image (easy with [Digital Ocean](https://www.digitalocean.com/?refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge))
 
-    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master)
+    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master&refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 1. Look up environment variables in your Supabase project and add them to your Docker build
 1. Visit _yoursqueakinstance.com_`/setup` and follow the wizard!
 
