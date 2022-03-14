@@ -45,7 +45,7 @@ const Users: NextPageWithLayout<Props> = () => {
 }
 
 Users.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title="Users">{page}</AdminLayout>
+    return <AdminLayout title="Profiles">{page}</AdminLayout>
 }
 
 export const getServerSideProps = withAdminAccess({
