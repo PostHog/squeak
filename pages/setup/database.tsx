@@ -11,9 +11,10 @@ import withPreflightCheck from '../../util/withPreflightCheck'
 
 interface Props {
     initialDatabaseSetup: boolean
+    databaseUrlProvided: boolean
 }
 
-const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
+const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrlProvided }) => {
     const [databaseSetup, setDatabaseSetup] = useState(initialDatabaseSetup)
     const [sqlCopied, setSqlCopied] = useState(false)
 
@@ -45,10 +46,15 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup }) => {
                     <>
                         <div className="p-6 border-green-700 border rounded-lg max-w-[650px]">
                             <h3>Database setup complete</h3>
-                            <p>
-                                Supabase and Postgres credentials were already provided, so your database has been
-                                automatically configured.
-                            </p>
+
+                            {databaseUrlProvided ? (
+                                <p>
+                                    Supabase and Postgres credentials were already provided, so your database has been
+                                    automatically configured.
+                                </p>
+                            ) : (
+                                <p>We have checked Supabase and validated your database is setup correctly.</p>
+                            )}
                         </div>
 
                         <p className="my-6">You’re ready to continue to the next step.</p>
@@ -94,6 +100,7 @@ export const getServerSideProps = withPreflightCheck({
         return {
             props: {
                 initialDatabaseSetup: !(error && error.code === '42P01'),
+                databaseUrlProvided: !!process.env.DATABASE_URL,
             },
         }
     },
