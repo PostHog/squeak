@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
 import Logo from '../components/Logo'
+import Head from 'next/head'
 
 const navigation = [
     { name: 'Questions', href: '/questions', icon: ChatAlt2Icon },
@@ -23,6 +24,12 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
     const router = useRouter()
     return (
         <>
+            <Head>
+                <title>Squeak! | {title}</title>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+                <link rel="icon" href="/favicon.png" />
+            </Head>
             <div>
                 <Transition.Root show={sidebarOpen} as={Fragment}>
                     <Dialog as="div" className="fixed inset-0 flex z-40 md:hidden" onClose={setSidebarOpen}>
