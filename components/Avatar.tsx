@@ -1,6 +1,6 @@
-export default function Avatar({ image }: { image?: string }) {
+export default function Avatar({ image, className }: { image?: string; className?: string }) {
     return (
-        <div className="w-[40px] h-[40px] overflow-hidden rounded-full">
+        <div className={`w-[40px] h-[40px] overflow-hidden rounded-full ${className}`}>
             {image ? (
                 <img className="w-full h-full" alt="" src={image} />
             ) : (
