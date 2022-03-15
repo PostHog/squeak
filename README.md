@@ -80,9 +80,8 @@ Something like {your-project}-squeak works great.
 
 The deployment will take 2-4 minutes.
 
-### Using DigitalOcean?
-
-- You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
+> **Using DigitalOcean?**
+> You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
 
 
 ## 7. Disable email confirmations in Supabase
@@ -114,6 +113,7 @@ The first time you run your app, you'll be redirected to:
 1. Copy the SQL query from the setup process
 1. Visit the Supabase SQL Editor and choose _New query_
 1. Paste and run the SQL command
+1. You'll see _"Success. No rows returns_"
 1. Return to the setup process
 
 ## 10. Create an login for the admin panel
