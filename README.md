@@ -120,6 +120,11 @@ The first time you run your app, you'll be redirected to:
 
 ## 11. Enter Mailgun and Slack credentials (optional)
 
+### Mailgun
+
+1. Find your _Private API key_ in Mailgun and enter it as the `Mailgun API key`
+1. Enter the domain name you'll be sending from, your company name, and your site's URL (so the email can link back to it)
+
 ### Slack
 
 1. Optionally, create a new Slack channel for Squeak! notifications
