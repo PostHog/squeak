@@ -120,12 +120,14 @@ The first time you run your app, you'll be redirected to:
 
 ## 11. Enter Mailgun and Slack credentials (optional)
 
-### Slack (needs to be tested)
+### Slack
 
+1. Optionally, create a new Slack channel for Squeak! notifications
 1. Copy and replace the app manifest
 1. Install to workspace
-1. In Slack under _App-Level Tokens_, name your new token something like `squeak`
-1. Add the `connections:write` scope and click _Generate_
+1. In Slack, visit the _OAuth & Permissions_ page (at `https://api.slack.com/apps/{your-app-id}/oauth
+1. Copy the value of `Bot User OAuth Token` and add to the setup wizard
+1. After entering your OAuth token, you'll be asked to select your desired Slack channel
 
 ## 12. Add the JavaScript snippet to your website or docs!
 
