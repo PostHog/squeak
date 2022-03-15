@@ -138,6 +138,25 @@ The first time you run your app, you'll be redirected to:
 
 It can be installed on a single page template, or in a snippet references across your site like a layout template.
 
+### Customization
+
+Set color variables in CSS to override default colors:
+
+```
+  :root {
+    --squeak-primary-color: black;
+    --squeak-button-color: blue;
+  }
+```
+
+This can be added to your widget's embed code by inserting the following above the opening <script> tag:
+  
+```
+  :root {
+    --squeak-primary-color: #3e3e3e;
+    --squeak-button-color: #643eff;
+  }
+```
 
 ---
 
