@@ -45,7 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500)
 
         if (messageError) {
-            console.error(`[🧵 Question] ${messageError}`)
+            console.error(`[🧵 Question] ${messageError.message}`)
 
             res.json({ error: messageError.message })
         }
@@ -69,7 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500)
 
         if (replyError) {
-            console.error(`[🧵 Question] ${replyError}`)
+            console.error(`[🧵 Question] ${replyError.message}`)
 
             res.json({ error: replyError.message })
         }
