@@ -8,7 +8,7 @@ After spinning up a server, grab the JavaScript embed code and place wherever yo
 
 ## Requirements
 
-_Squeak!_ is currently self-hosted, but we make deployment simple using a Docker image.
+_Squeak!_ is currently self-hosted, but we make deployment simple using a Docker container.
 
 1. Host a Docker image - Runs client-side widget and connects to integrations
 1. A [Supabase](https://supabase.com) account (to host the Postgres database, and for authentication)
