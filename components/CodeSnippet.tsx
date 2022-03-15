@@ -1,5 +1,5 @@
-import SyntaxHighlighter from 'react-syntax-highlighter'
 import { useState } from 'react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
 
 const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
 <script>
@@ -9,6 +9,7 @@ const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
             apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
             url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
         },
+        apiHost: "//${typeof window !== 'undefined' && window.location.host}",
     };
     var d = document,
         s = d.createElement("script");
