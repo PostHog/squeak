@@ -8,12 +8,12 @@ After spinning up a server, grab the JavaScript embed code and place wherever yo
 
 ## Requirements
 
-_Squeak!_ is currently self-hosted, but we make deployment simple using a Docker container.
+_Squeak!_ is currently self-hosted, but we make deployment simple using a Docker container. You'll need:
 
-1. Host a Docker image - Runs client-side widget and connects to integrations
-1. A [Supabase](https://supabase.com) account (to host the Postgres database, and for authentication)
-1. Mailgun (optional) - Email notifications for users when someone answers their question
-1. Slack (optional) - Moderator notifications for new questions and community replies
+- Docker and docker hosting - _Runs client-side widget, admin panel_
+- A [Supabase](https://supabase.com) account - _Hosted Postgres database, authentication_
+- Mailgun (optional) - _Email notifications for users when someone answers their question_
+- Slack (optional) - _Moderator notifications for new questions and community replies_
 
 ## Getting started
 
