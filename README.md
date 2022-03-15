@@ -143,19 +143,19 @@ It can be installed on a single page template, or in a snippet references across
 Set color variables in CSS to override default colors:
 
 ```
-  :root {
-    --squeak-primary-color: black;
-    --squeak-button-color: blue;
-  }
+--squeak-primary-color: black;
+--squeak-button-color: blue;
 ```
 
 This can be added to your widget's embed code by inserting the following above the opening <script> tag:
   
 ```
+<style>
   :root {
     --squeak-primary-color: #3e3e3e;
     --squeak-button-color: #643eff;
   }
+</style>
 ```
 
 ---
