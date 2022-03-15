@@ -17,23 +17,132 @@ _Squeak!_ is currently self-hosted, but we make deployment simple using a Docker
 
 ## Getting started
 
-1. Create a project in [Supabase](https://supabase.com).
-1. Open the project and go to Authentication → Settings, and disable _Enable email confirmations_.
-1. Host the Docker image (easy with [Digital Ocean](https://www.digitalocean.com/?refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge))
+## 1. Create a project in Supabase
 
-    [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master&refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
-1. Look up environment variables in your Supabase project and add them to your Docker build
-1. Visit _yoursqueakinstance.com_`/setup` and follow the wizard!
+This will take a few minutes. (We'll come back here.)
 
-## Configuration
+_Be sure to save your database password. You'll need this later._
+
+## 2. Host the Docker container
+
+We've made it easy to [deploy to DigitalOcean](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master&refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge).
+
+## 3. Configure server's environment variables
+
+Find these in Supabase at:
+
+```
+https://app.supabase.io/project/{your-project-id}
+```
+
+### Mapping environment variables
+
+
+| Where to find these values in Supabase   | Environment variable key                   |
+|---------------------------------|------------------------------------|
+| Project API keys → `anon` `public` | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
+| Project API keys → `service_role`  | `SUPABASE_SERVICE_ROLE_KEY`  |
+| Project Configuration → `URL`      | `NEXT_PUBLIC_SUPABASE_URL`      |
+
+
+## 4. Database credentials (optional)
+
+This step will run database migrations when the service is started.
+
+_If you don't enter your credentials, you'll just need to copy/paste a SQL query to create the table structure._
+
+### Build your connection string
+
+Enter your database's password and hostname into the following string.
+```
+postgresql://postgres:{your-password}@{your-host}:5432/postgres
+```
+
+Find your database hostname at the following URL:
+
+```
+https://app.supabase.io/project/{your-project-id}/settings/database
+```
+
+| Credentials you'll need       | Location in Supabase           |
+|---------------------------------|------------------------------------|
+| Database hostname        |  Connection info → `Host` |
+| Database password        |  _Set when creating project_ |
+
+
+Use the resulting value in the `DATABASE_URL` field. (Voila, that was the hardest part!)
+
+## 5. Disable email confirmations in Supabase
+
+Visit the following URL:
+
+```
+https://app.supabase.io/project/{your-project-id}/auth/settings
+```
+
+Under _Email Auth_, toggle `OFF` _Enable email confirmations_.
+
+
+This will allow users to post questions without leaving the widget.
+
+_Note: This form sometimes takes a few seconds to update._
+
+## 6. Return to your Docker project and name the app
+
+Something like {your-project}-squeak works great.
+
+## 7. Build the app
+
+The deployment will take 2-4 minutes.
+
+### Using DigitalOcean?
+
+- You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
+
+## 8. Complete setup process
+
+The first time you run your app, you'll be redirected to:
+
+```
+{your-url}.{tld}/setup/welcome
+```
+
+## 9. Create database table structure
+
+> Skip this step if you added your database connection string (from step 4)
+
+1. Copy the SQL query from the setup process
+1. Visit the Supabase SQL Editor and choose _New query_
+1. Paste and run the SQL command
+1. Return to the setup process
+
+## 10. Create an login for the admin panel
+
+## 11. Enter Mailgun and Slack credentials (optional)
+
+### Slack (needs to be tested)
+
+1. Copy and replace the app manifest
+1. Install to workspace
+1. In Slack under _App-Level Tokens_, name your new token something like `squeak`
+1. Add the `connections:write` scope and click _Generate_
+
+## 12. Add the JavaScript snippet to your website or docs!
+
+It can be installed on a single page template, or in a snippet references across your site like a layout template.
+
+
+---
+
+## More info about tokens and how they're used
 
 Find the values for these keys in your Supabase project.
 
 | Key                           | Required | Description                                                                                                                             |
 |-------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
 | NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
 | SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
+| NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
 | DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations in Supabase on start, found at `/settings/database`, in URI format. (If not provided, we'll provide a SQL query you'll need to copy/paste into Supabase's SQL console.) |
 
 ## API
