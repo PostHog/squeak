@@ -116,7 +116,9 @@ The first time you run your app, you'll be redirected to:
 1. You'll see _"Success. No rows returns_"
 1. Return to the setup process
 
-## 10. Create an login for the admin panel
+## 10. Create a login for the admin panel
+
+You'll also be able to reply to questions with this authentication.
 
 ## 11. Enter Mailgun and Slack credentials (optional)
 
