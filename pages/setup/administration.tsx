@@ -27,7 +27,7 @@ Administration.getLayout = function getLayout(page: ReactElement) {
     return (
         <SetupLayout
             title="Administration"
-            subtitle="Squeak! uses GitHub authentication for access to the admin portal."
+            subtitle="Squeak! uses Supabase authentication for access to the admin portal."
         >
             {page}
         </SetupLayout>
