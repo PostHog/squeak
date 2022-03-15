@@ -72,9 +72,22 @@ https://app.supabase.io/project/{your-project-id}/settings/database
 
 Use the resulting value in the `DATABASE_URL` field. (Voila, that was the hardest part!)
 
-## 5. Disable email confirmations in Supabase
+## 5. Return to your Docker project and name the app
 
-Visit the following URL:
+Something like {your-project}-squeak works great.
+
+## 6. Build the app
+
+The deployment will take 2-4 minutes.
+
+### Using DigitalOcean?
+
+- You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
+
+
+## 7. Disable email confirmations in Supabase
+
+While Docker is building, visit the following URL:
 
 ```
 https://app.supabase.io/project/{your-project-id}/auth/settings
@@ -82,22 +95,9 @@ https://app.supabase.io/project/{your-project-id}/auth/settings
 
 Under _Email Auth_, toggle `OFF` _Enable email confirmations_.
 
-
 This will allow users to post questions without leaving the widget.
 
 _Note: This form sometimes takes a few seconds to update._
-
-## 6. Return to your Docker project and name the app
-
-Something like {your-project}-squeak works great.
-
-## 7. Build the app
-
-The deployment will take 2-4 minutes.
-
-### Using DigitalOcean?
-
-- You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
 
 ## 8. Complete setup process
 
