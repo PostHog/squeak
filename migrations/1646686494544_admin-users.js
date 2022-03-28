@@ -27,29 +27,6 @@ exports.up = (pgm) => {
     pgm.sql('GRANT ALL ON TABLE public.squeak_profiles_readonly TO authenticated')
     pgm.sql('GRANT ALL ON TABLE public.squeak_profiles_readonly TO service_role')
 
-    pgm.sql(`CREATE OR REPLACE FUNCTION "public"."handle_new_user"()
-    RETURNS trigger
-    LANGUAGE plpgsql
-    SECURITY DEFINER SET search_path = public
-    as $$
-    BEGIN
-        INSERT INTO squeak_profiles (id)
-        VALUES (new.id);
-                
-        INSERT INTO squeak_profiles_readonly (id, role)
-        VALUES (new.id, (SELECT CASE WHEN preflight_complete THEN 'user' ELSE 'admin' END from squeak_config));
-        
-        RETURN new;
-    END;
-    $$;`)
-
-    pgm.createTrigger({ schema: 'auth', name: 'users' }, 'on_auth_user_created', {
-        when: 'AFTER',
-        operation: 'INSERT',
-        function: { schema: 'public', name: 'handle_new_user' },
-        level: 'ROW',
-    })
-
     pgm.sql(`CREATE OR REPLACE FUNCTION "public"."get_is_admin"()
     RETURNS boolean
     LANGUAGE sql
