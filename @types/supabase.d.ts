@@ -118,6 +118,7 @@ export interface paths {
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
                     company_name?: parameters['rowFilter.squeak_config.company_name']
                     company_domain?: parameters['rowFilter.squeak_config.company_domain']
+                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -177,6 +178,7 @@ export interface paths {
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
                     company_name?: parameters['rowFilter.squeak_config.company_name']
                     company_domain?: parameters['rowFilter.squeak_config.company_domain']
+                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
                 }
                 header: {
                     /** Preference */
@@ -200,6 +202,7 @@ export interface paths {
                     mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
                     company_name?: parameters['rowFilter.squeak_config.company_name']
                     company_domain?: parameters['rowFilter.squeak_config.company_domain']
+                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
                 }
                 body: {
                     /** squeak_config */
@@ -226,6 +229,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                     /** Filtering Columns */
                     select?: parameters['select']
@@ -283,6 +287,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 header: {
@@ -304,6 +309,7 @@ export interface paths {
                     slug?: parameters['rowFilter.squeak_messages.slug']
                     published?: parameters['rowFilter.squeak_messages.published']
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
+                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
                 }
                 body: {
@@ -321,14 +327,105 @@ export interface paths {
             }
         }
     }
+    '/squeak_organizations': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_organizations.id']
+                    name?: parameters['rowFilter.squeak_organizations.name']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['squeak_organizations'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** squeak_organizations */
+                    squeak_organizations?: definitions['squeak_organizations']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_organizations.id']
+                    name?: parameters['rowFilter.squeak_organizations.name']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_organizations.id']
+                    name?: parameters['rowFilter.squeak_organizations.name']
+                }
+                body: {
+                    /** squeak_organizations */
+                    squeak_organizations?: definitions['squeak_organizations']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
     '/squeak_profiles': {
         get: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles.id']
                     first_name?: parameters['rowFilter.squeak_profiles.first_name']
                     last_name?: parameters['rowFilter.squeak_profiles.last_name']
                     avatar?: parameters['rowFilter.squeak_profiles.avatar']
+                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
+                    id?: parameters['rowFilter.squeak_profiles.id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -379,10 +476,11 @@ export interface paths {
         delete: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles.id']
                     first_name?: parameters['rowFilter.squeak_profiles.first_name']
                     last_name?: parameters['rowFilter.squeak_profiles.last_name']
                     avatar?: parameters['rowFilter.squeak_profiles.avatar']
+                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
+                    id?: parameters['rowFilter.squeak_profiles.id']
                 }
                 header: {
                     /** Preference */
@@ -397,10 +495,11 @@ export interface paths {
         patch: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles.id']
                     first_name?: parameters['rowFilter.squeak_profiles.first_name']
                     last_name?: parameters['rowFilter.squeak_profiles.last_name']
                     avatar?: parameters['rowFilter.squeak_profiles.avatar']
+                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
+                    id?: parameters['rowFilter.squeak_profiles.id']
                 }
                 body: {
                     /** squeak_profiles */
@@ -421,8 +520,10 @@ export interface paths {
         get: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                     role?: parameters['rowFilter.squeak_profiles_readonly.role']
+                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
+                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
+                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -473,8 +574,10 @@ export interface paths {
         delete: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                     role?: parameters['rowFilter.squeak_profiles_readonly.role']
+                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
+                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
+                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                 }
                 header: {
                     /** Preference */
@@ -489,8 +592,10 @@ export interface paths {
         patch: {
             parameters: {
                 query: {
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                     role?: parameters['rowFilter.squeak_profiles_readonly.role']
+                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
+                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
+                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
                 }
                 body: {
                     /** squeak_profiles_readonly */
@@ -552,6 +657,7 @@ export interface paths {
                     created_at?: parameters['rowFilter.squeak_replies.created_at']
                     body?: parameters['rowFilter.squeak_replies.body']
                     message_id?: parameters['rowFilter.squeak_replies.message_id']
+                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_replies.profile_id']
                     /** Filtering Columns */
                     select?: parameters['select']
@@ -607,6 +713,7 @@ export interface paths {
                     created_at?: parameters['rowFilter.squeak_replies.created_at']
                     body?: parameters['rowFilter.squeak_replies.body']
                     message_id?: parameters['rowFilter.squeak_replies.message_id']
+                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_replies.profile_id']
                 }
                 header: {
@@ -626,6 +733,7 @@ export interface paths {
                     created_at?: parameters['rowFilter.squeak_replies.created_at']
                     body?: parameters['rowFilter.squeak_replies.body']
                     message_id?: parameters['rowFilter.squeak_replies.message_id']
+                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
                     profile_id?: parameters['rowFilter.squeak_replies.profile_id']
                 }
                 body: {
@@ -831,6 +939,12 @@ export interface definitions {
         company_name?: string
         /** Format: text */
         company_domain?: string
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+         */
+        organisation_id?: number
     }
     squeak_messages: {
         /**
@@ -853,45 +967,67 @@ export interface definitions {
         /** Format: text */
         slack_timestamp?: string
         /**
-         * Format: uuid
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+         */
+        organisation_id?: number
+        /**
+         * Format: bigint
          * @description Note:
          * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
          */
-        profile_id?: string
+        profile_id?: number
     }
-    squeak_profiles: {
+    squeak_organizations: {
         /**
-         * Format: uuid
+         * Format: bigint
          * @description Note:
          * This is a Primary Key.<pk/>
          */
-        id: string
+        id: number
+        /** Format: text */
+        name?: string
+    }
+    squeak_profiles: {
         /** Format: text */
         first_name?: string
         /** Format: text */
         last_name?: string
         /** Format: text */
         avatar?: string
-    }
-    squeak_profiles_readonly: {
+        /** Format: uuid */
+        user_id: string
         /**
-         * Format: uuid
+         * Format: bigint
          * @description Note:
          * This is a Primary Key.<pk/>
          */
-        id: string
+        id: number
+    }
+    squeak_profiles_readonly: {
         /**
          * Format: text
          * @default user
          */
         role: string
-    }
-    squeak_profiles_view: {
         /**
-         * Format: uuid
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+         */
+        organisation_id?: number
+        /** Format: uuid */
+        user_id: string
+        /**
+         * Format: bigint
          * @description Note:
          * This is a Primary Key.<pk/>
          */
+        id: number
+    }
+    squeak_profiles_view: {
+        /** Format: uuid */
         id?: string
         /** Format: text */
         first_name?: string
@@ -923,11 +1059,17 @@ export interface definitions {
          */
         message_id?: number
         /**
-         * Format: uuid
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+         */
+        organisation_id?: number
+        /**
+         * Format: bigint
          * @description Note:
          * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
          */
-        profile_id?: string
+        profile_id?: number
     }
     squeak_webhook_config: {
         /**
@@ -1004,6 +1146,8 @@ export interface parameters {
     'rowFilter.squeak_config.company_name': string
     /** Format: text */
     'rowFilter.squeak_config.company_domain': string
+    /** Format: bigint */
+    'rowFilter.squeak_config.organisation_id': string
     /** @description squeak_messages */
     'body.squeak_messages': definitions['squeak_messages']
     /** Format: bigint */
@@ -1018,24 +1162,38 @@ export interface parameters {
     'rowFilter.squeak_messages.published': string
     /** Format: text */
     'rowFilter.squeak_messages.slack_timestamp': string
-    /** Format: uuid */
+    /** Format: bigint */
+    'rowFilter.squeak_messages.organisation_id': string
+    /** Format: bigint */
     'rowFilter.squeak_messages.profile_id': string
+    /** @description squeak_organizations */
+    'body.squeak_organizations': definitions['squeak_organizations']
+    /** Format: bigint */
+    'rowFilter.squeak_organizations.id': string
+    /** Format: text */
+    'rowFilter.squeak_organizations.name': string
     /** @description squeak_profiles */
     'body.squeak_profiles': definitions['squeak_profiles']
-    /** Format: uuid */
-    'rowFilter.squeak_profiles.id': string
     /** Format: text */
     'rowFilter.squeak_profiles.first_name': string
     /** Format: text */
     'rowFilter.squeak_profiles.last_name': string
     /** Format: text */
     'rowFilter.squeak_profiles.avatar': string
+    /** Format: uuid */
+    'rowFilter.squeak_profiles.user_id': string
+    /** Format: bigint */
+    'rowFilter.squeak_profiles.id': string
     /** @description squeak_profiles_readonly */
     'body.squeak_profiles_readonly': definitions['squeak_profiles_readonly']
-    /** Format: uuid */
-    'rowFilter.squeak_profiles_readonly.id': string
     /** Format: text */
     'rowFilter.squeak_profiles_readonly.role': string
+    /** Format: bigint */
+    'rowFilter.squeak_profiles_readonly.organisation_id': string
+    /** Format: uuid */
+    'rowFilter.squeak_profiles_readonly.user_id': string
+    /** Format: bigint */
+    'rowFilter.squeak_profiles_readonly.id': string
     /** @description squeak_profiles_view */
     'body.squeak_profiles_view': definitions['squeak_profiles_view']
     /** Format: uuid */
@@ -1058,7 +1216,9 @@ export interface parameters {
     'rowFilter.squeak_replies.body': string
     /** Format: bigint */
     'rowFilter.squeak_replies.message_id': string
-    /** Format: uuid */
+    /** Format: bigint */
+    'rowFilter.squeak_replies.organisation_id': string
+    /** Format: bigint */
     'rowFilter.squeak_replies.profile_id': string
     /** @description squeak_webhook_config */
     'body.squeak_webhook_config': definitions['squeak_webhook_config']
