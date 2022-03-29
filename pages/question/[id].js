@@ -93,7 +93,7 @@ const QuestionView = ({ question }) => {
                 <h1 className="mb-3">{question.question.subject}</h1>
                 <Reply hideDelete {...replies[0]} />
                 <div className="ml-[56px]">
-                    {replies.slice(1).map((reply, index) => {
+                    {replies.slice(1).map((reply) => {
                         return <Reply key={reply.id} {...reply} />
                     })}
                 </div>
