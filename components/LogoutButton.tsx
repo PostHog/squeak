@@ -8,11 +8,11 @@ const LogoutButton = () => {
             if (event === 'SIGNED_OUT') {
                 Router.push('/login')
             }
-
-            return () => {
-                subscription?.unsubscribe()
-            }
         })
+
+        return () => {
+            subscription?.unsubscribe()
+        }
     }, [])
 
     const handleLogout = async () => {
