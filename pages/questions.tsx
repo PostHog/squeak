@@ -1,14 +1,15 @@
 import { CheckIcon } from '@heroicons/react/outline'
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import classNames from 'classnames'
+import type { GetStaticPropsResult } from 'next'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useLayoutEffect, useRef, useState } from 'react'
 import tinytime from 'tinytime'
-import AdminLayout from '../layout/AdminLayout'
-import type { NextPageWithLayout } from '../@types/types'
-import classNames from 'classnames'
 import type { definitions } from '../@types/supabase'
+import type { NextPageWithLayout } from '../@types/types'
+import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
-import type { GetStaticPropsResult } from 'next'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -125,9 +126,9 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                     >
                                         Published
                                     </th>
-                                    {/* <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                        <span className="sr-only">Edit</span>
-                                    </th> */}
+                                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                        <span className="sr-only">View</span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -181,11 +182,9 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                 {published && <CheckIcon className="w-6 text-green-500" />}
                                             </td>
-                                            {/* <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" className="text-orange-600 hover:text-orange-900">
-                                                    Edit
-                                                </a>
-                                            </td> */}
+                                            <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                <Link href={`/question/${id}`}>View</Link>
+                                            </td>
                                         </tr>
                                     )
                                 })}
