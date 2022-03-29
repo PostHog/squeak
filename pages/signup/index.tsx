@@ -26,7 +26,7 @@ const Signup: NextPageWithLayout<Props> = () => {
         })
     }, [])
 
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError(null)
 
@@ -38,7 +38,7 @@ const Signup: NextPageWithLayout<Props> = () => {
     }
 
     return (
-        <form className="space-y-6" onSubmit={handleLogin}>
+        <form className="space-y-6" onSubmit={handleSignup}>
             {error && <p className="text-center text-sm font-medium text-red-500">{error}</p>}
             <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
