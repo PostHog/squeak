@@ -1,11 +1,13 @@
 import Head from 'next/head'
 import Logo from '../components/Logo'
+import { ReactNode } from 'react'
 
 interface Props {
     title?: string
+    subtitle?: ReactNode
 }
 
-const LoginLayout: React.FunctionComponent<Props> = ({ title, children }) => {
+const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children }) => {
     return (
         <div>
             <Head>
@@ -21,6 +23,7 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                 </div>
 
                 {title && <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">{title}</h2>}
+                {subtitle}
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                     <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">{children}</div>

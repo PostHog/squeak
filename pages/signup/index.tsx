@@ -19,11 +19,11 @@ const Signup: NextPageWithLayout<Props> = () => {
             if (event === 'SIGNED_IN') {
                 Router.push('/signup/finish')
             }
-
-            return () => {
-                subscription?.unsubscribe()
-            }
         })
+
+        return () => {
+            subscription?.unsubscribe()
+        }
     }, [])
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {

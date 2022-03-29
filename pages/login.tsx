@@ -15,13 +15,14 @@ const Login: NextPageWithLayout<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
+                console
                 Router.push('/')
             }
-
-            return () => {
-                subscription?.unsubscribe()
-            }
         })
+
+        return () => {
+            subscription?.unsubscribe()
+        }
     }, [])
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -107,7 +108,23 @@ const Login: NextPageWithLayout<Props> = () => {
 }
 
 Login.getLayout = function getLayout(page: ReactElement) {
-    return <LoginLayout title="Sign in to your account">{page}</LoginLayout>
+    return (
+        <LoginLayout
+            title="Sign in to your account"
+            subtitle={
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Or{' '}
+                    <Link href="/signup" passHref>
+                        <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
+                            sign up for an account
+                        </a>
+                    </Link>
+                </p>
+            }
+        >
+            {page}
+        </LoginLayout>
+    )
 }
 
 export default Login
