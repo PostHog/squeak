@@ -17,7 +17,7 @@ const Signup: NextPageWithLayout<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
-                Router.push('/signup/finish')
+                Router.push('/signup/profile')
             }
         })
 
