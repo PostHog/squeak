@@ -15,7 +15,6 @@ const Login: NextPageWithLayout<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
-                console
                 Router.push('/')
             }
         })

@@ -1,26 +1,30 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Auth, useUser } from '@supabase/supabase-auth-helpers/react'
 import { GetStaticPropsResult } from 'next'
-import Router from 'next/router'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
+import SetupSignUp from '../../components/setup/SetupSignUp'
+import SetupProfile from '../../components/setup/SetupProfile'
+import { useUser } from '@supabase/supabase-auth-helpers/react'
 
 interface Props {}
 
 const Administration: NextPageWithLayout<Props> = () => {
+    const [view, setView] = useState<'signup' | 'profile'>('signup')
+
     const { user } = useUser()
 
     useEffect(() => {
         if (user) {
-            Router.push('/setup/notifications')
+            setView('profile')
         }
     }, [user])
 
-    return (
-        <div>{!user && <Auth view="sign_up" supabaseClient={supabaseClient} redirectTo="/setup/administration" />}</div>
-    )
+    if (!user || view === 'signup') {
+        return <SetupSignUp setView={setView} />
+    }
+
+    return <SetupProfile user={user} />
 }
 
 Administration.getLayout = function getLayout(page: ReactElement) {
