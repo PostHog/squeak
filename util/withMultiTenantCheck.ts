@@ -22,6 +22,7 @@ const withMultiTenantCheck = (arg: Args) => {
                     error: 'not_found',
                     description: 'The requested resource was not found',
                 })
+                return
             }
 
             await arg(req, res)
