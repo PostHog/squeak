@@ -1,16 +1,10 @@
-export default async function formatSlackElements(elements, apiKey) {
+export default function formatSlackElements(elements, apiKey) {
     const types = {
         text: (el) => {
             return el.style?.code ? '`' + el.text + '`' : el.text
         },
-        user: async (el) => {
-            const user = await fetch(`https://slack.com/api/users.info?user=${el.user_id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${apiKey}`,
-                },
-            }).then((res) => res.json())
-            return user?.user?.profile?.first_name || user?.user?.name
+        user: (el) => {
+            return '**@Slack user**'
         },
         link: (el) => {
             return `[${el.text || el.url}](${el.url})`
@@ -32,7 +26,7 @@ export default async function formatSlackElements(elements, apiKey) {
             })
         } else {
             for (const el2 of el.elements) {
-                const formatted = await types[el2.type](el2)
+                const formatted = types[el2.type](el2)
                 message.push(formatted)
             }
         }

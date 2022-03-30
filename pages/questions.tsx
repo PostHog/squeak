@@ -8,7 +8,6 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import tinytime from 'tinytime'
 import type { definitions } from '../@types/supabase'
 import type { NextPageWithLayout } from '../@types/types'
-import ImportModal from '../components/ImportModal'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
 
@@ -31,7 +30,6 @@ interface Props {
 const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) => {
     const checkbox = useRef<HTMLInputElement>(null)
     const [checked, setChecked] = useState(false)
-    const [importOpen, setImportOpen] = useState(false)
     const [indeterminate, setIndeterminate] = useState(false)
     const [selectedQuestions, setSelectedQuestions] = useState<Array<Question>>([])
     const router = useRouter()
@@ -65,7 +63,6 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
 
     return (
         <>
-            {importOpen && <ImportModal open={importOpen} setOpen={setImportOpen} />}
             <div className="mt-8 flex flex-col">
                 <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -130,13 +127,11 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                         >
                                             Published
                                         </th>
-                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                            <button
-                                                onClick={() => setImportOpen(!importOpen)}
-                                                className="ml-auto block relative px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                                            >
-                                                Import
-                                            </button>
+                                        <th
+                                            scope="col"
+                                            className="sr-only px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        >
+                                            View
                                         </th>
                                     </tr>
                                 </thead>
@@ -146,6 +141,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                             question: { id, subject, created_at, slug, published },
                                             replies,
                                         } = question
+                                        const replyCount = replies.length
                                         return (
                                             <tr
                                                 key={id}
@@ -185,7 +181,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                                     {created_at ? template.render(new Date(created_at)) : 'N/A'}
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                    {replies?.length - 1 || 0}
+                                                    {replyCount > 0 ? replyCount - 1 : 0}
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                     {slug}
