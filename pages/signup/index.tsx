@@ -50,7 +50,7 @@ const Signup: NextPageWithLayout<Props> = () => {
                 setPassword={setPassword}
             />
 
-            <div className="text-center text-sm">
+            <div className="mt-6 text-center text-sm">
                 <Link href="/login" passHref>
                     <a className="font-medium text-orange-600 hover:text-orange-500">
                         Already got an account? Sign in instead
