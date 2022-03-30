@@ -58,18 +58,21 @@ const withAdminAccess = (arg: Args) => {
 
                 const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-                const { data: config } = await supabaseClient
-                    .from<Config>('squeak_config')
-                    .select(`preflight_complete`)
-                    .eq('id', 1)
-                    .single()
+                const isMultiTenancy = process.env.MULTI_TENANCY ?? false
 
-                if (!config || !config?.preflight_complete) {
-                    return {
-                        redirect: {
-                            destination: '/setup/welcome',
-                            permanent: false,
-                        },
+                if (!isMultiTenancy) {
+                    const { data: config } = await supabaseClient
+                        .from<Config>('squeak_config')
+                        .select(`preflight_complete`)
+                        .single()
+
+                    if (!config || !config?.preflight_complete) {
+                        return {
+                            redirect: {
+                                destination: '/setup/welcome',
+                                permanent: false,
+                            },
+                        }
                     }
                 }
 
