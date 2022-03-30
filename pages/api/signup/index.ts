@@ -3,6 +3,7 @@ import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
 import { definitions } from '../../../@types/supabase'
 import withMultiTenantCheck from '../../../util/withMultiTenantCheck'
 
+type Config = definitions['squeak_config']
 type Organization = definitions['squeak_organizations']
 type UserProfile = definitions['squeak_profiles']
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
@@ -42,6 +43,29 @@ export default withMultiTenantCheck(async (req, res) => {
             console.error(`[🧵 Signup] ${organisatizationError.message}`)
 
             res.json({ error: organisatizationError.message })
+        }
+
+        return
+    }
+
+    const { data: config, error: configError } = await supabaseServiceRoleClient
+        .from<Config>('squeak_config')
+        .insert({
+            organisation_id: organization.id,
+            preflight_complete: true,
+        })
+        .limit(1)
+        .single()
+
+    if (!config || configError) {
+        console.error(`[🧵 Signup] Error creating config`)
+
+        res.status(500)
+
+        if (configError) {
+            console.error(`[🧵 Signup] ${configError.message}`)
+
+            res.json({ error: configError.message })
         }
 
         return
