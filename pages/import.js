@@ -48,11 +48,15 @@ const Import = (props) => {
 
     const importSelected = async () => {
         setLoading(true)
+        const newMessages = [...messages]
         for (const question of selectedQuestions) {
+            const index = newMessages.indexOf(question)
+            newMessages.splice(index, 1)
             const { subject, slug, body, replies, reply_count, ts } = question
             const { data: message, error } = await supabaseClient
                 .from('squeak_messages')
                 .insert({
+                    slack_timestamp: ts,
                     created_at: new Date(ts * 1000),
                     subject: subject || 'No subject',
                     slug: [slug],
@@ -69,6 +73,8 @@ const Import = (props) => {
                 await insertReply({ body, id: message.id })
             }
         }
+        setSelectedQuestions([])
+        setMessages(newMessages)
         setLoading(false)
     }
 
@@ -157,10 +163,10 @@ const Import = (props) => {
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {messages.map((message, index) => {
-                                        const { ts, body, reply_count, client_msg_id, slug, subject } = message
+                                        const { ts, body, reply_count, slug, subject } = message
                                         return (
                                             <tr
-                                                key={client_msg_id}
+                                                key={ts}
                                                 className={
                                                     selectedQuestions.includes(message) ? 'bg-gray-50' : undefined
                                                 }
@@ -172,7 +178,7 @@ const Import = (props) => {
                                                     <input
                                                         type="checkbox"
                                                         className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
-                                                        value={client_msg_id}
+                                                        value={ts}
                                                         checked={selectedQuestions.includes(message)}
                                                         onChange={(e) =>
                                                             setSelectedQuestions(
@@ -235,6 +241,12 @@ export const getServerSideProps = withAdminAccess({
 
             for (const message of messages.filter((message) => message.subtype !== 'channel_join')) {
                 const { ts, reply_count, client_msg_id } = message
+                const { data } = await supabaseServerClient(context)
+                    .from('squeak_messages')
+                    .select('slack_timestamp')
+                    .eq('slack_timestamp', ts)
+                    .single()
+                if (data) continue
                 const replies =
                     (await reply_count) && reply_count >= 1
                         ? await client.conversations.replies({ ts, channel: slack_question_channel }).then((data) =>
