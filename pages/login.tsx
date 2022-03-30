@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { ReactElement, useEffect, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import type { NextPageWithLayout } from '../@types/types'
+import { GetStaticPropsResult } from 'next'
 
-interface Props {}
+interface Props {
+    isMultiTenancy: boolean
+}
 
 const Login: NextPageWithLayout<Props> = () => {
     const [error, setError] = useState<string | null>(null)
@@ -106,24 +109,34 @@ const Login: NextPageWithLayout<Props> = () => {
     )
 }
 
-Login.getLayout = function getLayout(page: ReactElement) {
+Login.getLayout = function getLayout(page: ReactElement<Props>) {
     return (
         <LoginLayout
             title="Sign in to your account"
             subtitle={
-                <p className="mt-2 text-center text-sm text-gray-600">
-                    Or{' '}
-                    <Link href="/signup" passHref>
-                        <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
-                            sign up for an account
-                        </a>
-                    </Link>
-                </p>
+                page.props.isMultiTenancy && (
+                    <p className="mt-2 text-center text-sm text-gray-600">
+                        Or{' '}
+                        <Link href="/signup" passHref>
+                            <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
+                                sign up for an account
+                            </a>
+                        </Link>
+                    </p>
+                )
             }
         >
             {page}
         </LoginLayout>
     )
+}
+
+export const getServerSideProps = (): GetStaticPropsResult<Props> => {
+    return {
+        props: {
+            isMultiTenancy: (process.env.MULTI_TENANCY as unknown as boolean) ?? false,
+        },
+    }
 }
 
 export default Login
