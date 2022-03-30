@@ -31,7 +31,7 @@ const withAdminAccess = (arg: Args) => {
             const { data: userReadonlyProfile } = await supabaseServerClient({ req, res })
                 .from<UserReadonlyProfile>('squeak_profiles_readonly')
                 .select('role')
-                .eq('id', user?.id)
+                .eq('user_id', user?.id)
                 .single()
 
             if (!userReadonlyProfile) {
