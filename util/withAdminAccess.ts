@@ -31,7 +31,7 @@ const withAdminAccess = (arg: Args) => {
             const { data: userReadonlyProfile } = await supabaseServerClient({ req, res })
                 .from<UserReadonlyProfile>('squeak_profiles_readonly')
                 .select('role')
-                .eq('id', user?.id)
+                .eq('user_id', user?.id)
                 .single()
 
             if (!userReadonlyProfile) {
@@ -58,18 +58,21 @@ const withAdminAccess = (arg: Args) => {
 
                 const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-                const { data: config } = await supabaseClient
-                    .from<Config>('squeak_config')
-                    .select(`preflight_complete`)
-                    .eq('id', 1)
-                    .single()
+                const isMultiTenancy = process.env.MULTI_TENANCY ?? false
 
-                if (!config || !config?.preflight_complete) {
-                    return {
-                        redirect: {
-                            destination: '/setup/welcome',
-                            permanent: false,
-                        },
+                if (!isMultiTenancy) {
+                    const { data: config } = await supabaseClient
+                        .from<Config>('squeak_config')
+                        .select(`preflight_complete`)
+                        .single()
+
+                    if (!config || !config?.preflight_complete) {
+                        return {
+                            redirect: {
+                                destination: '/setup/welcome',
+                                permanent: false,
+                            },
+                        }
                     }
                 }
 
@@ -87,7 +90,7 @@ const withAdminAccess = (arg: Args) => {
                 const { data: userReadonlyProfile } = await supabaseServerClient(context)
                     .from<UserReadonlyProfile>('squeak_profiles_readonly')
                     .select('role')
-                    .eq('id', user?.id)
+                    .eq('user_id', user?.id)
                     .single()
 
                 if (!userReadonlyProfile) {
