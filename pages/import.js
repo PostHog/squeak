@@ -53,7 +53,7 @@ const Import = (props) => {
             const index = newMessages.indexOf(question)
             newMessages.splice(index, 1)
             const { subject, slug, body, replies, reply_count, ts } = question
-            const { data: message, error } = await supabaseClient
+            const { data: message } = await supabaseClient
                 .from('squeak_messages')
                 .insert({
                     slack_timestamp: ts,
