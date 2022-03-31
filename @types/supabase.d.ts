@@ -4,1230 +4,1089 @@
  */
 
 export interface paths {
-    '/': {
-        get: {
-            responses: {
-                /** OK */
-                200: unknown
-            }
-        }
-    }
-    '/pgmigrations': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.pgmigrations.id']
-                    name?: parameters['rowFilter.pgmigrations.name']
-                    run_on?: parameters['rowFilter.pgmigrations.run_on']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['pgmigrations'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** pgmigrations */
-                    pgmigrations?: definitions['pgmigrations']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.pgmigrations.id']
-                    name?: parameters['rowFilter.pgmigrations.name']
-                    run_on?: parameters['rowFilter.pgmigrations.run_on']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.pgmigrations.id']
-                    name?: parameters['rowFilter.pgmigrations.name']
-                    run_on?: parameters['rowFilter.pgmigrations.run_on']
-                }
-                body: {
-                    /** pgmigrations */
-                    pgmigrations?: definitions['pgmigrations']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_config': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_config.id']
-                    preflight_complete?: parameters['rowFilter.squeak_config.preflight_complete']
-                    slack_api_key?: parameters['rowFilter.squeak_config.slack_api_key']
-                    slack_question_channel?: parameters['rowFilter.squeak_config.slack_question_channel']
-                    slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
-                    mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
-                    mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
-                    company_name?: parameters['rowFilter.squeak_config.company_name']
-                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
-                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_config'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_config */
-                    squeak_config?: definitions['squeak_config']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_config.id']
-                    preflight_complete?: parameters['rowFilter.squeak_config.preflight_complete']
-                    slack_api_key?: parameters['rowFilter.squeak_config.slack_api_key']
-                    slack_question_channel?: parameters['rowFilter.squeak_config.slack_question_channel']
-                    slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
-                    mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
-                    mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
-                    company_name?: parameters['rowFilter.squeak_config.company_name']
-                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
-                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_config.id']
-                    preflight_complete?: parameters['rowFilter.squeak_config.preflight_complete']
-                    slack_api_key?: parameters['rowFilter.squeak_config.slack_api_key']
-                    slack_question_channel?: parameters['rowFilter.squeak_config.slack_question_channel']
-                    slack_signing_secret?: parameters['rowFilter.squeak_config.slack_signing_secret']
-                    mailgun_api_key?: parameters['rowFilter.squeak_config.mailgun_api_key']
-                    mailgun_domain?: parameters['rowFilter.squeak_config.mailgun_domain']
-                    company_name?: parameters['rowFilter.squeak_config.company_name']
-                    company_domain?: parameters['rowFilter.squeak_config.company_domain']
-                    organisation_id?: parameters['rowFilter.squeak_config.organisation_id']
-                }
-                body: {
-                    /** squeak_config */
-                    squeak_config?: definitions['squeak_config']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_messages': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_messages.id']
-                    created_at?: parameters['rowFilter.squeak_messages.created_at']
-                    subject?: parameters['rowFilter.squeak_messages.subject']
-                    slug?: parameters['rowFilter.squeak_messages.slug']
-                    published?: parameters['rowFilter.squeak_messages.published']
-                    slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
-                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_messages'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_messages */
-                    squeak_messages?: definitions['squeak_messages']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_messages.id']
-                    created_at?: parameters['rowFilter.squeak_messages.created_at']
-                    subject?: parameters['rowFilter.squeak_messages.subject']
-                    slug?: parameters['rowFilter.squeak_messages.slug']
-                    published?: parameters['rowFilter.squeak_messages.published']
-                    slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
-                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_messages.id']
-                    created_at?: parameters['rowFilter.squeak_messages.created_at']
-                    subject?: parameters['rowFilter.squeak_messages.subject']
-                    slug?: parameters['rowFilter.squeak_messages.slug']
-                    published?: parameters['rowFilter.squeak_messages.published']
-                    slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
-                    organisation_id?: parameters['rowFilter.squeak_messages.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_messages.profile_id']
-                }
-                body: {
-                    /** squeak_messages */
-                    squeak_messages?: definitions['squeak_messages']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_organizations': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_organizations.id']
-                    name?: parameters['rowFilter.squeak_organizations.name']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_organizations'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_organizations */
-                    squeak_organizations?: definitions['squeak_organizations']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_organizations.id']
-                    name?: parameters['rowFilter.squeak_organizations.name']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_organizations.id']
-                    name?: parameters['rowFilter.squeak_organizations.name']
-                }
-                body: {
-                    /** squeak_organizations */
-                    squeak_organizations?: definitions['squeak_organizations']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_profiles': {
-        get: {
-            parameters: {
-                query: {
-                    first_name?: parameters['rowFilter.squeak_profiles.first_name']
-                    last_name?: parameters['rowFilter.squeak_profiles.last_name']
-                    avatar?: parameters['rowFilter.squeak_profiles.avatar']
-                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
-                    id?: parameters['rowFilter.squeak_profiles.id']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_profiles'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_profiles */
-                    squeak_profiles?: definitions['squeak_profiles']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    first_name?: parameters['rowFilter.squeak_profiles.first_name']
-                    last_name?: parameters['rowFilter.squeak_profiles.last_name']
-                    avatar?: parameters['rowFilter.squeak_profiles.avatar']
-                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
-                    id?: parameters['rowFilter.squeak_profiles.id']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    first_name?: parameters['rowFilter.squeak_profiles.first_name']
-                    last_name?: parameters['rowFilter.squeak_profiles.last_name']
-                    avatar?: parameters['rowFilter.squeak_profiles.avatar']
-                    user_id?: parameters['rowFilter.squeak_profiles.user_id']
-                    id?: parameters['rowFilter.squeak_profiles.id']
-                }
-                body: {
-                    /** squeak_profiles */
-                    squeak_profiles?: definitions['squeak_profiles']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_profiles_readonly': {
-        get: {
-            parameters: {
-                query: {
-                    role?: parameters['rowFilter.squeak_profiles_readonly.role']
-                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
-                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_profiles_readonly'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_profiles_readonly */
-                    squeak_profiles_readonly?: definitions['squeak_profiles_readonly']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    role?: parameters['rowFilter.squeak_profiles_readonly.role']
-                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
-                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    role?: parameters['rowFilter.squeak_profiles_readonly.role']
-                    organisation_id?: parameters['rowFilter.squeak_profiles_readonly.organisation_id']
-                    user_id?: parameters['rowFilter.squeak_profiles_readonly.user_id']
-                    id?: parameters['rowFilter.squeak_profiles_readonly.id']
-                }
-                body: {
-                    /** squeak_profiles_readonly */
-                    squeak_profiles_readonly?: definitions['squeak_profiles_readonly']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_profiles_view': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_profiles_view.id']
-                    first_name?: parameters['rowFilter.squeak_profiles_view.first_name']
-                    last_name?: parameters['rowFilter.squeak_profiles_view.last_name']
-                    avatar?: parameters['rowFilter.squeak_profiles_view.avatar']
-                    role?: parameters['rowFilter.squeak_profiles_view.role']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_profiles_view'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-    }
-    '/squeak_replies': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_replies.id']
-                    created_at?: parameters['rowFilter.squeak_replies.created_at']
-                    body?: parameters['rowFilter.squeak_replies.body']
-                    message_id?: parameters['rowFilter.squeak_replies.message_id']
-                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_replies.profile_id']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_replies'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_replies */
-                    squeak_replies?: definitions['squeak_replies']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_replies.id']
-                    created_at?: parameters['rowFilter.squeak_replies.created_at']
-                    body?: parameters['rowFilter.squeak_replies.body']
-                    message_id?: parameters['rowFilter.squeak_replies.message_id']
-                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_replies.profile_id']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_replies.id']
-                    created_at?: parameters['rowFilter.squeak_replies.created_at']
-                    body?: parameters['rowFilter.squeak_replies.body']
-                    message_id?: parameters['rowFilter.squeak_replies.message_id']
-                    organisation_id?: parameters['rowFilter.squeak_replies.organisation_id']
-                    profile_id?: parameters['rowFilter.squeak_replies.profile_id']
-                }
-                body: {
-                    /** squeak_replies */
-                    squeak_replies?: definitions['squeak_replies']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/squeak_webhook_config': {
-        get: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_webhook_config.id']
-                    type?: parameters['rowFilter.squeak_webhook_config.type']
-                    url?: parameters['rowFilter.squeak_webhook_config.url']
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                    /** Ordering */
-                    order?: parameters['order']
-                    /** Limiting and Pagination */
-                    offset?: parameters['offset']
-                    /** Limiting and Pagination */
-                    limit?: parameters['limit']
-                }
-                header: {
-                    /** Limiting and Pagination */
-                    Range?: parameters['range']
-                    /** Limiting and Pagination */
-                    'Range-Unit'?: parameters['rangeUnit']
-                    /** Preference */
-                    Prefer?: parameters['preferCount']
-                }
-            }
-            responses: {
-                /** OK */
-                200: {
-                    schema: definitions['squeak_webhook_config'][]
-                }
-                /** Partial Content */
-                206: unknown
-            }
-        }
-        post: {
-            parameters: {
-                body: {
-                    /** squeak_webhook_config */
-                    squeak_webhook_config?: definitions['squeak_webhook_config']
-                }
-                query: {
-                    /** Filtering Columns */
-                    select?: parameters['select']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** Created */
-                201: unknown
-            }
-        }
-        delete: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_webhook_config.id']
-                    type?: parameters['rowFilter.squeak_webhook_config.type']
-                    url?: parameters['rowFilter.squeak_webhook_config.url']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-        patch: {
-            parameters: {
-                query: {
-                    id?: parameters['rowFilter.squeak_webhook_config.id']
-                    type?: parameters['rowFilter.squeak_webhook_config.type']
-                    url?: parameters['rowFilter.squeak_webhook_config.url']
-                }
-                body: {
-                    /** squeak_webhook_config */
-                    squeak_webhook_config?: definitions['squeak_webhook_config']
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferReturn']
-                }
-            }
-            responses: {
-                /** No Content */
-                204: never
-            }
-        }
-    }
-    '/rpc/check_profile_access': {
-        post: {
-            parameters: {
-                body: {
-                    args: {
-                        /** Format: bigint */
-                        row_profile_id: number
-                    }
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferParams']
-                }
-            }
-            responses: {
-                /** OK */
-                200: unknown
-            }
-        }
-    }
-    '/rpc/check_organization_access': {
-        post: {
-            parameters: {
-                body: {
-                    args: {
-                        /** Format: bigint */
-                        row_organization_id: number
-                    }
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferParams']
-                }
-            }
-            responses: {
-                /** OK */
-                200: unknown
-            }
-        }
-    }
-    '/rpc/get_is_admin': {
-        post: {
-            parameters: {
-                body: {
-                    args: { [key: string]: unknown }
-                }
-                header: {
-                    /** Preference */
-                    Prefer?: parameters['preferParams']
-                }
-            }
-            responses: {
-                /** OK */
-                200: unknown
-            }
-        }
-    }
+  "/": {
+    get: {
+      responses: {
+        /** OK */
+        200: unknown;
+      };
+    };
+  };
+  "/pgmigrations": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.pgmigrations.id"];
+          name?: parameters["rowFilter.pgmigrations.name"];
+          run_on?: parameters["rowFilter.pgmigrations.run_on"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["pgmigrations"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** pgmigrations */
+          pgmigrations?: definitions["pgmigrations"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.pgmigrations.id"];
+          name?: parameters["rowFilter.pgmigrations.name"];
+          run_on?: parameters["rowFilter.pgmigrations.run_on"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.pgmigrations.id"];
+          name?: parameters["rowFilter.pgmigrations.name"];
+          run_on?: parameters["rowFilter.pgmigrations.run_on"];
+        };
+        body: {
+          /** pgmigrations */
+          pgmigrations?: definitions["pgmigrations"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_config": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_config.id"];
+          preflight_complete?: parameters["rowFilter.squeak_config.preflight_complete"];
+          slack_api_key?: parameters["rowFilter.squeak_config.slack_api_key"];
+          slack_question_channel?: parameters["rowFilter.squeak_config.slack_question_channel"];
+          slack_signing_secret?: parameters["rowFilter.squeak_config.slack_signing_secret"];
+          mailgun_api_key?: parameters["rowFilter.squeak_config.mailgun_api_key"];
+          mailgun_domain?: parameters["rowFilter.squeak_config.mailgun_domain"];
+          company_name?: parameters["rowFilter.squeak_config.company_name"];
+          company_domain?: parameters["rowFilter.squeak_config.company_domain"];
+          organisation_id?: parameters["rowFilter.squeak_config.organisation_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_config"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_config */
+          squeak_config?: definitions["squeak_config"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_config.id"];
+          preflight_complete?: parameters["rowFilter.squeak_config.preflight_complete"];
+          slack_api_key?: parameters["rowFilter.squeak_config.slack_api_key"];
+          slack_question_channel?: parameters["rowFilter.squeak_config.slack_question_channel"];
+          slack_signing_secret?: parameters["rowFilter.squeak_config.slack_signing_secret"];
+          mailgun_api_key?: parameters["rowFilter.squeak_config.mailgun_api_key"];
+          mailgun_domain?: parameters["rowFilter.squeak_config.mailgun_domain"];
+          company_name?: parameters["rowFilter.squeak_config.company_name"];
+          company_domain?: parameters["rowFilter.squeak_config.company_domain"];
+          organisation_id?: parameters["rowFilter.squeak_config.organisation_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_config.id"];
+          preflight_complete?: parameters["rowFilter.squeak_config.preflight_complete"];
+          slack_api_key?: parameters["rowFilter.squeak_config.slack_api_key"];
+          slack_question_channel?: parameters["rowFilter.squeak_config.slack_question_channel"];
+          slack_signing_secret?: parameters["rowFilter.squeak_config.slack_signing_secret"];
+          mailgun_api_key?: parameters["rowFilter.squeak_config.mailgun_api_key"];
+          mailgun_domain?: parameters["rowFilter.squeak_config.mailgun_domain"];
+          company_name?: parameters["rowFilter.squeak_config.company_name"];
+          company_domain?: parameters["rowFilter.squeak_config.company_domain"];
+          organisation_id?: parameters["rowFilter.squeak_config.organisation_id"];
+        };
+        body: {
+          /** squeak_config */
+          squeak_config?: definitions["squeak_config"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_messages": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_messages.id"];
+          created_at?: parameters["rowFilter.squeak_messages.created_at"];
+          subject?: parameters["rowFilter.squeak_messages.subject"];
+          slug?: parameters["rowFilter.squeak_messages.slug"];
+          published?: parameters["rowFilter.squeak_messages.published"];
+          slack_timestamp?: parameters["rowFilter.squeak_messages.slack_timestamp"];
+          organisation_id?: parameters["rowFilter.squeak_messages.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_messages"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_messages */
+          squeak_messages?: definitions["squeak_messages"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_messages.id"];
+          created_at?: parameters["rowFilter.squeak_messages.created_at"];
+          subject?: parameters["rowFilter.squeak_messages.subject"];
+          slug?: parameters["rowFilter.squeak_messages.slug"];
+          published?: parameters["rowFilter.squeak_messages.published"];
+          slack_timestamp?: parameters["rowFilter.squeak_messages.slack_timestamp"];
+          organisation_id?: parameters["rowFilter.squeak_messages.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_messages.id"];
+          created_at?: parameters["rowFilter.squeak_messages.created_at"];
+          subject?: parameters["rowFilter.squeak_messages.subject"];
+          slug?: parameters["rowFilter.squeak_messages.slug"];
+          published?: parameters["rowFilter.squeak_messages.published"];
+          slack_timestamp?: parameters["rowFilter.squeak_messages.slack_timestamp"];
+          organisation_id?: parameters["rowFilter.squeak_messages.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
+        };
+        body: {
+          /** squeak_messages */
+          squeak_messages?: definitions["squeak_messages"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_organizations": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_organizations.id"];
+          name?: parameters["rowFilter.squeak_organizations.name"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_organizations"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_organizations */
+          squeak_organizations?: definitions["squeak_organizations"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_organizations.id"];
+          name?: parameters["rowFilter.squeak_organizations.name"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_organizations.id"];
+          name?: parameters["rowFilter.squeak_organizations.name"];
+        };
+        body: {
+          /** squeak_organizations */
+          squeak_organizations?: definitions["squeak_organizations"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_profiles": {
+    get: {
+      parameters: {
+        query: {
+          first_name?: parameters["rowFilter.squeak_profiles.first_name"];
+          last_name?: parameters["rowFilter.squeak_profiles.last_name"];
+          avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          id?: parameters["rowFilter.squeak_profiles.id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_profiles"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_profiles */
+          squeak_profiles?: definitions["squeak_profiles"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          first_name?: parameters["rowFilter.squeak_profiles.first_name"];
+          last_name?: parameters["rowFilter.squeak_profiles.last_name"];
+          avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          id?: parameters["rowFilter.squeak_profiles.id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          first_name?: parameters["rowFilter.squeak_profiles.first_name"];
+          last_name?: parameters["rowFilter.squeak_profiles.last_name"];
+          avatar?: parameters["rowFilter.squeak_profiles.avatar"];
+          id?: parameters["rowFilter.squeak_profiles.id"];
+        };
+        body: {
+          /** squeak_profiles */
+          squeak_profiles?: definitions["squeak_profiles"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_profiles_readonly": {
+    get: {
+      parameters: {
+        query: {
+          role?: parameters["rowFilter.squeak_profiles_readonly.role"];
+          organisation_id?: parameters["rowFilter.squeak_profiles_readonly.organisation_id"];
+          user_id?: parameters["rowFilter.squeak_profiles_readonly.user_id"];
+          profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_profiles_readonly"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_profiles_readonly */
+          squeak_profiles_readonly?: definitions["squeak_profiles_readonly"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          role?: parameters["rowFilter.squeak_profiles_readonly.role"];
+          organisation_id?: parameters["rowFilter.squeak_profiles_readonly.organisation_id"];
+          user_id?: parameters["rowFilter.squeak_profiles_readonly.user_id"];
+          profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          role?: parameters["rowFilter.squeak_profiles_readonly.role"];
+          organisation_id?: parameters["rowFilter.squeak_profiles_readonly.organisation_id"];
+          user_id?: parameters["rowFilter.squeak_profiles_readonly.user_id"];
+          profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
+        };
+        body: {
+          /** squeak_profiles_readonly */
+          squeak_profiles_readonly?: definitions["squeak_profiles_readonly"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/squeak_profiles_view": {
+    get: {
+      parameters: {
+        query: {
+          profile_id?: parameters["rowFilter.squeak_profiles_view.profile_id"];
+          user_id?: parameters["rowFilter.squeak_profiles_view.user_id"];
+          organization_id?: parameters["rowFilter.squeak_profiles_view.organization_id"];
+          first_name?: parameters["rowFilter.squeak_profiles_view.first_name"];
+          last_name?: parameters["rowFilter.squeak_profiles_view.last_name"];
+          avatar?: parameters["rowFilter.squeak_profiles_view.avatar"];
+          role?: parameters["rowFilter.squeak_profiles_view.role"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_profiles_view"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+  };
+  "/squeak_replies": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_replies.id"];
+          created_at?: parameters["rowFilter.squeak_replies.created_at"];
+          body?: parameters["rowFilter.squeak_replies.body"];
+          message_id?: parameters["rowFilter.squeak_replies.message_id"];
+          organisation_id?: parameters["rowFilter.squeak_replies.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_replies"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_replies */
+          squeak_replies?: definitions["squeak_replies"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_replies.id"];
+          created_at?: parameters["rowFilter.squeak_replies.created_at"];
+          body?: parameters["rowFilter.squeak_replies.body"];
+          message_id?: parameters["rowFilter.squeak_replies.message_id"];
+          organisation_id?: parameters["rowFilter.squeak_replies.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_replies.id"];
+          created_at?: parameters["rowFilter.squeak_replies.created_at"];
+          body?: parameters["rowFilter.squeak_replies.body"];
+          message_id?: parameters["rowFilter.squeak_replies.message_id"];
+          organisation_id?: parameters["rowFilter.squeak_replies.organisation_id"];
+          profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+        };
+        body: {
+          /** squeak_replies */
+          squeak_replies?: definitions["squeak_replies"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/rpc/get_is_admin": {
+    post: {
+      parameters: {
+        body: {
+          args: { [key: string]: unknown };
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferParams"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: unknown;
+      };
+    };
+  };
 }
 
 export interface definitions {
-    pgmigrations: {
-        /**
-         * Format: integer
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /** Format: character varying */
-        name: string
-        /** Format: timestamp without time zone */
-        run_on: string
-    }
-    squeak_config: {
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /** Format: boolean */
-        preflight_complete: boolean
-        /** Format: text */
-        slack_api_key?: string
-        /** Format: text */
-        slack_question_channel?: string
-        /** Format: text */
-        slack_signing_secret?: string
-        /** Format: text */
-        mailgun_api_key?: string
-        /** Format: text */
-        mailgun_domain?: string
-        /** Format: text */
-        company_name?: string
-        /** Format: text */
-        company_domain?: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
-         */
-        organisation_id?: number
-    }
-    squeak_messages: {
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /**
-         * Format: timestamp with time zone
-         * @default now()
-         */
-        created_at?: string
-        /** Format: text */
-        subject?: string
-        /** Format: ARRAY */
-        slug?: unknown[]
-        /** Format: boolean */
-        published: boolean
-        /** Format: text */
-        slack_timestamp?: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
-         */
-        organisation_id?: number
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
-         */
-        profile_id?: number
-    }
-    squeak_organizations: {
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /** Format: text */
-        name?: string
-    }
-    squeak_profiles: {
-        /** Format: text */
-        first_name?: string
-        /** Format: text */
-        last_name?: string
-        /** Format: text */
-        avatar?: string
-        /** Format: uuid */
-        user_id: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-    }
-    squeak_profiles_readonly: {
-        /**
-         * Format: text
-         * @default user
-         */
-        role: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
-         */
-        organisation_id?: number
-        /** Format: uuid */
-        user_id: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-    }
-    squeak_profiles_view: {
-        /** Format: uuid */
-        id?: string
-        /** Format: text */
-        first_name?: string
-        /** Format: text */
-        last_name?: string
-        /** Format: text */
-        avatar?: string
-        /** Format: text */
-        role?: string
-    }
-    squeak_replies: {
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /**
-         * Format: timestamp with time zone
-         * @default now()
-         */
-        created_at?: string
-        /** Format: text */
-        body?: string
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_messages.id`.<fk table='squeak_messages' column='id'/>
-         */
-        message_id?: number
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
-         */
-        organisation_id?: number
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
-         */
-        profile_id?: number
-    }
-    squeak_webhook_config: {
-        /**
-         * Format: bigint
-         * @description Note:
-         * This is a Primary Key.<pk/>
-         */
-        id: number
-        /** Format: text */
-        type: string
-        /** Format: text */
-        url: string
-    }
+  pgmigrations: {
+    /**
+     * Format: integer
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: character varying */
+    name: string;
+    /** Format: timestamp without time zone */
+    run_on: string;
+  };
+  squeak_config: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: boolean */
+    preflight_complete: boolean;
+    /** Format: text */
+    slack_api_key?: string;
+    /** Format: text */
+    slack_question_channel?: string;
+    /** Format: text */
+    slack_signing_secret?: string;
+    /** Format: text */
+    mailgun_api_key?: string;
+    /** Format: text */
+    mailgun_domain?: string;
+    /** Format: text */
+    company_name?: string;
+    /** Format: text */
+    company_domain?: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organisation_id?: number;
+  };
+  squeak_messages: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    created_at?: string;
+    /** Format: text */
+    subject?: string;
+    /** Format: ARRAY */
+    slug?: unknown[];
+    /** Format: boolean */
+    published: boolean;
+    /** Format: text */
+    slack_timestamp?: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organisation_id?: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
+     */
+    profile_id?: number;
+  };
+  squeak_organizations: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: text */
+    name?: string;
+  };
+  squeak_profiles: {
+    /** Format: text */
+    first_name?: string;
+    /** Format: text */
+    last_name?: string;
+    /** Format: text */
+    avatar?: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+  };
+  squeak_profiles_readonly: {
+    /**
+     * Format: text
+     * @default user
+     */
+    role: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organisation_id?: number;
+    /** Format: uuid */
+    user_id: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
+     */
+    profile_id: number;
+  };
+  squeak_profiles_view: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    profile_id?: number;
+    /** Format: uuid */
+    user_id?: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organization_id?: number;
+    /** Format: text */
+    first_name?: string;
+    /** Format: text */
+    last_name?: string;
+    /** Format: text */
+    avatar?: string;
+    /** Format: text */
+    role?: string;
+  };
+  squeak_replies: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    created_at?: string;
+    /** Format: text */
+    body?: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_messages.id`.<fk table='squeak_messages' column='id'/>
+     */
+    message_id?: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organisation_id?: number;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
+     */
+    profile_id?: number;
+  };
 }
 
 export interface parameters {
-    /**
-     * @description Preference
-     * @enum {string}
-     */
-    preferParams: 'params=single-object'
-    /**
-     * @description Preference
-     * @enum {string}
-     */
-    preferReturn: 'return=representation' | 'return=minimal' | 'return=none'
-    /**
-     * @description Preference
-     * @enum {string}
-     */
-    preferCount: 'count=none'
-    /** @description Filtering Columns */
-    select: string
-    /** @description On Conflict */
-    on_conflict: string
-    /** @description Ordering */
-    order: string
-    /** @description Limiting and Pagination */
-    range: string
-    /**
-     * @description Limiting and Pagination
-     * @default items
-     */
-    rangeUnit: string
-    /** @description Limiting and Pagination */
-    offset: string
-    /** @description Limiting and Pagination */
-    limit: string
-    /** @description pgmigrations */
-    'body.pgmigrations': definitions['pgmigrations']
-    /** Format: integer */
-    'rowFilter.pgmigrations.id': string
-    /** Format: character varying */
-    'rowFilter.pgmigrations.name': string
-    /** Format: timestamp without time zone */
-    'rowFilter.pgmigrations.run_on': string
-    /** @description squeak_config */
-    'body.squeak_config': definitions['squeak_config']
-    /** Format: bigint */
-    'rowFilter.squeak_config.id': string
-    /** Format: boolean */
-    'rowFilter.squeak_config.preflight_complete': string
-    /** Format: text */
-    'rowFilter.squeak_config.slack_api_key': string
-    /** Format: text */
-    'rowFilter.squeak_config.slack_question_channel': string
-    /** Format: text */
-    'rowFilter.squeak_config.slack_signing_secret': string
-    /** Format: text */
-    'rowFilter.squeak_config.mailgun_api_key': string
-    /** Format: text */
-    'rowFilter.squeak_config.mailgun_domain': string
-    /** Format: text */
-    'rowFilter.squeak_config.company_name': string
-    /** Format: text */
-    'rowFilter.squeak_config.company_domain': string
-    /** Format: bigint */
-    'rowFilter.squeak_config.organisation_id': string
-    /** @description squeak_messages */
-    'body.squeak_messages': definitions['squeak_messages']
-    /** Format: bigint */
-    'rowFilter.squeak_messages.id': string
-    /** Format: timestamp with time zone */
-    'rowFilter.squeak_messages.created_at': string
-    /** Format: text */
-    'rowFilter.squeak_messages.subject': string
-    /** Format: ARRAY */
-    'rowFilter.squeak_messages.slug': string
-    /** Format: boolean */
-    'rowFilter.squeak_messages.published': string
-    /** Format: text */
-    'rowFilter.squeak_messages.slack_timestamp': string
-    /** Format: bigint */
-    'rowFilter.squeak_messages.organisation_id': string
-    /** Format: bigint */
-    'rowFilter.squeak_messages.profile_id': string
-    /** @description squeak_organizations */
-    'body.squeak_organizations': definitions['squeak_organizations']
-    /** Format: bigint */
-    'rowFilter.squeak_organizations.id': string
-    /** Format: text */
-    'rowFilter.squeak_organizations.name': string
-    /** @description squeak_profiles */
-    'body.squeak_profiles': definitions['squeak_profiles']
-    /** Format: text */
-    'rowFilter.squeak_profiles.first_name': string
-    /** Format: text */
-    'rowFilter.squeak_profiles.last_name': string
-    /** Format: text */
-    'rowFilter.squeak_profiles.avatar': string
-    /** Format: uuid */
-    'rowFilter.squeak_profiles.user_id': string
-    /** Format: bigint */
-    'rowFilter.squeak_profiles.id': string
-    /** @description squeak_profiles_readonly */
-    'body.squeak_profiles_readonly': definitions['squeak_profiles_readonly']
-    /** Format: text */
-    'rowFilter.squeak_profiles_readonly.role': string
-    /** Format: bigint */
-    'rowFilter.squeak_profiles_readonly.organisation_id': string
-    /** Format: uuid */
-    'rowFilter.squeak_profiles_readonly.user_id': string
-    /** Format: bigint */
-    'rowFilter.squeak_profiles_readonly.id': string
-    /** @description squeak_profiles_view */
-    'body.squeak_profiles_view': definitions['squeak_profiles_view']
-    /** Format: uuid */
-    'rowFilter.squeak_profiles_view.id': string
-    /** Format: text */
-    'rowFilter.squeak_profiles_view.first_name': string
-    /** Format: text */
-    'rowFilter.squeak_profiles_view.last_name': string
-    /** Format: text */
-    'rowFilter.squeak_profiles_view.avatar': string
-    /** Format: text */
-    'rowFilter.squeak_profiles_view.role': string
-    /** @description squeak_replies */
-    'body.squeak_replies': definitions['squeak_replies']
-    /** Format: bigint */
-    'rowFilter.squeak_replies.id': string
-    /** Format: timestamp with time zone */
-    'rowFilter.squeak_replies.created_at': string
-    /** Format: text */
-    'rowFilter.squeak_replies.body': string
-    /** Format: bigint */
-    'rowFilter.squeak_replies.message_id': string
-    /** Format: bigint */
-    'rowFilter.squeak_replies.organisation_id': string
-    /** Format: bigint */
-    'rowFilter.squeak_replies.profile_id': string
-    /** @description squeak_webhook_config */
-    'body.squeak_webhook_config': definitions['squeak_webhook_config']
-    /** Format: bigint */
-    'rowFilter.squeak_webhook_config.id': string
-    /** Format: text */
-    'rowFilter.squeak_webhook_config.type': string
-    /** Format: text */
-    'rowFilter.squeak_webhook_config.url': string
+  /**
+   * @description Preference
+   * @enum {string}
+   */
+  preferParams: "params=single-object";
+  /**
+   * @description Preference
+   * @enum {string}
+   */
+  preferReturn: "return=representation" | "return=minimal" | "return=none";
+  /**
+   * @description Preference
+   * @enum {string}
+   */
+  preferCount: "count=none";
+  /** @description Filtering Columns */
+  select: string;
+  /** @description On Conflict */
+  on_conflict: string;
+  /** @description Ordering */
+  order: string;
+  /** @description Limiting and Pagination */
+  range: string;
+  /**
+   * @description Limiting and Pagination
+   * @default items
+   */
+  rangeUnit: string;
+  /** @description Limiting and Pagination */
+  offset: string;
+  /** @description Limiting and Pagination */
+  limit: string;
+  /** @description pgmigrations */
+  "body.pgmigrations": definitions["pgmigrations"];
+  /** Format: integer */
+  "rowFilter.pgmigrations.id": string;
+  /** Format: character varying */
+  "rowFilter.pgmigrations.name": string;
+  /** Format: timestamp without time zone */
+  "rowFilter.pgmigrations.run_on": string;
+  /** @description squeak_config */
+  "body.squeak_config": definitions["squeak_config"];
+  /** Format: bigint */
+  "rowFilter.squeak_config.id": string;
+  /** Format: boolean */
+  "rowFilter.squeak_config.preflight_complete": string;
+  /** Format: text */
+  "rowFilter.squeak_config.slack_api_key": string;
+  /** Format: text */
+  "rowFilter.squeak_config.slack_question_channel": string;
+  /** Format: text */
+  "rowFilter.squeak_config.slack_signing_secret": string;
+  /** Format: text */
+  "rowFilter.squeak_config.mailgun_api_key": string;
+  /** Format: text */
+  "rowFilter.squeak_config.mailgun_domain": string;
+  /** Format: text */
+  "rowFilter.squeak_config.company_name": string;
+  /** Format: text */
+  "rowFilter.squeak_config.company_domain": string;
+  /** Format: bigint */
+  "rowFilter.squeak_config.organisation_id": string;
+  /** @description squeak_messages */
+  "body.squeak_messages": definitions["squeak_messages"];
+  /** Format: bigint */
+  "rowFilter.squeak_messages.id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.squeak_messages.created_at": string;
+  /** Format: text */
+  "rowFilter.squeak_messages.subject": string;
+  /** Format: ARRAY */
+  "rowFilter.squeak_messages.slug": string;
+  /** Format: boolean */
+  "rowFilter.squeak_messages.published": string;
+  /** Format: text */
+  "rowFilter.squeak_messages.slack_timestamp": string;
+  /** Format: bigint */
+  "rowFilter.squeak_messages.organisation_id": string;
+  /** Format: bigint */
+  "rowFilter.squeak_messages.profile_id": string;
+  /** @description squeak_organizations */
+  "body.squeak_organizations": definitions["squeak_organizations"];
+  /** Format: bigint */
+  "rowFilter.squeak_organizations.id": string;
+  /** Format: text */
+  "rowFilter.squeak_organizations.name": string;
+  /** @description squeak_profiles */
+  "body.squeak_profiles": definitions["squeak_profiles"];
+  /** Format: text */
+  "rowFilter.squeak_profiles.first_name": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles.last_name": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles.avatar": string;
+  /** Format: bigint */
+  "rowFilter.squeak_profiles.id": string;
+  /** @description squeak_profiles_readonly */
+  "body.squeak_profiles_readonly": definitions["squeak_profiles_readonly"];
+  /** Format: text */
+  "rowFilter.squeak_profiles_readonly.role": string;
+  /** Format: bigint */
+  "rowFilter.squeak_profiles_readonly.organisation_id": string;
+  /** Format: uuid */
+  "rowFilter.squeak_profiles_readonly.user_id": string;
+  /** Format: bigint */
+  "rowFilter.squeak_profiles_readonly.profile_id": string;
+  /** @description squeak_profiles_view */
+  "body.squeak_profiles_view": definitions["squeak_profiles_view"];
+  /** Format: bigint */
+  "rowFilter.squeak_profiles_view.profile_id": string;
+  /** Format: uuid */
+  "rowFilter.squeak_profiles_view.user_id": string;
+  /** Format: bigint */
+  "rowFilter.squeak_profiles_view.organization_id": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles_view.first_name": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles_view.last_name": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles_view.avatar": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles_view.role": string;
+  /** @description squeak_replies */
+  "body.squeak_replies": definitions["squeak_replies"];
+  /** Format: bigint */
+  "rowFilter.squeak_replies.id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.squeak_replies.created_at": string;
+  /** Format: text */
+  "rowFilter.squeak_replies.body": string;
+  /** Format: bigint */
+  "rowFilter.squeak_replies.message_id": string;
+  /** Format: bigint */
+  "rowFilter.squeak_replies.organisation_id": string;
+  /** Format: bigint */
+  "rowFilter.squeak_replies.profile_id": string;
 }
 
 export interface operations {}

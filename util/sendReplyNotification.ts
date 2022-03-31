@@ -10,6 +10,7 @@ import type { definitions } from '../@types/supabase'
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
+type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
 const sendReplyNotification = async (messageId: number, body: string) => {
     const supabaseServiceUserClient = createClient(
@@ -61,7 +62,25 @@ const sendReplyNotification = async (messageId: number, body: string) => {
         return
     }
 
-    const { data: user, error: userError } = await supabaseServiceUserClient.auth.api.getUserById(message?.profile_id)
+    const { data: userReadonlyProfile, error: userReadonlyProfileError } = await supabaseServiceUserClient
+        .from<UserProfileReadonly>('squeak_profiles_readonly')
+        .select(`user_id`)
+        .eq('profile_id', message.profile_id)
+        .single()
+
+    if (!userReadonlyProfile || userReadonlyProfileError) {
+        console.warn(`[📧 Mailgun] Profile not found for message`)
+
+        if (userReadonlyProfileError) {
+            console.error(`[📧 Mailgun] ${userReadonlyProfileError.message}`)
+        }
+
+        return
+    }
+
+    const { data: user, error: userError } = await supabaseServiceUserClient.auth.api.getUserById(
+        userReadonlyProfile.user_id
+    )
 
     if (!user || userError) {
         console.warn(`[📧 Mailgun] User not found for id ${message?.profile_id}`)

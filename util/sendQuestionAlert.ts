@@ -4,11 +4,12 @@ import { definitions } from '../@types/supabase'
 type WebhookConfig = definitions['squeak_webhook_config']
 
 const sendReplyNotification = async (
+    organizationId: number,
     messageId: number,
     subject: string,
     body: string,
     slug: string,
-    userId: string
+    profileId: number
 ) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,

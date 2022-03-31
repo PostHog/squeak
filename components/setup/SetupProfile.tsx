@@ -2,12 +2,15 @@ import ProfileForm from '../ProfileForm'
 import { useState } from 'react'
 import Router from 'next/router'
 import { User } from '@supabase/gotrue-js'
+import useActiveOrganization from '../../util/useActiveOrganization'
 
 interface Props {
     user: User
 }
 
 const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
+    const { setActiveOrganization } = useActiveOrganization()
+
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [firstName, setFirstName] = useState('')
@@ -29,6 +32,10 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
             setError(errorResponse.error)
             return
         }
+
+        const { organizationId } = await response.json()
+
+        await setActiveOrganization(organizationId)
 
         Router.push('/setup/notifications')
     }

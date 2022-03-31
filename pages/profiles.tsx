@@ -18,7 +18,7 @@ const Users: NextPageWithLayout<Props> = () => {
     const fetchProfiles = async () => {
         const { data } = await supabaseClient
             .from<UserProfileView>('squeak_profiles_view')
-            .select(`id, first_name, last_name, avatar, role`)
+            .select(`profile_id, user_id, first_name, last_name, avatar, role`)
 
         // TODO(JS): Handle errors here
 
