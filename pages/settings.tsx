@@ -1,15 +1,16 @@
+import { Menu } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/outline'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
+import NotificationForm from '../components/NotificationForm'
+import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
-import NotificationForm from '../components/NotificationForm'
-import SlackForm from '../components/SlackForm'
-import SlackManifestSnippet from '../components/SlackManifestSnippet'
 
 type Config = definitions['squeak_config']
 
@@ -30,6 +31,9 @@ const Settings: NextPageWithLayout<Props> = ({
     slackApiKey,
     slackQuestionChannel,
 }) => {
+    const [modalOpen, setModalOpen] = useState(false)
+    const [modalType, setModalType] = useState('')
+
     return (
         <div>
             <h3>Snippet</h3>
@@ -38,7 +42,32 @@ const Settings: NextPageWithLayout<Props> = ({
                 on other pages.
             </p>
             <CodeSnippet className="max-w-6xl" />
-            <h3>Notifications</h3>
+            <h3>Alerts</h3>
+            <p className="mb-6">Setup outgoing webhooks to alert other services about new questions added to Squeak!</p>
+
+            <Menu>
+                <Menu.Button className="px-4 py-2 rounded-md border border-gray-400 flex items-center space-x-4">
+                    <span>Add alert</span>
+                    <span>
+                        <ChevronDownIcon className="w-4 text-gray-400" />
+                    </span>
+                </Menu.Button>
+                <Menu.Items className="absolute bg-white shadow-md rounded-md z-10">
+                    <Menu.Item>
+                        <button
+                            onClick={() => {
+                                setModalType('webhook')
+                                setModalOpen(true)
+                            }}
+                            className="font-bold hover:bg-gray-50 transition-colors p-4"
+                        >
+                            Outgoing webhook
+                        </button>
+                    </Menu.Item>
+                </Menu.Items>
+            </Menu>
+            <WebhookTable modalOpen={modalOpen} setModalOpen={setModalOpen} />
+            <h3 className="mt-12">Notifications</h3>
             <p>Manage configuration for reply notifications via Mailgun</p>
             <hr />
             <NotificationForm
@@ -52,8 +81,8 @@ const Settings: NextPageWithLayout<Props> = ({
                     </Button>
                 )}
             />
-            <h3>Alerts</h3>
-            <p>Manage configuration for admin alerts via Slack</p>
+
+            {/* <p>Manage configuration for admin alerts via Slack</p>
             <hr />
 
             <p className="my-2 block font-semibold">Instructions</p>
@@ -67,7 +96,7 @@ const Settings: NextPageWithLayout<Props> = ({
                         Save
                     </Button>
                 )}
-            />
+            /> */}
         </div>
     )
 }
