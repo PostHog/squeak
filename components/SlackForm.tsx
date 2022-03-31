@@ -1,9 +1,10 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
-import debounce from 'lodash.debounce'
 import Router from 'next/router'
-import React, { useCallback, useEffect, useState } from 'react'
+import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
 import type { definitions } from '../@types/supabase'
+import React, { useCallback, useEffect, useState } from 'react'
+import debounce from 'lodash.debounce'
+import useActiveOrganization from '../util/useActiveOrganization'
 type Config = definitions['squeak_config']
 
 type SlackFormContentProps = Pick<FormikComputedProps<InitialValues>, 'initialValues'> &
@@ -89,14 +90,18 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
     actionButtons,
     onSubmit,
 }) => {
+    const { getActiveOrganization } = useActiveOrganization()
+
     const handleSave = async (values: InitialValues) => {
+        const organizationId = getActiveOrganization()
+
         const { error } = await supabaseClient
             .from<Config>('squeak_config')
             .update({
                 slack_api_key: values.slackApiKey,
                 slack_question_channel: values.slackQuestionChannel,
             })
-            .match({ id: 1 })
+            .match({ organisation_id: organizationId })
 
         onSubmit && onSubmit(values)
 

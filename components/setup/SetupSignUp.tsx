@@ -12,18 +12,6 @@ const SetupSignUp: React.VoidFunctionComponent<Props> = ({ setView }) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    useEffect(() => {
-        const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
-            if (event === 'SIGNED_IN') {
-                Router.push('/signup/profile')
-            }
-        })
-
-        return () => {
-            subscription?.unsubscribe()
-        }
-    }, [])
-
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError(null)

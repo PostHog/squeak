@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { definitions } from '../../@types/supabase'
 import sendReplyNotification from '../../util/sendReplyNotification'
+import getUserProfile from '../../util/getUserProfile'
 
 type Reply = definitions['squeak_replies']
 
@@ -12,18 +13,28 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { messageId, body, token } = JSON.parse(req.body)
+    const { messageId, body, organizationId, token } = JSON.parse(req.body)
 
-    if (!messageId || !body || !token) {
+    if (!messageId || !body || !organizationId || !token) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
 
-    const { user } = await supabaseServerClient({ req, res }).auth.api.getUser(token)
+    const { data: userProfile, error: userProfileError } = await getUserProfile({
+        context: { req, res },
+        organizationId,
+        token,
+    })
 
-    if (!user) {
-        console.error(`[🧵 Reply] User not found for token`)
-        res.status(401).json({ error: 'Unauthorized' })
+    if (!userProfile || userProfileError) {
+        console.error(`[🧵 Question] Error fetching user profile`)
+        res.status(500)
+
+        if (userProfileError) {
+            console.error(`[🧵 Question] ${userProfileError.message}`)
+            res.json({ error: userProfileError.message })
+        }
+
         return
     }
 
@@ -32,7 +43,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .insert({
             body: body,
             message_id: messageId,
-            profile_id: user?.id,
+            organisation_id: organizationId,
+            profile_id: userProfile.id,
         })
         .limit(1)
         .single()

@@ -2,6 +2,7 @@ import type { definitions } from '../@types/supabase'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import Router from 'next/router'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -29,7 +30,11 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     redirect,
     actionButtons,
 }) => {
+    const { getActiveOrganization } = useActiveOrganization()
+
     const handleSaveNotifications = async (values: InitialValues) => {
+        const organizationId = getActiveOrganization()
+
         const { error } = await supabaseClient
             .from<Config>('squeak_config')
             .update({
@@ -38,7 +43,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                 company_name: values.companyName,
                 company_domain: values.companyDomain,
             })
-            .match({ id: 1 })
+            .match({ organisation_id: organizationId })
 
         if (!error && redirect) {
             Router.push(redirect)

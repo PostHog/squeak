@@ -5,12 +5,15 @@ import { ReactElement, useEffect, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import type { NextPageWithLayout } from '../@types/types'
 import { GetStaticPropsResult } from 'next'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 interface Props {
     isMultiTenancy: boolean
 }
 
 const Login: NextPageWithLayout<Props> = () => {
+    const { setActiveOrganization } = useActiveOrganization()
+
     const [error, setError] = useState<string | null>(null)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -35,7 +38,10 @@ const Login: NextPageWithLayout<Props> = () => {
 
         if (error) {
             setError(error.message)
+            return
         }
+
+        await setActiveOrganization()
     }
 
     return (
