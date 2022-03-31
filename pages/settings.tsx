@@ -10,6 +10,7 @@ import withAdminAccess from '../util/withAdminAccess'
 import NotificationForm from '../components/NotificationForm'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
+import getActiveOrganization from '../util/getActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -79,12 +80,14 @@ Settings.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        const organizationId = getActiveOrganization(context)
+
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
                 `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel`
             )
-            .eq('id', 1)
+            .eq('organisation_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

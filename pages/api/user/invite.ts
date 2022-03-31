@@ -13,7 +13,7 @@ export default withAdminAccess(async (req, res) => {
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
     )
 
-    const { email, role = 'admin', firstName } = JSON.parse(req.body)
+    const { organizationId, email, role = 'admin', firstName } = JSON.parse(req.body)
 
     const { origin } = absoluteUrl(req)
 
@@ -24,36 +24,47 @@ export default withAdminAccess(async (req, res) => {
         }
     )
 
-    if (invitedUserError) {
-        res.status(500).json({ error: invitedUserError.message })
+    if (!invitedUser || invitedUserError) {
+        console.error(`[🧵 Invite] Error creating user profile`)
+        res.status(500)
+
+        if (invitedUserError) {
+            console.error(`[🧵 Invite] ${invitedUserError.message}`)
+
+            res.status(500).json({ error: invitedUserError.message })
+        }
+
         return
     }
 
-    const { data: updatedUserReadonly, error: updatedUserReadonlyError } = await supabaseServerClient({ res, req })
-        .from<UserProfileReadonly>('squeak_profiles_readonly')
-        .update({ role })
-        .match({ id: invitedUser?.id })
+    const { data: userProfile, error: userProfileError } = await supabaseServerClient({ res, req })
+        .from<UserProfile>('squeak_profiles')
+        .insert({ first_name: firstName })
         .limit(1)
         .single()
 
-    if (updatedUserReadonlyError) {
-        res.status(500).json({ error: updatedUserReadonlyError.message })
+    if (userProfileError) {
+        console.error(`[🧵 Invite] ${userProfileError.message}`)
+        res.status(500).json({ error: userProfileError.message })
         return
     }
 
-    if (firstName) {
-        const { error: updatedUserError } = await supabaseServerClient({ res, req })
-            .from<UserProfile>('squeak_profiles')
-            .update({ first_name: firstName })
-            .match({ id: invitedUser?.id })
-            .limit(1)
-            .single()
+    const { error: userProfileReadonlyError } = await supabaseServerClient({ res, req })
+        .from<UserProfileReadonly>('squeak_profiles_readonly')
+        .insert({
+            role,
+            profile_id: userProfile.id,
+            user_id: invitedUser.id,
+            organisation_id: organizationId,
+        })
+        .limit(1)
+        .single()
 
-        if (updatedUserError) {
-            res.status(500).json({ error: updatedUserError.message })
-            return
-        }
+    if (userProfileReadonlyError) {
+        console.error(`[🧵 Invite] ${userProfileReadonlyError.message}`)
+        res.status(500).json({ error: userProfileReadonlyError.message })
+        return
     }
 
-    res.json(updatedUserReadonly)
+    res.json(true)
 })

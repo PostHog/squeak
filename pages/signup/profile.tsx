@@ -5,15 +5,15 @@ import { useState } from 'react'
 import Router from 'next/router'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import { GetStaticPropsResult } from 'next'
-import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../@types/supabase'
+import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
 import ProfileForm from '../../components/ProfileForm'
-
-type UserReadonlyProfile = definitions['squeak_profiles_readonly']
+import useActiveOrganization from '../../util/useActiveOrganization'
 
 interface Props {}
 
 const Profile: NextPageWithLayout<Props> = () => {
+    const { setActiveOrganization } = useActiveOrganization()
+
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [firstName, setFirstName] = useState('')
@@ -35,6 +35,10 @@ const Profile: NextPageWithLayout<Props> = () => {
             setError(errorResponse.error)
             return
         }
+
+        const { organizationId } = await response.json()
+
+        await setActiveOrganization(organizationId)
 
         Router.push('/questions')
     }
@@ -66,21 +70,6 @@ export const getServerSideProps = withMultiTenantCheck({
             return {
                 redirect: {
                     destination: '/signup',
-                    permanent: false,
-                },
-            }
-        }
-
-        const { data: userReadonlyProfile } = await supabaseServerClient(context)
-            .from<UserReadonlyProfile>('squeak_profiles_readonly')
-            .select('role')
-            .eq('user_id', user.id)
-            .single()
-
-        if (userReadonlyProfile && userReadonlyProfile.role) {
-            return {
-                redirect: {
-                    destination: '/questions',
                     permanent: false,
                 },
             }

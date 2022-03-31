@@ -1,20 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
-/* eslint-enable @typescript-eslint/no-var-requires */
 import type { definitions } from '../@types/supabase'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { WebClient } = require('@slack/web-api')
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
 type Profile = definitions['squeak_profiles']
 
 const sendReplyNotification = async (
+    organizationId: number,
     messageId: number,
     subject: string,
     body: string,
     slug: string,
-    userId: string
+    profileId: number
 ) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -24,7 +25,7 @@ const sendReplyNotification = async (
     const { data: config, error: configError } = await supabaseServiceUserClient
         .from<Config>('squeak_config')
         .select(`slack_api_key, slack_question_channel`)
-        .eq('id', 1)
+        .eq('organisation_id', organizationId)
         .single()
 
     if (!config || configError) {
@@ -49,7 +50,7 @@ const sendReplyNotification = async (
     const { data: profile, error: profileError } = await supabaseServiceUserClient
         .from<Profile>('squeak_profiles')
         .select(`first_name, avatar`)
-        .eq('id', userId)
+        .eq('id', profileId)
         .single()
 
     if (!profile || profileError) {

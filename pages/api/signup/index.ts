@@ -76,7 +76,6 @@ export default withMultiTenantCheck(async (req, res) => {
         .insert({
             first_name: firstName,
             last_name: lastName,
-            user_id: user.id,
         })
         .limit(1)
         .single()
@@ -99,6 +98,7 @@ export default withMultiTenantCheck(async (req, res) => {
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .insert({
             role: 'admin',
+            profile_id: userProfile.id,
             user_id: user.id,
             organisation_id: organization.id,
         })
@@ -119,5 +119,5 @@ export default withMultiTenantCheck(async (req, res) => {
         return
     }
 
-    res.status(200).json({ userId: user.id, firstName, lastName, organizationName })
+    res.status(200).json({ userId: user.id, firstName, lastName, organizationId: organization.id, organizationName })
 })

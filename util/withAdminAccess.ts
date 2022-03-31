@@ -64,6 +64,7 @@ const withAdminAccess = (arg: Args) => {
                     const { data: config } = await supabaseClient
                         .from<Config>('squeak_config')
                         .select(`preflight_complete`)
+                        .limit(1)
                         .single()
 
                     if (!config || !config?.preflight_complete) {

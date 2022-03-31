@@ -36,7 +36,7 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => 
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {profiles.map((profile) => (
-                                    <ProfileRow key={profile.id} profile={profile} />
+                                    <ProfileRow key={profile.profile_id} profile={profile} />
                                 ))}
                             </tbody>
                         </table>
@@ -59,7 +59,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
         await supabaseClient
             .from<ProfileReadonly>('squeak_profiles_readonly')
             .update({ role })
-            .match({ id: profile.id })
+            .match({ profile_id: profile.profile_id })
 
         // TODO(JS): Handle errors
 
@@ -84,7 +84,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {user?.id !== profile.id ? (
+                {user?.id !== profile.user_id ? (
                     <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
                         <option value="admin">Admin</option>
                         <option value="moderator">Moderator</option>
