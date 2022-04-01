@@ -1,13 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-/* eslint-enable @typescript-eslint/no-var-requires */
-import type { definitions } from '../@types/supabase'
+import { definitions } from '../@types/supabase'
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { WebClient } = require('@slack/web-api')
-
-type Config = definitions['squeak_config']
-type Message = definitions['squeak_messages']
-type Profile = definitions['squeak_profiles']
+type WebhookConfig = definitions['squeak_webhook_config']
 
 const sendReplyNotification = async (
     messageId: number,
@@ -21,112 +15,69 @@ const sendReplyNotification = async (
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
     )
 
-    const { data: config, error: configError } = await supabaseServiceUserClient
-        .from<Config>('squeak_config')
-        .select(`slack_api_key, slack_question_channel`)
-        .eq('id', 1)
-        .single()
+    const { data: webhooks, error } = await supabaseServiceUserClient
+        .from<WebhookConfig>('squeak_webhook_config')
+        .select('url, type, id')
 
-    if (!config || configError) {
-        console.warn(`[⚙️ Config] Failed to fetch config for slack`)
-
-        if (configError) {
-            console.error(`[⚙️ Config] ${configError.message}`)
-        }
-
+    if (error) {
+        console.warn(`[⚙️ Config] Failed to fetch webhooks`)
         return
     }
 
-    const { slack_api_key, slack_question_channel } = config
-
-    if (!slack_api_key || !slack_question_channel) {
-        console.warn(`[📧 Slack] Slack credentials missing in config`)
-        return
-    }
-
-    const client = new WebClient(slack_api_key)
-
-    const { data: profile, error: profileError } = await supabaseServiceUserClient
-        .from<Profile>('squeak_profiles')
-        .select(`first_name, avatar`)
-        .eq('id', userId)
-        .single()
-
-    if (!profile || profileError) {
-        console.warn(`[⚙️ Profiles] Failed to fetch profile`)
-
-        if (profileError) {
-            console.error(`[⚙️ Profiles] ${profileError.message}`)
-        }
-
-        return
-    }
-
-    const { first_name, avatar } = profile
-
-    let result
-    try {
-        result = await client.chat.postMessage({
-            channel: slack_question_channel,
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: `${first_name} on ${slug}`,
-                        emoji: true,
-                    },
-                    block_id: 'name_and_slug',
-                },
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: subject,
-                        emoji: true,
-                    },
-                    block_id: 'subject',
-                },
-                {
-                    type: 'section',
-                    block_id: 'question',
-                    text: {
-                        type: 'mrkdwn',
-                        text: body,
-                    },
-                    ...(avatar && {
-                        accessory: {
-                            type: 'image',
-                            image_url: avatar,
-                            alt_text: first_name,
-                        },
-                    }),
-                },
-            ],
+    Promise.all(
+        webhooks.map(({ url, type }) => {
+            switch (type) {
+                case 'webhook':
+                    return fetch(url, { method: 'POST', body: JSON.stringify({ subject, slug, body }) })
+                case 'slack':
+                    return supabaseServiceUserClient
+                        .from('squeak_profiles')
+                        .select('first_name, avatar')
+                        .match({ id: userId })
+                        .single()
+                        .then(({ data: { first_name, avatar } }) => {
+                            return fetch(url, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    text: `Question asked on ${slug[0]}`,
+                                    blocks: [
+                                        {
+                                            type: 'header',
+                                            text: {
+                                                type: 'plain_text',
+                                                text: `${first_name} on ${slug}`,
+                                                emoji: true,
+                                            },
+                                        },
+                                        {
+                                            type: 'header',
+                                            text: {
+                                                type: 'plain_text',
+                                                text: subject,
+                                                emoji: true,
+                                            },
+                                        },
+                                        {
+                                            type: 'section',
+                                            text: {
+                                                type: 'mrkdwn',
+                                                text: body,
+                                            },
+                                            ...(avatar && {
+                                                accessory: {
+                                                    type: 'image',
+                                                    image_url: avatar,
+                                                    alt_text: first_name,
+                                                },
+                                            }),
+                                        },
+                                    ],
+                                }),
+                            })
+                        })
+            }
         })
-    } catch (error) {
-        console.error(error)
-        return
-    }
-
-    if (!result) {
-        return
-    }
-
-    const { data: message, error: messageError } = await supabaseServiceUserClient
-        .from<Message>('squeak_messages')
-        .update({
-            slack_timestamp: result.ts,
-        })
-        .match({ id: messageId })
-
-    if (!message || messageError) {
-        console.warn(`[📧 Slack] Failed to update message with slack timestamp`)
-
-        if (messageError) {
-            console.error(`[📧 Slack] ${messageError.message}`)
-        }
-    }
+    )
 }
 
 export default sendReplyNotification

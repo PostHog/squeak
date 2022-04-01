@@ -10,10 +10,10 @@ After spinning up a server, grab the JavaScript embed code and place wherever yo
 
 _Squeak!_ is currently self-hosted, but we make deployment simple using a Docker container. You'll need:
 
-- Docker and docker hosting - _Runs client-side widget, admin panel_
-- A [Supabase](https://supabase.com) account - _Hosted Postgres database, authentication_
-- Mailgun (optional) - _Email notifications for users when someone answers their question_
-- Slack (optional) - _Moderator notifications for new questions and community replies_
+-   Docker and docker hosting - _Runs client-side widget, admin panel_
+-   A [Supabase](https://supabase.com) account - _Hosted Postgres database, authentication_
+-   Mailgun (optional) - _Email notifications for users when someone answers their question_
+-   Slack (optional) - _Moderator notifications for new questions and community replies_
 
 ## Getting started
 
@@ -37,13 +37,11 @@ https://app.supabase.io/project/{your-project-id}
 
 ### Mapping environment variables
 
-
-| Where to find these values in Supabase   | Environment variable key                   |
-|---------------------------------|------------------------------------|
-| Project API keys → `anon` `public` | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
-| Project API keys → `service_role`  | `SUPABASE_SERVICE_ROLE_KEY`  |
-| Project Configuration → `URL`      | `NEXT_PUBLIC_SUPABASE_URL`      |
-
+| Where to find these values in Supabase | Environment variable key        |
+| -------------------------------------- | ------------------------------- |
+| Project API keys → `anon` `public`     | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
+| Project API keys → `service_role`      | `SUPABASE_SERVICE_ROLE_KEY`     |
+| Project Configuration → `URL`          | `NEXT_PUBLIC_SUPABASE_URL`      |
 
 ## 4. Database credentials (optional)
 
@@ -54,6 +52,7 @@ _If you don't enter your credentials, you'll just need to copy/paste a SQL query
 ### Build your connection string
 
 Enter your database's password and hostname into the following string.
+
 ```
 postgresql://postgres:{your-password}@{your-host}:5432/postgres
 ```
@@ -64,11 +63,10 @@ Find your database hostname at the following URL:
 https://app.supabase.io/project/{your-project-id}/settings/database
 ```
 
-| Credentials you'll need       | Location in Supabase           |
-|---------------------------------|------------------------------------|
-| Database hostname        |  Connection info → `Host` |
-| Database password        |  _Set when creating project_ |
-
+| Credentials you'll need | Location in Supabase        |
+| ----------------------- | --------------------------- |
+| Database hostname       | Connection info → `Host`    |
+| Database password       | _Set when creating project_ |
 
 Use the resulting value in the `DATABASE_URL` field. (Voila, that was the hardest part!)
 
@@ -82,7 +80,6 @@ The deployment will take 2-4 minutes.
 
 > **Using DigitalOcean?**
 > You'll need to set up billing before building. You can host with DigitalOcean for as little as $5 by choosing the _Basic_ plan, then adjusting the _Basic Size_.
-
 
 ## 7. Disable email confirmations in Supabase
 
@@ -136,6 +133,30 @@ You'll also be able to reply to questions with this authentication.
 1. Copy the value of `Bot User OAuth Token` and add to the setup wizard
 1. After entering your OAuth token, you'll be asked to select your desired Slack channel
 
+### Alerts
+
+Squeak! allows you to add alerts via outgoing webhooks to notify external services when new questions are received.
+
+1. Visit the Settings page
+1. Under Alerts, click Add alert
+1. Choose between Slack notification or Outgoing webhook (see below for a description on both)
+1. Enter your webhook URL
+1. Click save!
+
+The next time a new question is received, each webhook URL is called.
+
+#### Slack notification
+
+To set up Slack notifications, follow the instructions in [this article](https://api.slack.com/messaging/webhooks). Once you've received your unique webhook URL, add it to your alerts table. Once added, a Slack notification will be received every time a new question is asked.
+
+#### Outgoing webhook
+
+Squeak! also supports generic outgoing webhooks. Great for Zapier automations! Each time a new question is asked, a POST request will be sent to your webhook URL with following body:
+
+```
+{ subject: 'Test subject', slug: ['/'], body: 'Test question' }
+```
+
 ## 12. Add the JavaScript snippet to your website or docs!
 
 It can be installed on a single page template, or in a snippet references across your site like a layout template.
@@ -150,7 +171,7 @@ Set color variables in CSS to override default colors:
 ```
 
 This can be added to your widget's embed code by inserting the following above the opening <script> tag:
-  
+
 ```
 <style>
   :root {
@@ -166,20 +187,19 @@ This can be added to your widget's embed code by inserting the following above t
 
 Find the values for these keys in your Supabase project.
 
-| Key                           | Required | Description                                                                                                                             |
-|-------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                  |
-| SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                |
-| NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                    |
+| Key                           | Required | Description                                                                                                                                                                                                                                              |
+| ----------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Yes      | Public key used to authenticate with Supabase in the browser, found at `/settings/api`                                                                                                                                                                   |
+| SUPABASE_SERVICE_ROLE_KEY     | Yes      | Secret key used to authenticate with Supabase on the server, used to bypass Row Level Security, found at `/settings/api`                                                                                                                                 |
+| NEXT_PUBLIC_SUPABASE_URL      | Yes      | Restful endpoint for querying and managing the Supabase DB, found at `/settings/api`                                                                                                                                                                     |
 | DATABASE_URL                  | No       | The Postgresql connection string, if provided, will automatically run migrations in Supabase on start, found at `/settings/database`, in URI format. (If not provided, we'll provide a SQL query you'll need to copy/paste into Supabase's SQL console.) |
 
 ## API
 
 | Task                        | URL             | Docs                          |
-|-----------------------------|-----------------|-------------------------------|
+| --------------------------- | --------------- | ----------------------------- |
 | Adding a new question       | `/api/question` | [Docs](/docs/api/question.md) |
 | Adding a reply to a message | `/api/reply`    | [Docs](/docs/api/reply.md)    |
-
 
 ## Local Development
 

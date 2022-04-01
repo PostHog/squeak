@@ -40,7 +40,7 @@ select {
 }
 
 label {
-    @apply my-2 block font-semibold;
+    @apply my-2 block font-medium;
 }
 
 .active-setup-tab::before {
