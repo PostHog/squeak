@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
+import { definitions } from '../@types/supabase'
+
+type WebhookConfig = definitions['squeak_webhook_config']
 
 const sendReplyNotification = async (
     messageId: number,
@@ -13,12 +16,14 @@ const sendReplyNotification = async (
     )
 
     const { data: webhooks, error } = await supabaseServiceUserClient
-        .from('squeak_webhook_notifications')
+        .from<WebhookConfig>('squeak_webhook_config')
         .select('url, type, id')
+
     if (error) {
         console.warn(`[⚙️ Config] Failed to fetch webhooks`)
         return
     }
+
     Promise.all(
         webhooks.map(({ url, type }) => {
             switch (type) {

@@ -643,6 +643,139 @@ export interface paths {
             }
         }
     }
+    '/squeak_webhook_config': {
+        get: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_webhook_config.id']
+                    type?: parameters['rowFilter.squeak_webhook_config.type']
+                    url?: parameters['rowFilter.squeak_webhook_config.url']
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                    /** Ordering */
+                    order?: parameters['order']
+                    /** Limiting and Pagination */
+                    offset?: parameters['offset']
+                    /** Limiting and Pagination */
+                    limit?: parameters['limit']
+                }
+                header: {
+                    /** Limiting and Pagination */
+                    Range?: parameters['range']
+                    /** Limiting and Pagination */
+                    'Range-Unit'?: parameters['rangeUnit']
+                    /** Preference */
+                    Prefer?: parameters['preferCount']
+                }
+            }
+            responses: {
+                /** OK */
+                200: {
+                    schema: definitions['squeak_webhook_config'][]
+                }
+                /** Partial Content */
+                206: unknown
+            }
+        }
+        post: {
+            parameters: {
+                body: {
+                    /** squeak_webhook_config */
+                    squeak_webhook_config?: definitions['squeak_webhook_config']
+                }
+                query: {
+                    /** Filtering Columns */
+                    select?: parameters['select']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** Created */
+                201: unknown
+            }
+        }
+        delete: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_webhook_config.id']
+                    type?: parameters['rowFilter.squeak_webhook_config.type']
+                    url?: parameters['rowFilter.squeak_webhook_config.url']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+        patch: {
+            parameters: {
+                query: {
+                    id?: parameters['rowFilter.squeak_webhook_config.id']
+                    type?: parameters['rowFilter.squeak_webhook_config.type']
+                    url?: parameters['rowFilter.squeak_webhook_config.url']
+                }
+                body: {
+                    /** squeak_webhook_config */
+                    squeak_webhook_config?: definitions['squeak_webhook_config']
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferReturn']
+                }
+            }
+            responses: {
+                /** No Content */
+                204: never
+            }
+        }
+    }
+    '/rpc/check_profile_access': {
+        post: {
+            parameters: {
+                body: {
+                    args: {
+                        /** Format: bigint */
+                        row_profile_id: number
+                    }
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferParams']
+                }
+            }
+            responses: {
+                /** OK */
+                200: unknown
+            }
+        }
+    }
+    '/rpc/check_organization_access': {
+        post: {
+            parameters: {
+                body: {
+                    args: {
+                        /** Format: bigint */
+                        row_organization_id: number
+                    }
+                }
+                header: {
+                    /** Preference */
+                    Prefer?: parameters['preferParams']
+                }
+            }
+            responses: {
+                /** OK */
+                200: unknown
+            }
+        }
+    }
     '/rpc/get_is_admin': {
         post: {
             parameters: {
@@ -796,6 +929,18 @@ export interface definitions {
          */
         profile_id?: string
     }
+    squeak_webhook_config: {
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Primary Key.<pk/>
+         */
+        id: number
+        /** Format: text */
+        type: string
+        /** Format: text */
+        url: string
+    }
 }
 
 export interface parameters {
@@ -915,6 +1060,14 @@ export interface parameters {
     'rowFilter.squeak_replies.message_id': string
     /** Format: uuid */
     'rowFilter.squeak_replies.profile_id': string
+    /** @description squeak_webhook_config */
+    'body.squeak_webhook_config': definitions['squeak_webhook_config']
+    /** Format: bigint */
+    'rowFilter.squeak_webhook_config.id': string
+    /** Format: text */
+    'rowFilter.squeak_webhook_config.type': string
+    /** Format: text */
+    'rowFilter.squeak_webhook_config.url': string
 }
 
 export interface operations {}

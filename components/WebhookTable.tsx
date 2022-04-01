@@ -3,21 +3,28 @@ import { ChevronDownIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import React, { useEffect, useState } from 'react'
 import WebhookModal from './WebhookModal'
+import { WebhookValues } from '../@types/types'
+import { definitions } from '../@types/supabase'
 
-export default function WebhookTable() {
-    const [initialValues, setInitialvalues] = useState(null)
+type WebhookConfig = definitions['squeak_webhook_config']
+
+interface Props {}
+
+const WebhookTable: React.VoidFunctionComponent<Props> = () => {
+    const [initialValues, setInitialvalues] = useState<WebhookValues | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
-    const [modalType, setModalType] = useState('')
-    const handleEdit = (initialValues) => {
+    const [modalType, setModalType] = useState<string>('')
+
+    const handleEdit = (initialValues: WebhookValues) => {
         setInitialvalues(initialValues)
         setModalType(initialValues.type)
         setModalOpen(true)
     }
-    const [webhooks, setWebhooks] = useState([])
+    const [webhooks, setWebhooks] = useState<Array<WebhookConfig>>([])
 
     const getWebhooks = async () => {
-        const { data } = await supabaseClient.from('squeak_webhook_notifications').select('url, type, id')
-        setWebhooks(data)
+        const { data } = await supabaseClient.from<WebhookConfig>('squeak_webhook_config').select('url, type, id')
+        setWebhooks(data ?? [])
     }
 
     const handleWebhookSubmit = () => {
@@ -76,6 +83,7 @@ export default function WebhookTable() {
                     </Menu.Item>
                 </Menu.Items>
             </Menu>
+
             {webhooks.length > 0 && (
                 <div className="mt-8 flex flex-col">
                     <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -134,3 +142,5 @@ export default function WebhookTable() {
         </>
     )
 }
+
+export default WebhookTable
