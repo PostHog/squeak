@@ -84,8 +84,6 @@ const withAdminAccess = (arg: Args) => {
                 const { user } = await getUser(context)
                 const organizationId = getActiveOrganization(context)
 
-                console.log(organizationId)
-
                 if (!user) {
                     return {
                         redirect: {
