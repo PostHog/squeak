@@ -27,10 +27,10 @@ const sendReplyNotification = async (
                 case 'slack':
                     return supabaseServiceUserClient
                         .from('squeak_profiles')
-                        .select('first_name')
+                        .select('first_name, avatar')
                         .match({ id: userId })
                         .single()
-                        .then(({ data: { first_name } }) => {
+                        .then(({ data: { first_name, avatar } }) => {
                             return fetch(url, {
                                 method: 'POST',
                                 body: JSON.stringify({
@@ -45,11 +45,26 @@ const sendReplyNotification = async (
                                             },
                                         },
                                         {
+                                            type: 'header',
+                                            text: {
+                                                type: 'plain_text',
+                                                text: subject,
+                                                emoji: true,
+                                            },
+                                        },
+                                        {
                                             type: 'section',
                                             text: {
                                                 type: 'mrkdwn',
                                                 text: body,
                                             },
+                                            ...(avatar && {
+                                                accessory: {
+                                                    type: 'image',
+                                                    image_url: avatar,
+                                                    alt_text: first_name,
+                                                },
+                                            }),
                                         },
                                     ],
                                 }),
