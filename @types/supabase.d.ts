@@ -753,6 +753,99 @@ export interface paths {
       };
     };
   };
+  "/squeak_webhook_config": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_webhook_config.id"];
+          type?: parameters["rowFilter.squeak_webhook_config.type"];
+          url?: parameters["rowFilter.squeak_webhook_config.url"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_webhook_config"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_webhook_config */
+          squeak_webhook_config?: definitions["squeak_webhook_config"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_webhook_config.id"];
+          type?: parameters["rowFilter.squeak_webhook_config.type"];
+          url?: parameters["rowFilter.squeak_webhook_config.url"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_webhook_config.id"];
+          type?: parameters["rowFilter.squeak_webhook_config.type"];
+          url?: parameters["rowFilter.squeak_webhook_config.url"];
+        };
+        body: {
+          /** squeak_webhook_config */
+          squeak_webhook_config?: definitions["squeak_webhook_config"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/rpc/check_profile_access": {
     post: {
       parameters: {
@@ -853,7 +946,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
      */
-    organization_id?: number;
+    organization_id: number;
   };
   squeak_messages: {
     /**
@@ -880,13 +973,13 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
      */
-    organization_id?: number;
+    organization_id: number;
     /**
      * Format: bigint
      * @description Note:
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
-    profile_id?: number;
+    profile_id: number;
   };
   squeak_organizations: {
     /**
@@ -923,7 +1016,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
      */
-    organization_id?: number;
+    organization_id: number;
     /** Format: uuid */
     user_id: string;
     /**
@@ -982,19 +1075,31 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_messages.id`.<fk table='squeak_messages' column='id'/>
      */
-    message_id?: number;
+    message_id: number;
     /**
      * Format: bigint
      * @description Note:
      * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
      */
-    organization_id?: number;
+    organization_id: number;
     /**
      * Format: bigint
      * @description Note:
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
-    profile_id?: number;
+    profile_id: number;
+  };
+  squeak_webhook_config: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: text */
+    type: string;
+    /** Format: text */
+    url: string;
   };
 }
 
@@ -1137,6 +1242,14 @@ export interface parameters {
   "rowFilter.squeak_replies.organization_id": string;
   /** Format: bigint */
   "rowFilter.squeak_replies.profile_id": string;
+  /** @description squeak_webhook_config */
+  "body.squeak_webhook_config": definitions["squeak_webhook_config"];
+  /** Format: bigint */
+  "rowFilter.squeak_webhook_config.id": string;
+  /** Format: text */
+  "rowFilter.squeak_webhook_config.type": string;
+  /** Format: text */
+  "rowFilter.squeak_webhook_config.url": string;
 }
 
 export interface operations {}

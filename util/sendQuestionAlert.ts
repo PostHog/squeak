@@ -3,7 +3,7 @@ import { definitions } from '../@types/supabase'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 
-const sendReplyNotification = async (
+const sendQuestionAlert = async (
     organizationId: number,
     messageId: number,
     subject: string,
@@ -32,9 +32,11 @@ const sendReplyNotification = async (
                     return fetch(url, { method: 'POST', body: JSON.stringify({ subject, slug, body }) })
                 case 'slack':
                     return supabaseServiceUserClient
-                        .from('squeak_profiles')
+                        .from('squeak_profiles_view')
                         .select('first_name, avatar')
-                        .match({ id: userId })
+                        .eq('profile_id', profileId)
+                        .eq('organization_id', organizationId)
+                        .limit(1)
                         .single()
                         .then(({ data: { first_name, avatar } }) => {
                             return fetch(url, {
@@ -81,4 +83,4 @@ const sendReplyNotification = async (
     )
 }
 
-export default sendReplyNotification
+export default sendQuestionAlert

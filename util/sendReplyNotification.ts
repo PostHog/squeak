@@ -12,7 +12,7 @@ type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
-const sendReplyNotification = async (messageId: number, body: string) => {
+const sendReplyNotification = async (organizationId: number, messageId: number, body: string) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -21,7 +21,8 @@ const sendReplyNotification = async (messageId: number, body: string) => {
     const { data: config, error: configError } = await supabaseServiceUserClient
         .from<Config>('squeak_config')
         .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
-        .eq('id', 1)
+        .eq('organization_id', organizationId)
+        .limit(1)
         .single()
 
     if (!config || configError) {
@@ -66,6 +67,8 @@ const sendReplyNotification = async (messageId: number, body: string) => {
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .select(`user_id`)
         .eq('profile_id', message.profile_id)
+        .eq('organization_id', organizationId)
+        .limit(1)
         .single()
 
     if (!userReadonlyProfile || userReadonlyProfileError) {
