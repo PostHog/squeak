@@ -5,12 +5,16 @@ import React, { useEffect, useState } from 'react'
 import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 
 interface Props {}
 
 const WebhookTable: React.VoidFunctionComponent<Props> = () => {
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+
     const [initialValues, setInitialvalues] = useState<WebhookValues | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
     const [modalType, setModalType] = useState<string>('')
@@ -23,7 +27,10 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
     const [webhooks, setWebhooks] = useState<Array<WebhookConfig>>([])
 
     const getWebhooks = async () => {
-        const { data } = await supabaseClient.from<WebhookConfig>('squeak_webhook_config').select('url, type, id')
+        const { data } = await supabaseClient
+            .from<WebhookConfig>('squeak_webhook_config')
+            .select('url, type, id')
+            .eq('organization_id', organizationId)
         setWebhooks(data ?? [])
     }
 

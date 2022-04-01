@@ -3,6 +3,7 @@ import { Field, Form, Formik } from 'formik'
 import Button from './Button'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
@@ -13,14 +14,19 @@ interface Props {
 }
 
 const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }) => {
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+
     const handleSave = async ({ url }: FormValues) => {
         if (initialValues) {
             await supabaseClient
                 .from<WebhookConfig>('squeak_webhook_config')
                 .update({ url })
-                .match({ id: initialValues.id })
+                .match({ id: initialValues.id, organinization_id: organizationId })
         } else {
-            await supabaseClient.from<WebhookConfig>('squeak_webhook_config').insert({ url, type: 'webhook' })
+            await supabaseClient
+                .from<WebhookConfig>('squeak_webhook_config')
+                .insert({ url, type: 'webhook', organization_id: organizationId })
         }
 
         onSubmit()
@@ -33,7 +39,10 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
             return
         }
 
-        await supabaseClient.from<WebhookConfig>('squeak_webhook_config').delete().match({ id: initialValues.id })
+        await supabaseClient
+            .from<WebhookConfig>('squeak_webhook_config')
+            .delete()
+            .match({ id: initialValues.id, organization_id: organizationId })
         onSubmit()
     }
     return (

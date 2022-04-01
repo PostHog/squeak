@@ -19,6 +19,7 @@ const sendQuestionAlert = async (
     const { data: webhooks, error } = await supabaseServiceUserClient
         .from<WebhookConfig>('squeak_webhook_config')
         .select('url, type, id')
+        .eq('organization_id', organizationId)
 
     if (error) {
         console.warn(`[⚙️ Config] Failed to fetch webhooks`)
