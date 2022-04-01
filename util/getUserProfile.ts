@@ -31,7 +31,7 @@ const lookupUserProfile = async (context: Context, user: User, organizationId: n
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .select('profile_id')
         .eq('user_id', user.id)
-        .eq('organisation_id', organizationId)
+        .eq('organization_id', organizationId)
         .limit(1)
         .single()
 

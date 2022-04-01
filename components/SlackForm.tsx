@@ -99,7 +99,7 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
                 slack_api_key: values.slackApiKey,
                 slack_question_channel: values.slackQuestionChannel,
             })
-            .match({ organisation_id: organizationId })
+            .match({ organization_id: organizationId })
 
         if (!error && redirect) {
             Router.push(redirect)

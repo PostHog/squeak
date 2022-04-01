@@ -21,7 +21,11 @@ const Login: NextPageWithLayout<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
-                Router.push('/')
+                // Timeout required to allow for the cookie to be set before redirecting
+                // TODO(JS): There must be a better way to do this?
+                setTimeout(() => {
+                    Router.push('/')
+                }, 1000)
             }
         })
 
@@ -34,14 +38,19 @@ const Login: NextPageWithLayout<Props> = () => {
         e.preventDefault()
         setError(null)
 
-        const { error } = await supabaseClient.auth.signIn({ email, password })
+        const { user, error } = await supabaseClient.auth.signIn({ email, password })
 
         if (error) {
             setError(error.message)
             return
         }
 
-        await setActiveOrganization()
+        if (!user) {
+            setError('Invalid email or password')
+            return
+        }
+
+        await setActiveOrganization(user.id)
     }
 
     return (

@@ -78,7 +78,7 @@ export const getServerSideProps = withPreflightCheck({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
-            .eq('organisation_id', organizationId)
+            .eq('organization_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

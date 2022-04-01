@@ -55,14 +55,14 @@ export const getServerSideProps = withPreflightCheck({
 
         const { data: userProfileReadonly } = await supabaseClient
             .from<UserProfileReadonly>('squeak_profiles_readonly')
-            .select('organisation_id')
+            .select('organization_id')
             .eq('user_id', user?.id)
             .single()
 
         await supabaseClient
             .from<Config>('squeak_config')
             .update({ preflight_complete: true })
-            .match({ organisation_id: userProfileReadonly?.organisation_id })
+            .match({ organization_id: userProfileReadonly?.organization_id })
 
         return {
             props: {},

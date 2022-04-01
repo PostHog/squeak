@@ -1,14 +1,11 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { definitions } from '../@types/supabase'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { parseCookies, setCookie } from 'nookies'
 
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
 const useActiveOrganization = () => {
-    const { user } = useUser()
-
-    const setActiveOrganization = async (organizationId?: number) => {
+    const setActiveOrganization = async (userId: string, organizationId?: number) => {
         if (organizationId) {
             setCookie(null, 'squeak_organization_id', `${organizationId}`, { path: '/' })
             return
@@ -18,16 +15,16 @@ const useActiveOrganization = () => {
         // TODO(JS): In the future, we may want to allow the user to select which organization they want to use upon login
         const { data: organizations } = await supabaseClient
             .from<UserProfileReadonly>('squeak_profiles_readonly')
-            .select('organisation_id')
-            .eq('user_id', user?.id)
+            .select('organization_id')
+            .eq('user_id', userId)
 
         if (!organizations) {
             return
         }
 
-        const [organisation] = organizations
+        const [organization] = organizations
 
-        setCookie(null, 'squeak_organization_id', `${organisation.organisation_id}`, { path: '/' })
+        setCookie(null, 'squeak_organization_id', `${organization.organization_id}`, { path: '/' })
     }
 
     const getActiveOrganization = () => {

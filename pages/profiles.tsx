@@ -7,18 +7,23 @@ import { definitions } from '../@types/supabase'
 import withAdminAccess from '../util/withAdminAccess'
 import { GetStaticPropsResult } from 'next'
 import InviteUser from '../components/InviteUser'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 type UserProfileView = definitions['squeak_profiles_view']
 
 interface Props {}
 
 const Users: NextPageWithLayout<Props> = () => {
+    const { getActiveOrganization } = useActiveOrganization()
     const [profiles, setProfiles] = useState<Array<UserProfileView>>([])
+
+    const organizationId = getActiveOrganization()
 
     const fetchProfiles = async () => {
         const { data } = await supabaseClient
             .from<UserProfileView>('squeak_profiles_view')
             .select(`profile_id, user_id, first_name, last_name, avatar, role`)
+            .eq('organization_id', organizationId)
 
         // TODO(JS): Handle errors here
 

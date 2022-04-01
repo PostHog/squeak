@@ -71,7 +71,7 @@ export const getServerSideProps = withPreflightCheck({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`slack_api_key, slack_question_channel`)
-            .eq('organisation_id', organizationId)
+            .eq('organization_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

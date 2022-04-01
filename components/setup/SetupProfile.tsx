@@ -33,9 +33,9 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
             return
         }
 
-        const { organizationId } = await response.json()
+        const { userId, organizationId } = await response.json()
 
-        await setActiveOrganization(organizationId)
+        await setActiveOrganization(userId, organizationId)
 
         Router.push('/setup/notifications')
     }
