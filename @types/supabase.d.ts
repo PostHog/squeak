@@ -760,6 +760,7 @@ export interface paths {
           id?: parameters["rowFilter.squeak_webhook_config.id"];
           type?: parameters["rowFilter.squeak_webhook_config.type"];
           url?: parameters["rowFilter.squeak_webhook_config.url"];
+          organization_id?: parameters["rowFilter.squeak_webhook_config.organization_id"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -813,6 +814,7 @@ export interface paths {
           id?: parameters["rowFilter.squeak_webhook_config.id"];
           type?: parameters["rowFilter.squeak_webhook_config.type"];
           url?: parameters["rowFilter.squeak_webhook_config.url"];
+          organization_id?: parameters["rowFilter.squeak_webhook_config.organization_id"];
         };
         header: {
           /** Preference */
@@ -830,6 +832,7 @@ export interface paths {
           id?: parameters["rowFilter.squeak_webhook_config.id"];
           type?: parameters["rowFilter.squeak_webhook_config.type"];
           url?: parameters["rowFilter.squeak_webhook_config.url"];
+          organization_id?: parameters["rowFilter.squeak_webhook_config.organization_id"];
         };
         body: {
           /** squeak_webhook_config */
@@ -1100,6 +1103,12 @@ export interface definitions {
     type: string;
     /** Format: text */
     url: string;
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organization_id: number;
   };
 }
 
@@ -1250,6 +1259,8 @@ export interface parameters {
   "rowFilter.squeak_webhook_config.type": string;
   /** Format: text */
   "rowFilter.squeak_webhook_config.url": string;
+  /** Format: bigint */
+  "rowFilter.squeak_webhook_config.organization_id": string;
 }
 
 export interface operations {}

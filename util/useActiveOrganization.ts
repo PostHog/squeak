@@ -27,10 +27,10 @@ const useActiveOrganization = () => {
         setCookie(null, 'squeak_organization_id', `${organization.organization_id}`, { path: '/' })
     }
 
-    const getActiveOrganization = () => {
+    const getActiveOrganization = (): number => {
         const { squeak_organization_id } = parseCookies()
 
-        return squeak_organization_id
+        return parseInt(squeak_organization_id)
     }
 
     return {
