@@ -57,7 +57,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json({ ...data })
 
-    sendReplyNotification(messageId, body)
+    sendReplyNotification(organizationId, messageId, body)
 }
 
 export default handler

@@ -1,7 +1,6 @@
 import { CheckIcon } from '@heroicons/react/outline'
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import classNames from 'classnames'
-import type { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useLayoutEffect, useRef, useState } from 'react'
