@@ -31,6 +31,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
             .from<WebhookConfig>('squeak_webhook_config')
             .select('url, type, id')
             .eq('organization_id', organizationId)
+
         setWebhooks(data ?? [])
     }
 
@@ -47,7 +48,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
 
     useEffect(() => {
         getWebhooks()
-    }, [])
+    }, [getWebhooks])
 
     return (
         <>
