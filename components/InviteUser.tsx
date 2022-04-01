@@ -1,21 +1,27 @@
 import Button from './Button'
 import { useState } from 'react'
 import classNames from 'classnames'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     onInvite?: () => void
 }
 
 const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, ...rest }) => {
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+
     const [email, setEmail] = useState('')
     const [firstName, setFirstName] = useState('')
     const [role, setRole] = useState('admin')
     const [showInput, setShowInput] = useState(false)
 
-    const handleInvite = async () => {
+    const handleInvite = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
         await fetch('/api/user/invite', {
             method: 'POST',
-            body: JSON.stringify({ email, firstName, role }),
+            body: JSON.stringify({ email, firstName, role, organizationId }),
         })
 
         if (onInvite) {
@@ -26,9 +32,10 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
     }
 
     return showInput ? (
-        <div className={classNames(className, 'space-x-2')}>
+        <form className={classNames(className, 'space-x-2 inline-flex')} onSubmit={handleInvite}>
             <input
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="User's email"
@@ -36,6 +43,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
             />
             <input
                 type="text"
+                required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="User's first name"
@@ -50,8 +58,8 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
                 <option value="moderator">Moderator</option>
                 <option value="admin">Admin</option>
             </select>
-            <Button onClick={handleInvite}>Invite</Button>
-        </div>
+            <Button type="submit">Invite</Button>
+        </form>
     ) : (
         <Button onClick={() => setShowInput(true)} className={className} {...rest}>
             Invite User

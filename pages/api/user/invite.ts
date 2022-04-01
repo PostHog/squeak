@@ -1,7 +1,6 @@
 import withAdminAccess from '../../../util/withAdminAccess'
 import { createClient } from '@supabase/supabase-js'
 import absoluteUrl from 'next-absolute-url'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { definitions } from '../../../@types/supabase'
 
 type UserProfile = definitions['squeak_profiles']
@@ -25,7 +24,7 @@ export default withAdminAccess(async (req, res) => {
     )
 
     if (!invitedUser || invitedUserError) {
-        console.error(`[🧵 Invite] Error creating user profile`)
+        console.error(`[🧵 Invite] Error inviting user`)
         res.status(500)
 
         if (invitedUserError) {
@@ -37,7 +36,7 @@ export default withAdminAccess(async (req, res) => {
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await supabaseServerClient({ res, req })
+    const { data: userProfile, error: userProfileError } = await supabaseServiceRoleClient
         .from<UserProfile>('squeak_profiles')
         .insert({ first_name: firstName })
         .limit(1)
@@ -49,7 +48,7 @@ export default withAdminAccess(async (req, res) => {
         return
     }
 
-    const { error: userProfileReadonlyError } = await supabaseServerClient({ res, req })
+    const { error: userProfileReadonlyError } = await supabaseServiceRoleClient
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .insert({
             role,
