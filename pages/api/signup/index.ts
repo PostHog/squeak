@@ -51,7 +51,7 @@ export default withMultiTenantCheck(async (req, res) => {
     const { data: config, error: configError } = await supabaseServiceRoleClient
         .from<Config>('squeak_config')
         .insert({
-            organisation_id: organization.id,
+            organization_id: organization.id,
             preflight_complete: true,
         })
         .limit(1)
@@ -100,7 +100,7 @@ export default withMultiTenantCheck(async (req, res) => {
             role: 'admin',
             profile_id: userProfile.id,
             user_id: user.id,
-            organisation_id: organization.id,
+            organization_id: organization.id,
         })
         .limit(1)
         .single()

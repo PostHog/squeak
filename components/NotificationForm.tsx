@@ -43,7 +43,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                 company_name: values.companyName,
                 company_domain: values.companyDomain,
             })
-            .match({ organisation_id: organizationId })
+            .match({ organization_id: organizationId })
 
         if (!error && redirect) {
             Router.push(redirect)

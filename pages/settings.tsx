@@ -83,7 +83,7 @@ export const getServerSideProps = withAdminAccess({
             .select(
                 `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel`
             )
-            .eq('organisation_id', organizationId)
+            .eq('organization_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

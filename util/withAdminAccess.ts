@@ -4,6 +4,7 @@ import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/n
 import { definitions } from '../@types/supabase'
 import { createClient } from '@supabase/supabase-js'
 import type { GetServerSideProps, NextApiHandler } from 'next'
+import getActiveOrganization from './getActiveOrganization'
 
 type Config = definitions['squeak_config']
 type UserReadonlyProfile = definitions['squeak_profiles_readonly']
@@ -18,6 +19,7 @@ type Args =
 const withAdminAccess = (arg: Args) => {
     if (typeof arg === 'function') {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+            const organizationId = getActiveOrganization({ req, res })
             const { user } = await getUser({ req, res })
 
             if (!user) {
@@ -32,6 +34,8 @@ const withAdminAccess = (arg: Args) => {
                 .from<UserReadonlyProfile>('squeak_profiles_readonly')
                 .select('role')
                 .eq('user_id', user?.id)
+                .eq('organization_id', organizationId)
+                .limit(1)
                 .single()
 
             if (!userReadonlyProfile) {
@@ -78,6 +82,9 @@ const withAdminAccess = (arg: Args) => {
                 }
 
                 const { user } = await getUser(context)
+                const organizationId = getActiveOrganization(context)
+
+                console.log(organizationId)
 
                 if (!user) {
                     return {
@@ -92,6 +99,8 @@ const withAdminAccess = (arg: Args) => {
                     .from<UserReadonlyProfile>('squeak_profiles_readonly')
                     .select('role')
                     .eq('user_id', user?.id)
+                    .eq('organization_id', organizationId)
+                    .limit(1)
                     .single()
 
                 if (!userReadonlyProfile) {

@@ -55,7 +55,7 @@ export default withAdminAccess(async (req, res) => {
             role,
             profile_id: userProfile.id,
             user_id: invitedUser.id,
-            organisation_id: organizationId,
+            organization_id: organizationId,
         })
         .limit(1)
         .single()

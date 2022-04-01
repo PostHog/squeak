@@ -43,7 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .insert({
             body: body,
             message_id: messageId,
-            organisation_id: organizationId,
+            organization_id: organizationId,
             profile_id: userProfile.id,
         })
         .limit(1)

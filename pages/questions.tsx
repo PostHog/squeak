@@ -10,6 +10,8 @@ import type { definitions } from '../@types/supabase'
 import type { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
+import type { GetStaticPropsResult } from 'next'
+import getActiveOrganization from '../util/getActiveOrganization'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -246,6 +248,8 @@ Questions.getLayout = function getLayout(page) {
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        const organizationId = await getActiveOrganization(context)
+
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
         const end = start + 19
         const getQuestions = async () => {
@@ -253,6 +257,7 @@ export const getServerSideProps = withAdminAccess({
                 .from<Message>('squeak_messages')
                 .select('subject, id, slug, created_at, published', { count: 'exact' })
                 .order('created_at')
+                .eq('organization_id', organizationId)
                 .range(start, end)
 
             return {
@@ -262,6 +267,7 @@ export const getServerSideProps = withAdminAccess({
                             .from<Reply>('squeak_replies')
                             .select(`id`)
                             .eq('message_id', question.id)
+                            .eq('organization_id', organizationId)
                             .order('created_at')
                             .then((data) => ({
                                 question,
