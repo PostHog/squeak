@@ -1,4 +1,5 @@
 import { Dialog } from '@headlessui/react'
+import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import Button from './Button'
@@ -20,37 +21,101 @@ const Webhook = ({ onSubmit, initialValues }) => {
         onSubmit()
     }
     return (
-        <Formik
-            validateOnMount
-            validate={(values) => {
-                const errors = {}
-                if (!values.url) {
-                    errors.url = 'Required'
-                }
-                return errors
-            }}
-            initialValues={{ url: initialValues?.url }}
-            onSubmit={handleSave}
-        >
-            {({ isValid }) => {
-                return (
-                    <Form>
-                        <label htmlFor="url">Webhook URL</label>
-                        <Field id="url" name="url" placeholder="Webhook URL" />
-                        <div className="flex space-x-2 mt-3">
-                            <Button disabled={!isValid} type="submit">
-                                {initialValues ? 'Save' : 'Add'}
-                            </Button>
-                            {initialValues && (
-                                <Button onClick={handleDelete} className="bg-red-500">
-                                    Delete
+        <>
+            <h3 className="mb-4 text-xl">Outgoing webhook</h3>
+            <Formik
+                validateOnMount
+                validate={(values) => {
+                    const errors = {}
+                    if (!values.url) {
+                        errors.url = 'Required'
+                    }
+                    return errors
+                }}
+                initialValues={{ url: initialValues?.url }}
+                onSubmit={handleSave}
+            >
+                {({ isValid }) => {
+                    return (
+                        <Form>
+                            <label htmlFor="url">Webhook URL</label>
+                            <Field id="url" name="url" placeholder="Webhook URL" />
+                            <div className="flex space-x-2 mt-3">
+                                <Button disabled={!isValid} type="submit">
+                                    {initialValues ? 'Save' : 'Add'}
                                 </Button>
-                            )}
-                        </div>
-                    </Form>
-                )
-            }}
-        </Formik>
+                                {initialValues && (
+                                    <Button onClick={handleDelete} className="bg-red-500">
+                                        Delete
+                                    </Button>
+                                )}
+                            </div>
+                        </Form>
+                    )
+                }}
+            </Formik>
+        </>
+    )
+}
+
+const SlackWebhook = ({ onSubmit, initialValues }) => {
+    const handleSave = async ({ url }) => {
+        if (initialValues) {
+            await supabaseClient.from('squeak_webhook_notifications').update({ url }).match({ id: initialValues.id })
+        } else {
+            await supabaseClient.from('squeak_webhook_notifications').insert({ url, type: 'slack' })
+        }
+
+        onSubmit()
+    }
+
+    const handleDelete = async (e) => {
+        e.preventDefault()
+        await supabaseClient.from('squeak_webhook_notifications').delete().match({ id: initialValues.id })
+        onSubmit()
+    }
+    return (
+        <>
+            <h3 className="mb-4 text-xl flex items-center space-x-2">
+                <span>Slack notification</span>
+                <span>
+                    <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noreferrer">
+                        <QuestionMarkCircleIcon className="w-4 text-gray-400" />
+                    </a>
+                </span>
+            </h3>
+            <Formik
+                validateOnMount
+                validate={(values) => {
+                    const errors = {}
+                    if (!values.url) {
+                        errors.url = 'Required'
+                    }
+                    return errors
+                }}
+                initialValues={{ url: initialValues?.url }}
+                onSubmit={handleSave}
+            >
+                {({ isValid }) => {
+                    return (
+                        <Form>
+                            <label htmlFor="url">Slack incoming webhook URL</label>
+                            <Field id="url" name="url" placeholder="Slack incoming webhook URL" />
+                            <div className="flex space-x-2 mt-3">
+                                <Button disabled={!isValid} type="submit">
+                                    {initialValues ? 'Save' : 'Add'}
+                                </Button>
+                                {initialValues && (
+                                    <Button onClick={handleDelete} className="bg-red-500">
+                                        Delete
+                                    </Button>
+                                )}
+                            </div>
+                        </Form>
+                    )
+                }}
+            </Formik>
+        </>
     )
 }
 
@@ -63,6 +128,7 @@ export default function WebhookModal({ type = 'webhook', open = false, onSubmit,
                 {
                     {
                         webhook: <Webhook initialValues={initialValues} onSubmit={onSubmit} />,
+                        slack: <SlackWebhook initialValues={initialValues} onSubmit={onSubmit} />,
                     }[type]
                 }
             </div>

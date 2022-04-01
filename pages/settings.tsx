@@ -1,8 +1,6 @@
-import { Menu } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/outline'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
@@ -23,17 +21,7 @@ interface Props {
     slackQuestionChannel: string
 }
 
-const Settings: NextPageWithLayout<Props> = ({
-    mailgunApiKey,
-    mailgunDomain,
-    companyName,
-    companyDomain,
-    slackApiKey,
-    slackQuestionChannel,
-}) => {
-    const [modalOpen, setModalOpen] = useState(false)
-    const [modalType, setModalType] = useState('')
-
+const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
     return (
         <div>
             <h3>Snippet</h3>
@@ -45,28 +33,7 @@ const Settings: NextPageWithLayout<Props> = ({
             <h3>Alerts</h3>
             <p className="mb-6">Setup outgoing webhooks to alert other services about new questions added to Squeak!</p>
 
-            <Menu>
-                <Menu.Button className="px-4 py-2 rounded-md border border-gray-400 flex items-center space-x-4">
-                    <span>Add alert</span>
-                    <span>
-                        <ChevronDownIcon className="w-4 text-gray-400" />
-                    </span>
-                </Menu.Button>
-                <Menu.Items className="absolute bg-white shadow-md rounded-md z-10">
-                    <Menu.Item>
-                        <button
-                            onClick={() => {
-                                setModalType('webhook')
-                                setModalOpen(true)
-                            }}
-                            className="font-bold hover:bg-gray-50 transition-colors p-4"
-                        >
-                            Outgoing webhook
-                        </button>
-                    </Menu.Item>
-                </Menu.Items>
-            </Menu>
-            <WebhookTable modalOpen={modalOpen} setModalOpen={setModalOpen} />
+            <WebhookTable />
             <h3 className="mt-12">Notifications</h3>
             <p>Manage configuration for reply notifications via Mailgun</p>
             <hr />
