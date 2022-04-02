@@ -1,13 +1,18 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { definitions } from '../../@types/supabase'
 import sendReplyNotification from '../../util/sendReplyNotification'
 import getUserProfile from '../../util/getUserProfile'
+import { createClient } from '@supabase/supabase-js'
 
 type Reply = definitions['squeak_replies']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    const supabaseServiceRoleClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    )
+
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
@@ -38,7 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    const { data, error } = await supabaseServerClient({ req, res })
+    const { data, error } = await supabaseServiceRoleClient
         .from<Reply>('squeak_replies')
         .insert({
             body: body,
