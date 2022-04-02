@@ -110,7 +110,7 @@ const Question = () => {
         getQuestion(id).then((question) => {
             setQuestion(question)
         })
-    }, [])
+    }, [id])
 
     return question && <QuestionView question={question} />
 }

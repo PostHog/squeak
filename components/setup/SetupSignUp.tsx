@@ -1,7 +1,6 @@
 import SignupForm from '../SignupForm'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import Router from 'next/router'
 
 interface Props {
     setView: Dispatch<SetStateAction<'signup' | 'profile'>>

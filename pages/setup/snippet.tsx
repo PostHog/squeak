@@ -1,4 +1,4 @@
-import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import { ReactElement } from 'react'
 import { definitions } from '../../@types/supabase'
@@ -7,9 +7,9 @@ import Button from '../../components/Button'
 import CodeSnippet from '../../components/CodeSnippet'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
+import getActiveOrganization from '../../util/getActiveOrganization'
 
 type Config = definitions['squeak_config']
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
 interface Props {}
 
@@ -50,19 +50,12 @@ export const getServerSideProps = withPreflightCheck({
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const supabaseClient = supabaseServerClient(context)
-
-        const { user } = await getUser(context)
-
-        const { data: userProfileReadonly } = await supabaseClient
-            .from<UserProfileReadonly>('squeak_profiles_readonly')
-            .select('organization_id')
-            .eq('user_id', user?.id)
-            .single()
+        const organizationId = getActiveOrganization(context)
 
         await supabaseClient
             .from<Config>('squeak_config')
             .update({ preflight_complete: true })
-            .match({ organization_id: userProfileReadonly?.organization_id })
+            .match({ organization_id: organizationId })
 
         return {
             props: {},

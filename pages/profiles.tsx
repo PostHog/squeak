@@ -1,5 +1,5 @@
 import { NextPageWithLayout } from '../@types/types'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
@@ -19,7 +19,7 @@ const Users: NextPageWithLayout<Props> = () => {
 
     const organizationId = getActiveOrganization()
 
-    const fetchProfiles = async () => {
+    const fetchProfiles = useCallback(async () => {
         const { data } = await supabaseClient
             .from<UserProfileView>('squeak_profiles_view')
             .select(`profile_id, user_id, first_name, last_name, avatar, role`)
@@ -28,11 +28,11 @@ const Users: NextPageWithLayout<Props> = () => {
         // TODO(JS): Handle errors here
 
         setProfiles(data ?? [])
-    }
+    }, [organizationId])
 
     useEffect(() => {
         fetchProfiles()
-    }, [])
+    }, [fetchProfiles])
 
     return (
         <>
