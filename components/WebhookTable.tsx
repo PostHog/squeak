@@ -1,7 +1,7 @@
 import { Menu } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
@@ -26,14 +26,14 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
     }
     const [webhooks, setWebhooks] = useState<Array<WebhookConfig>>([])
 
-    const getWebhooks = async () => {
+    const getWebhooks = useCallback(async () => {
         const { data } = await supabaseClient
             .from<WebhookConfig>('squeak_webhook_config')
             .select('url, type, id')
             .eq('organization_id', organizationId)
 
         setWebhooks(data ?? [])
-    }
+    }, [organizationId])
 
     const handleWebhookSubmit = () => {
         getWebhooks()
