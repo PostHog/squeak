@@ -1,14 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../../@types/supabase'
-import withMultiTenantCheck from '../../../util/withMultiTenantCheck'
+import { definitions } from '../../@types/supabase'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 type Config = definitions['squeak_config']
 type Organization = definitions['squeak_organizations']
 type UserProfile = definitions['squeak_profiles']
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
-export default withMultiTenantCheck(async (req, res) => {
+// This API route is for user setup in the self-hosted preflight.
+export default withPreflightCheck(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -24,7 +25,22 @@ export default withMultiTenantCheck(async (req, res) => {
         return
     }
 
+    const { data: organizations } = await supabaseServiceRoleClient.from<Organization>('squeak_organizations')
+
+    if (organizations?.length) {
+        console.error(`[🧵 Setup] Organization already exists, limited to one`)
+
+        res.status(500)
+        res.json({ error: 'An organization already exists, maximum of one allowed' })
+        return
+    }
+
     const { firstName, lastName, organizationName } = JSON.parse(req.body)
+
+    if (!firstName || !lastName || !organizationName) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    }
 
     const { data: organization, error: organisatizationError } = await supabaseServiceRoleClient
         .from<Organization>('squeak_organizations')
@@ -35,12 +51,12 @@ export default withMultiTenantCheck(async (req, res) => {
         .single()
 
     if (!organization || organisatizationError) {
-        console.error(`[🧵 Signup] Error creating organization`)
+        console.error(`[🧵 Setup] Error creating organization`)
 
         res.status(500)
 
         if (organisatizationError) {
-            console.error(`[🧵 Signup] ${organisatizationError.message}`)
+            console.error(`[🧵 Setup] ${organisatizationError.message}`)
 
             res.json({ error: organisatizationError.message })
         }
@@ -52,18 +68,18 @@ export default withMultiTenantCheck(async (req, res) => {
         .from<Config>('squeak_config')
         .insert({
             organization_id: organization.id,
-            preflight_complete: true,
+            preflight_complete: false,
         })
         .limit(1)
         .single()
 
     if (!config || configError) {
-        console.error(`[🧵 Signup] Error creating config`)
+        console.error(`[🧵 Setup] Error creating config`)
 
         res.status(500)
 
         if (configError) {
-            console.error(`[🧵 Signup] ${configError.message}`)
+            console.error(`[🧵 Setup] ${configError.message}`)
 
             res.json({ error: configError.message })
         }
@@ -81,12 +97,12 @@ export default withMultiTenantCheck(async (req, res) => {
         .single()
 
     if (!userProfile || userProfileError) {
-        console.error(`[🧵 Signup] Error creating user profile`)
+        console.error(`[🧵 Setup] Error creating user profile`)
 
         res.status(500)
 
         if (userProfileError) {
-            console.error(`[🧵 Signup] ${userProfileError.message}`)
+            console.error(`[🧵 Setup] ${userProfileError.message}`)
 
             res.json({ error: userProfileError.message })
         }
@@ -106,12 +122,12 @@ export default withMultiTenantCheck(async (req, res) => {
         .single()
 
     if (!userProfileReadonly || userProfileReadonlyError) {
-        console.error(`[🧵 Signup] Error creating user readonly profile`)
+        console.error(`[🧵 Setup] Error creating user readonly profile`)
 
         res.status(500)
 
         if (userProfileReadonlyError) {
-            console.error(`[🧵 Signup] ${userProfileReadonlyError.message}`)
+            console.error(`[🧵 Setup] ${userProfileReadonlyError.message}`)
 
             res.json({ error: userProfileReadonlyError.message })
         }
