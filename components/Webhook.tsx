@@ -4,6 +4,7 @@ import Button from './Button'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
@@ -14,19 +15,28 @@ interface Props {
 }
 
 const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }) => {
+    const { addToast } = useToasts()
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
 
     const handleSave = async ({ url }: FormValues) => {
         if (initialValues) {
-            await supabaseClient
+            const { error } = await supabaseClient
                 .from<WebhookConfig>('squeak_webhook_config')
                 .update({ url })
                 .match({ id: initialValues.id, organinization_id: organizationId })
+
+            addToast(error ? error.message : 'Webhook updated', {
+                appearance: error ? 'error' : 'success',
+            })
         } else {
-            await supabaseClient
+            const { error } = await supabaseClient
                 .from<WebhookConfig>('squeak_webhook_config')
                 .insert({ url, type: 'webhook', organization_id: organizationId })
+
+            addToast(error ? error.message : 'Webhook created', {
+                appearance: error ? 'error' : 'success',
+            })
         }
 
         onSubmit()

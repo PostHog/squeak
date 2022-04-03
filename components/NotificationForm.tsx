@@ -3,6 +3,7 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import Router from 'next/router'
 import useActiveOrganization from '../util/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 
 type Config = definitions['squeak_config']
 
@@ -30,6 +31,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     redirect,
     actionButtons,
 }) => {
+    const { addToast } = useToasts()
     const { getActiveOrganization } = useActiveOrganization()
 
     const handleSaveNotifications = async (values: InitialValues) => {
@@ -49,8 +51,9 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             Router.push(redirect)
         }
 
-        // TODO(JS): Trigger toast?
-        // TODO(JS): Handle errors here?
+        addToast(error ? error.message : 'Notification settings saved', {
+            appearance: error ? 'error' : 'success',
+        })
     }
 
     const initialValues: InitialValues = {
