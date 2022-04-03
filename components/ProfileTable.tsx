@@ -3,6 +3,7 @@ import { definitions } from '../@types/supabase'
 import Avatar from './Avatar'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { useToasts } from 'react-toast-notifications'
 
 type Profile = definitions['squeak_profiles_view']
 type ProfileReadonly = definitions['squeak_profiles_readonly']
@@ -52,16 +53,20 @@ interface RowProps {
 }
 
 const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
+    const { addToast } = useToasts()
     const { user } = useUser()
     const [role, setRole] = useState(profile.role)
 
     const handleRoleChange = async (role: string) => {
-        await supabaseClient
+        const { error } = await supabaseClient
             .from<ProfileReadonly>('squeak_profiles_readonly')
             .update({ role })
             .match({ profile_id: profile.profile_id })
 
-        // TODO(JS): Handle errors
+        if (error) {
+            addToast(error.message, { appearance: 'error', autoDismiss: true })
+            return
+        }
 
         setRole(role)
     }
