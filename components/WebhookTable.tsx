@@ -6,12 +6,14 @@ import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import { useUser } from '@supabase/supabase-auth-helpers/react'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 
 interface Props {}
 
 const WebhookTable: React.VoidFunctionComponent<Props> = () => {
+    const { isLoading: isUserLoading } = useUser()
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
 
@@ -27,13 +29,16 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
     const [webhooks, setWebhooks] = useState<Array<WebhookConfig>>([])
 
     const getWebhooks = useCallback(async () => {
-        const { data } = await supabaseClient
-            .from<WebhookConfig>('squeak_webhook_config')
-            .select('url, type, id')
-            .eq('organization_id', organizationId)
-
-        setWebhooks(data ?? [])
-    }, [organizationId])
+        if (!isUserLoading) {
+            await supabaseClient
+                .from<WebhookConfig>('squeak_webhook_config')
+                .select('url, type, id')
+                .eq('organization_id', organizationId)
+                .then(({ data }) => {
+                    setWebhooks(data ?? [])
+                })
+        }
+    }, [isUserLoading, organizationId])
 
     const handleWebhookSubmit = () => {
         getWebhooks()
