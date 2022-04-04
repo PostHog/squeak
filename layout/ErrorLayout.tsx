@@ -16,7 +16,7 @@ const ErrorLayout: React.VoidFunctionComponent<Props> = ({ error }) => {
             <div className="max-w-max mx-auto my-auto">
                 <main>
                     <div>
-                        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight text-center">Oops!</h1>
+                        <h1 className="text-4xl font-extrabold text-primary-light tracking-tight text-center">Oops!</h1>
                         <p className="mt-1 text-base text-gray-500 text-center">{error.message}</p>
                         <div className="mt-10 flex justify-center space-x-3 mx-auto">
                             <Link href="/login" passHref>

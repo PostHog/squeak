@@ -65,7 +65,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                 open={modalOpen}
             />
             <Menu>
-                <Menu.Button className="px-4 py-2 rounded-md border border-gray-400 flex items-center space-x-4">
+                <Menu.Button className="px-4 py-2 rounded-md border border-gray-light-400 flex items-center space-x-4">
                     <span>Add alert</span>
                     <span>
                         <ChevronDownIcon className="w-4 text-gray-400" />
@@ -107,13 +107,13 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                                         <tr>
                                             <th
                                                 scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                                className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                             >
                                                 Type
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                                className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                             >
                                                 URL
                                             </th>
@@ -136,7 +136,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
 
                                                     <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                         <button
-                                                            className="text-orange-500 font-bold"
+                                                            className="text-accent-light font-bold"
                                                             onClick={() => handleEdit({ url, type, id })}
                                                         >
                                                             Edit

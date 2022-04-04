@@ -41,7 +41,7 @@ const ForgotPassword: NextPageWithLayout<Props> = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         autoComplete="email"
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 border border-gray-light rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
             </div>
@@ -49,7 +49,7 @@ const ForgotPassword: NextPageWithLayout<Props> = () => {
             <div>
                 <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                     Reset password
                 </button>
@@ -57,7 +57,7 @@ const ForgotPassword: NextPageWithLayout<Props> = () => {
 
             <div className="text-center text-sm">
                 <Link href="/login" passHref>
-                    <a className="font-medium text-orange-600 hover:text-orange-500">
+                    <a className="font-medium text-accent-light hover:text-accent-light">
                         Remembered your password? Sign in instead
                     </a>
                 </Link>

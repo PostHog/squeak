@@ -45,7 +45,7 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                             <Button disabled={!isValid} type="submit">
                                 Continue
                             </Button>
-                            <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                            <button onClick={handleSkip} className="text-accent-light font-semibold">
                                 Skip
                             </button>
                         </>

@@ -4,6 +4,7 @@
 
 html,
 body {
+    @apply bg-light;
     padding: 0;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
@@ -11,7 +12,7 @@ body {
 }
 
 a {
-    @apply text-orange-600 font-semibold;
+    @apply text-accent-light font-semibold;
 }
 
 * {
@@ -32,11 +33,11 @@ li {
 
 input,
 select {
-    @apply block px-4 py-2 border-gray-300 border rounded-md w-full;
+    @apply block px-4 py-2 border-gray-light border rounded-md w-full;
 }
 
 select {
-    @apply block pl-2 pr-14 py-2 border-gray-300 border rounded-md;
+    @apply block pl-2 pr-14 py-2 border-gray-light border rounded-md;
 }
 
 label {
@@ -45,7 +46,7 @@ label {
 
 .active-setup-tab::before {
     content: '';
-    @apply absolute bg-orange-500 w-1 rounded-full h-full -translate-x-full -left-2;
+    @apply absolute bg-accent-light w-1 rounded-full h-full -translate-x-full -left-2;
 }
 
 .setup-layout {
@@ -53,7 +54,7 @@ label {
         @apply max-w-[500px] w-full;
     }
     tr {
-        @apply border-b border-gray-300 border-dashed;
+        @apply border-b border-gray-light border-dashed;
         > td {
             @apply py-3;
         }
@@ -69,10 +70,10 @@ label {
     }
 
     .sbui-btn {
-        @apply bg-orange-500 text-white;
+        @apply bg-accent-light text-white;
     }
 
     .sbui-typography-link {
-        @apply text-orange-500;
+        @apply text-accent-light;
     }
 }
