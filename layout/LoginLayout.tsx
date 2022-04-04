@@ -22,7 +22,7 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children
                     <Logo className="w-40" />
                 </div>
 
-                {title && <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">{title}</h2>}
+                {title && <h2 className="mt-6 text-center text-2xl font-extrabold text-primary-light">{title}</h2>}
                 {subtitle}
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

@@ -72,14 +72,14 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                 <button
                                     onClick={() => updatePublished(true)}
                                     type="button"
-                                    className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
+                                    className="inline-flex items-center rounded border border-gray-light bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                                 >
                                     Publish selected
                                 </button>
                                 <button
                                     onClick={() => updatePublished(false)}
                                     type="button"
-                                    className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
+                                    className="inline-flex items-center rounded border border-gray-light bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                                 >
                                     Unpublish selected
                                 </button>
@@ -91,7 +91,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                     <th scope="col" className="relative w-12 px-6 sm:w-16 sm:px-8">
                                         <input
                                             type="checkbox"
-                                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
+                                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-light text-accent-light focus:ring-orange-500 sm:left-6"
                                             ref={checkbox}
                                             checked={checked}
                                             onChange={toggleAll}
@@ -99,31 +99,31 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                     </th>
                                     <th
                                         scope="col"
-                                        className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
+                                        className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-primary-light"
                                     >
                                         Subject
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                     >
                                         Date
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                     >
                                         Replies
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                     >
                                         Slug
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-primary-light"
                                     >
                                         Published
                                     </th>
@@ -149,7 +149,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                                 )}
                                                 <input
                                                     type="checkbox"
-                                                    className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
+                                                    className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-light text-accent-light focus:ring-orange-500 sm:left-6"
                                                     value={id}
                                                     checked={selectedQuestions.includes(question)}
                                                     onChange={(e) =>
@@ -165,8 +165,8 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                                 className={classNames(
                                                     'whitespace-nowrap py-4 pr-3 text-sm font-medium max-w-[200px] overflow-hidden',
                                                     selectedQuestions.includes(question)
-                                                        ? 'text-orange-600'
-                                                        : 'text-gray-900'
+                                                        ? 'text-accent-light'
+                                                        : 'text-primary-light'
                                                 )}
                                             >
                                                 {subject}
@@ -195,7 +195,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                 </div>
             </div>
             <nav
-                className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+                className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-light-200 sm:px-6"
                 aria-label="Pagination"
             >
                 <div className="hidden sm:block">
@@ -209,7 +209,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                     {start > 0 && (
                         <a
                             href={`/questions?start=${start - 20}`}
-                            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            className="relative inline-flex items-center px-4 py-2 border border-gray-light text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                         >
                             Previous
                         </a>
@@ -217,7 +217,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                     {start + 20 < results.count && (
                         <a
                             href={`/questions?start=${start + 20}`}
-                            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-light text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                         >
                             Next
                         </a>
