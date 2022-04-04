@@ -1,5 +1,5 @@
 import { CheckIcon } from '@heroicons/react/outline'
-import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import classNames from 'classnames'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -9,8 +9,8 @@ import type { definitions } from '../@types/supabase'
 import type { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
-import type { GetStaticPropsResult } from 'next'
 import getActiveOrganization from '../util/getActiveOrganization'
+import getQuestions from '../util/getQuestions'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -238,43 +238,19 @@ Questions.getLayout = function getLayout(page) {
 
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
-    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+    async getServerSideProps(context) {
         const organizationId = await getActiveOrganization(context)
-
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
-        const end = start + 19
-        const getQuestions = async () => {
-            const { data: questions, count } = await supabaseServerClient(context)
-                .from<Message>('squeak_messages')
-                .select('subject, id, slug, created_at, published', { count: 'exact' })
-                .order('created_at')
-                .eq('organization_id', organizationId)
-                .range(start, end)
 
-            return {
-                questions: await Promise.all(
-                    (questions || []).map((question) => {
-                        return supabaseServerClient(context)
-                            .from<Reply>('squeak_replies')
-                            .select(`id`)
-                            .eq('message_id', question.id)
-                            .eq('organization_id', organizationId)
-                            .order('created_at')
-                            .then((data) => ({
-                                question,
-                                replies: data?.data || [],
-                            }))
-                    })
-                ),
-                count: count ?? 0,
-            }
+        const { data, error } = await getQuestions(context, { start, organizationId })
+
+        if (error) {
+            return { props: { error: error.message } }
         }
-
-        const results = await getQuestions()
 
         return {
             props: {
-                results,
+                results: data,
                 start,
             },
         }
