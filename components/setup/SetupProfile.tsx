@@ -42,7 +42,7 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
 
     return (
         <>
-            <h2 className="text-2xl font-bold text-gray-900">Complete profile</h2>
+            <h2 className="text-2xl font-bold text-primary-light">Complete profile</h2>
 
             <div className="mt-6">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -56,7 +56,7 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
                         autoComplete="none"
                         value={user.email}
                         disabled
-                        className="appearance-none block w-full px-3 py-2 bg-gray-100 cursor-not-allowed border border-gray-300 rounded-md shadow-sm sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 bg-gray-100 cursor-not-allowed border border-gray-light rounded-md shadow-sm sm:text-sm"
                     />
                 </div>
             </div>

@@ -52,7 +52,7 @@ const Signup: NextPageWithLayout<Props> = () => {
 
             <div className="mt-6 text-center text-sm">
                 <Link href="/login" passHref>
-                    <a className="font-medium text-orange-600 hover:text-orange-500">
+                    <a className="font-medium text-accent-light hover:text-accent-light">
                         Already got an account? Sign in instead
                     </a>
                 </Link>

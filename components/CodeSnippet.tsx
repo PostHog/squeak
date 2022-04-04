@@ -39,7 +39,7 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
                 {snippet}
             </SyntaxHighlighter>
 
-            <button onClick={copyToClipboard} className="mt-2 mb-12 text-orange-600 font-semibold flex space-x-2">
+            <button onClick={copyToClipboard} className="mt-2 mb-12 text-accent-light font-semibold flex space-x-2">
                 <span>Copy to clipboard</span>
                 {snippetCopied && <span className="text-green-600 font-normal">Copied</span>}
             </button>

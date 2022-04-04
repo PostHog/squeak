@@ -27,7 +27,7 @@ const SetupSignUp: React.VoidFunctionComponent<Props> = ({ setView }) => {
 
     return (
         <>
-            <h2 className="text-2xl font-bold text-gray-900">Create an account</h2>
+            <h2 className="text-2xl font-bold text-primary-light">Create an account</h2>
 
             <SignupForm
                 handleSignup={handleSignup}
