@@ -15,7 +15,7 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
 <script>
 (function() {
     window.squeak = {
-        suapabase: {
+        supabase: {
             apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
             url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
         },
