@@ -8,11 +8,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const params = req.body
+    const params = JSON.parse(req.body)
     const { data, error } = await getQuestions({ req, res }, params)
 
     if (error) {
+        console.error(error.message)
         res.status(500).json({ error: error.message })
+        return
     }
 
     res.status(200).json(data)
