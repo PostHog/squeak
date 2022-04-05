@@ -74,7 +74,7 @@ interface Props {
     slackQuestionChannel: string
     redirect?: string
     actionButtons: (isValid: boolean) => JSX.Element
-    onSubmit: (values: InitialValues) => void
+    onSubmit?: (values: InitialValues) => void
 }
 
 interface InitialValues {

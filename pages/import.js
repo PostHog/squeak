@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { WebClient } = require('@slack/web-api')
-/* eslint-enable @typescript-eslint/no-var-requires */
 import { CogIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
@@ -294,7 +291,7 @@ Import.getLayout = function getLayout(page) {
 
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
-    async getServerSideProps(context) {
+    async getServerSideProps() {
         return {
             props: {},
         }
