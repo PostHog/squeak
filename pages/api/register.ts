@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { token, organizationId, firstName, lastName } = JSON.parse(req.body)
+    const { token, organizationId, firstName, lastName, avatar } = JSON.parse(req.body)
 
     if (!organizationId || !token) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -45,6 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .insert({
             first_name: firstName,
             last_name: lastName,
+            avatar,
         })
         .limit(1)
         .single()
@@ -93,6 +94,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         profileId: userProfile.id,
         firstName,
         lastName,
+        avatar,
         organizationId: organizationId,
     })
 }
