@@ -11,6 +11,7 @@
         "migrate": "node-pg-migrate"
     },
     "dependencies": {
+        "@fontsource/nunito": "^4.5.8",
         "@headlessui/react": "^1.5.0",
         "@heroicons/react": "^1.0.6",
         "@popperjs/core": "^2.11.4",
