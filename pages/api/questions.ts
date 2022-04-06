@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { data, error } = await getQuestions({ req, res }, params)
 
     if (error) {
-        console.error(error.message)
+        console.error(`[Questions] ${error.message}`)
         res.status(500).json({ error: error.message })
         return
     }

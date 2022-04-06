@@ -127,8 +127,8 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                     >
                                         Published
                                     </th>
-                                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                        <span className="sr-only">View</span>
+                                    <th scope="col" className="sr-only px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        View
                                     </th>
                                 </tr>
                             </thead>
@@ -138,6 +138,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                         question: { id, subject, created_at, slug, published },
                                         replies,
                                     } = question
+                                    const replyCount = replies.length
                                     return (
                                         <tr
                                             key={id}
@@ -175,7 +176,7 @@ const QuestionsTable: React.VoidFunctionComponent<Props> = ({ results, start }) 
                                                 {created_at ? template.render(new Date(created_at)) : 'N/A'}
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                {replies?.length - 1 || 0}
+                                                {replyCount > 0 ? replyCount - 1 : 0}
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                 {slug}

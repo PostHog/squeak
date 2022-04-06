@@ -75,6 +75,7 @@ interface Props {
     slackQuestionChannel: string
     redirect?: string
     actionButtons: (isValid: boolean) => JSX.Element
+    onSubmit?: (values: InitialValues) => void
 }
 
 interface InitialValues {
@@ -87,6 +88,7 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
     slackQuestionChannel,
     redirect,
     actionButtons,
+    onSubmit,
 }) => {
     const { getActiveOrganization } = useActiveOrganization()
 
@@ -100,6 +102,8 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
                 slack_question_channel: values.slackQuestionChannel,
             })
             .match({ organization_id: organizationId })
+
+        onSubmit && onSubmit(values)
 
         if (!error && redirect) {
             Router.push(redirect)

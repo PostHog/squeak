@@ -1,14 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { ChatAlt2Icon, CogIcon, MenuIcon, UsersIcon, XIcon } from '@heroicons/react/outline'
+import { ChatAlt2Icon, CogIcon, MenuIcon, UploadIcon, UsersIcon, XIcon } from '@heroicons/react/outline'
+import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
 import Logo from '../components/Logo'
-import Head from 'next/head'
 
 const navigation = [
     { name: 'Questions', href: '/questions', icon: ChatAlt2Icon },
     { name: 'Profiles', href: '/profiles', icon: UsersIcon },
+    { name: 'Import', href: '/import', icon: UploadIcon },
 ]
 
 function classNames(...classes: Array<unknown>) {

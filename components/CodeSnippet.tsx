@@ -1,15 +1,26 @@
 import { useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
+import useActiveOrganization from '../util/useActiveOrganization'
 
-const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
+interface Props {
+    className?: string
+}
+
+const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+    const [snippetCopied, setSnippetCopied] = useState(false)
+
+    const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
 <script>
 (function() {
     window.squeak = {
-        suapabase: {
+        supabase: {
             apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
             url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
         },
         apiHost: "//${typeof window !== 'undefined' && window.location.host}",
+        organizationId: "${organizationId}"
     };
     var d = document,
         s = d.createElement("script");
@@ -17,13 +28,6 @@ const snippet = `<div id="squeak-root" style="max-width: 450px"></div>
     (d.head || d.body).appendChild(s);
 })();
 </script>`
-
-interface Props {
-    className?: string
-}
-
-const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
-    const [snippetCopied, setSnippetCopied] = useState(false)
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(snippet)
