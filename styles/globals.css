@@ -28,7 +28,7 @@ h3 {
 
 p,
 li {
-    @apply my-2;
+    @apply my-2 text-[16px];
 }
 
 input,

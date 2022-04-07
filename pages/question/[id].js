@@ -22,7 +22,7 @@ const getQuestion = async (id) => {
                 id,
                 created_at,
                 body,
-                squeak_profiles!replies_profile_id_fkey (
+                squeak_profiles!squeak_replies_profile_id_fkey (
                     first_name, last_name, avatar
                 )
                 `

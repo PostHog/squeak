@@ -17,9 +17,10 @@ function classNames(...classes: Array<unknown>) {
 
 interface Props {
     title: string
+    style: React.CSSProperties
 }
 
-const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
+const AdminLayout: React.FunctionComponent<Props> = ({ title, children, style }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const router = useRouter()
     return (
@@ -30,16 +31,16 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 <link rel="icon" href="/favicon.png" />
             </Head>
-            <div>
+            <div className="items-start flex" style={style}>
                 {/* Static sidebar for desktop */}
-                <div className="flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+                <div className="sticky top-0 max-w-[250px] w-full">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
                     <div className="flex-1 flex flex-col min-h-0">
                         <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
                             <div className="flex items-center flex-shrink-0">
                                 <Logo />
                             </div>
-                            <nav className="mt-5 flex-1 px-7 space-y-1 ">
+                            <nav className="mt-5 flex-1 px-7 space-y-1">
                                 {navigation.map((item) => (
                                     <Link key={item.name} href={item.href} passHref>
                                         <a
@@ -58,13 +59,13 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children }) => {
                         </div>
                     </div>
                 </div>
-                <div className="md:pl-64 flex flex-col flex-1">
+                <div className="flex flex-col flex-1 col-span-2">
                     <main className="flex-1">
                         <div className="py-12">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div>
                                 <h1 className=" mb-6">{title}</h1>
                             </div>
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">{children}</div>
+                            <div>{children}</div>
                         </div>
                     </main>
                 </div>
