@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
+import { createClient } from '@supabase/supabase-js'
 import { definitions } from '../../@types/supabase'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 
@@ -25,9 +25,9 @@ export default withMultiTenantCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName } = JSON.parse(req.body)
+    const { firstName, lastName, organizationName, url } = JSON.parse(req.body)
 
-    if (!firstName || !lastName || !organizationName) {
+    if (!firstName || !lastName || !organizationName || !url) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
@@ -59,6 +59,7 @@ export default withMultiTenantCheck(async (req, res) => {
         .insert({
             organization_id: organization.id,
             preflight_complete: true,
+            company_domain: url,
         })
         .limit(1)
         .single()

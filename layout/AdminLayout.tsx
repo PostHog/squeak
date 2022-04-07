@@ -1,3 +1,4 @@
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -24,6 +25,12 @@ interface Props {
 const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const router = useRouter()
+
+    const handleLogout = () => {
+        supabaseClient.auth.signOut()
+        router.push('/login')
+    }
+
     return (
         <>
             <Head>
@@ -56,6 +63,14 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                                         </a>
                                     </Link>
                                 ))}
+                                <button
+                                    onClick={handleLogout}
+                                    className={classNames(
+                                        'hover:text-gray-600 group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                    )}
+                                >
+                                    Logout
+                                </button>
                             </nav>
                         </div>
                     </div>

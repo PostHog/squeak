@@ -187,9 +187,6 @@ const Import = () => {
                         />
                     </button>
                 </div>
-                <button className="text-lg font-bold text-gray-300">
-                    CSV <span className="text-xs">(coming soon!)</span>
-                </button>
             </div>
             {slackSetup ? (
                 <Surface className="max-w-[500px]">
