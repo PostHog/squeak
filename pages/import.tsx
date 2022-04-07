@@ -1,7 +1,7 @@
 import { CogIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
 import Button from '../components/Button'
@@ -9,124 +9,171 @@ import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
+import useActiveOrganization from '../util/useActiveOrganization'
+import { definitions } from '../@types/supabase'
+import { Message as MessageResponse } from './api/slack/messages'
+
+type Config = definitions['squeak_config']
+type Message = definitions['squeak_messages']
+type Reply = definitions['squeak_replies']
+
+interface SlackData {
+    slackApiKey: string
+    slackQuestionChannel: string
+}
 
 const Import = () => {
-    const [messages, setMessages] = useState([])
-    const checkbox = useRef(null)
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+
+    const checkbox = useRef<HTMLInputElement>(null)
+
+    const [questions, setQuestions] = useState<Array<MessageResponse>>([])
+    const [selectedQuestions, setSelectedQuestions] = useState<Array<MessageResponse>>([])
+
     const [checked, setChecked] = useState(false)
     const [indeterminate, setIndeterminate] = useState(false)
-    const [selectedQuestions, setSelectedQuestions] = useState([])
     const [loading, setLoading] = useState(false)
     const [slackSetup, setSlackSetup] = useState(false)
     const { isLoading } = useUser()
-    const [slackData, setSlackData] = useState({})
+    const [slackData, setSlackData] = useState<SlackData>({
+        slackApiKey: '',
+        slackQuestionChannel: '',
+    })
 
     useLayoutEffect(() => {
-        const isIndeterminate = selectedQuestions.length > 0 && selectedQuestions.length < messages.length
-        setChecked(selectedQuestions.length === messages.length)
+        const isIndeterminate = selectedQuestions.length > 0 && selectedQuestions.length < questions.length
+        setChecked(selectedQuestions.length === questions.length)
         setIndeterminate(isIndeterminate)
 
         if (checkbox.current) {
             checkbox.current.indeterminate = isIndeterminate
         }
-    }, [messages.length, selectedQuestions])
+    }, [questions.length, selectedQuestions])
 
     function toggleAll() {
-        setSelectedQuestions(checked || indeterminate ? [] : messages)
+        setSelectedQuestions(checked || indeterminate ? [] : questions)
         setChecked(!checked && !indeterminate)
         setIndeterminate(false)
     }
 
     const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
-    const insertReply = async ({ body, id, created_at }) => {
+    const insertReply = async ({ body, id, created_at }: { body: string; id: number; created_at: Date | null }) => {
         return supabaseClient
-            .from('squeak_replies')
+            .from<Reply>('squeak_replies')
             .insert({
-                created_at,
+                created_at: created_at ? created_at.toISOString() : '',
                 body,
                 message_id: id,
+                organization_id: organizationId,
             })
+            .limit(1)
             .single()
     }
 
     const importSelected = async () => {
         setLoading(true)
-        const newMessages = [...messages]
+        const newMessages = [...questions]
+
         for (const question of selectedQuestions) {
             const index = newMessages.indexOf(question)
             newMessages.splice(index, 1)
             const { subject, slug, body, replies, reply_count, ts } = question
             const { data: message } = await supabaseClient
-                .from('squeak_messages')
+                .from<Message>('squeak_messages')
                 .insert({
                     slack_timestamp: ts,
-                    created_at: new Date(ts * 1000),
+                    created_at: ts ? new Date(parseInt(ts) * 1000).toISOString() : '',
                     subject: subject || 'No subject',
                     slug: [slug],
                     published: !!subject && !!slug,
+                    organization_id: organizationId,
                 })
                 .single()
+
+            if (!message) {
+                continue
+            }
+
             if (reply_count && reply_count >= 1 && replies) {
                 await Promise.all(
                     replies.map(({ body, ts }) => {
-                        return insertReply({ body, id: message.id, created_at: new Date(ts * 1000) })
+                        return insertReply({
+                            body: body || '',
+                            id: message.id,
+                            created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                        })
                     })
                 )
             } else {
-                await insertReply({ body, id: message.id })
+                await insertReply({
+                    body: body ?? '',
+                    id: message.id,
+                    created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                })
             }
         }
+
         setSelectedQuestions([])
-        setMessages(newMessages)
+        setQuestions(newMessages)
         setLoading(false)
     }
 
-    const updateSlug = (e, index) => {
-        const newMessages = [...messages]
+    const updateSlug = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+        const newMessages = [...questions]
         const message = newMessages[index]
         message.slug = e.target.value
-        setMessages(newMessages)
+        setQuestions(newMessages)
     }
 
-    const updateSubject = (e, index) => {
-        const newMessages = [...messages]
+    const updateSubject = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+        const newMessages = [...questions]
         const message = newMessages[index]
         message.subject = e.target.value
-        setMessages(newMessages)
+        setQuestions(newMessages)
     }
 
-    const getMessages = async () => {
+    const getQuestions = useCallback(async () => {
         if (!isLoading) {
             const { data } = await supabaseClient
-                .from('squeak_config')
+                .from<Config>('squeak_config')
                 .select(`slack_api_key, slack_question_channel`)
-                .eq('id', 1)
+                .eq('organization_id', organizationId)
                 .single()
+
             if (!data || !data?.slack_api_key || !data?.slack_question_channel) {
+                setSlackData({
+                    slackApiKey: data?.slack_api_key || '',
+                    slackQuestionChannel: data?.slack_question_channel || '',
+                })
                 return setSlackSetup(true)
             }
+
             const { slack_api_key, slack_question_channel } = data
-            setSlackData({ slack_api_key, slack_question_channel })
+            setSlackData({ slackApiKey: slack_api_key, slackQuestionChannel: slack_question_channel })
+
             const messages = await fetch('/api/slack/messages', {
                 method: 'POST',
                 body: JSON.stringify({
                     token: slack_api_key,
+                    organizationId,
                     channel: slack_question_channel,
                 }),
             }).then((res) => res.json())
-            setMessages(messages)
-        }
-    }
 
-    const handleSlackSubmit = (values) => {
-        setSlackData({ slack_api_key: values?.slackApiKey, slack_question_channel: values?.slackQuestionChannel })
+            setQuestions(messages)
+        }
+    }, [isLoading, organizationId])
+
+    const handleSlackSubmit = (values: SlackData) => {
+        setSlackData({ slackApiKey: values?.slackApiKey, slackQuestionChannel: values?.slackQuestionChannel })
         setSlackSetup(false)
     }
 
     useEffect(() => {
-        getMessages()
-    }, [isLoading])
+        getQuestions()
+    }, [getQuestions, isLoading])
 
     return (
         <>
@@ -148,8 +195,8 @@ const Import = () => {
                     <SlackManifestSnippet />
                     <SlackForm
                         onSubmit={handleSlackSubmit}
-                        slackApiKey={slackData.slack_api_key}
-                        slackQuestionChannel={slackData.slack_question_channel}
+                        slackApiKey={slackData.slackApiKey}
+                        slackQuestionChannel={slackData.slackQuestionChannel}
                         redirect="/import"
                         actionButtons={(isValid) => (
                             <>
@@ -223,7 +270,7 @@ const Import = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
-                                        {messages.map((message, index) => {
+                                        {questions.map((message, index) => {
                                             const { ts, body, reply_count, slug, subject } = message
                                             return (
                                                 <tr
@@ -252,14 +299,14 @@ const Import = () => {
                                                     </td>
 
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                        {ts ? template.render(new Date(ts * 1000)) : 'N/A'}
+                                                        {ts ? template.render(new Date(parseInt(ts) * 1000)) : 'N/A'}
                                                     </td>
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                         {reply_count}
                                                     </td>
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
                                                         <div className="overflow-hidden text-ellipsis max-w-[450px]">
-                                                            <ReactMarkdown>{body}</ReactMarkdown>
+                                                            <ReactMarkdown>{body || ''}</ReactMarkdown>
                                                         </div>
                                                     </td>
                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
@@ -285,7 +332,7 @@ const Import = () => {
     )
 }
 
-Import.getLayout = function getLayout(page) {
+Import.getLayout = function getLayout(page: ReactElement) {
     return <AdminLayout title={'Import'}>{page}</AdminLayout>
 }
 

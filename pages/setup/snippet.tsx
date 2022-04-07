@@ -7,6 +7,7 @@ import Button from '../../components/Button'
 import CodeSnippet from '../../components/CodeSnippet'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
+import getActiveOrganization from '../../util/getActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -49,8 +50,12 @@ export const getServerSideProps = withPreflightCheck({
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const supabaseClient = supabaseServerClient(context)
+        const organizationId = getActiveOrganization(context)
 
-        await supabaseClient.from<Config>('squeak_config').update({ preflight_complete: true }).match({ id: 1 })
+        await supabaseClient
+            .from<Config>('squeak_config')
+            .update({ preflight_complete: true })
+            .match({ organization_id: organizationId })
 
         return {
             props: {},

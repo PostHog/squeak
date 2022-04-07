@@ -1,5 +1,5 @@
 import { NextPageWithLayout } from '../@types/types'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
@@ -7,27 +7,36 @@ import { definitions } from '../@types/supabase'
 import withAdminAccess from '../util/withAdminAccess'
 import { GetStaticPropsResult } from 'next'
 import InviteUser from '../components/InviteUser'
+import useActiveOrganization from '../util/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 
 type UserProfileView = definitions['squeak_profiles_view']
 
 interface Props {}
 
 const Users: NextPageWithLayout<Props> = () => {
+    const { addToast } = useToasts()
+    const { getActiveOrganization } = useActiveOrganization()
     const [profiles, setProfiles] = useState<Array<UserProfileView>>([])
 
-    const fetchProfiles = async () => {
-        const { data } = await supabaseClient
-            .from<UserProfileView>('squeak_profiles_view')
-            .select(`id, first_name, last_name, avatar, role`)
+    const organizationId = getActiveOrganization()
 
-        // TODO(JS): Handle errors here
+    const fetchProfiles = useCallback(async () => {
+        const { data, error } = await supabaseClient
+            .from<UserProfileView>('squeak_profiles_view')
+            .select(`profile_id, user_id, first_name, last_name, avatar, role`)
+            .eq('organization_id', organizationId)
+
+        if (error) {
+            addToast(error.message, { appearance: 'error', autoDismiss: true })
+        }
 
         setProfiles(data ?? [])
-    }
+    }, [addToast, organizationId])
 
     useEffect(() => {
         fetchProfiles()
-    }, [])
+    }, [fetchProfiles])
 
     return (
         <>

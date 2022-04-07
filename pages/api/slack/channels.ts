@@ -8,6 +8,11 @@ const channels = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = JSON.parse(req.body)
     const client = new WebClient(token)
 
+    if (!token) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    }
+
     try {
         const result = await client.conversations.list()
         res.status(200).json(result.channels)

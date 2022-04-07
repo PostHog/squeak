@@ -1,38 +1,55 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { definitions } from '../../@types/supabase'
 import sendReplyNotification from '../../util/sendReplyNotification'
+import getUserProfile from '../../util/getUserProfile'
+import { createClient } from '@supabase/supabase-js'
 
 type Reply = definitions['squeak_replies']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    const supabaseServiceRoleClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    )
+
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
     })
 
-    const { messageId, body, token } = JSON.parse(req.body)
+    const { messageId, body, organizationId, token } = JSON.parse(req.body)
 
-    if (!messageId || !body || !token) {
+    if (!messageId || !body || !organizationId || !token) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
 
-    const { user } = await supabaseServerClient({ req, res }).auth.api.getUser(token)
+    const { data: userProfile, error: userProfileError } = await getUserProfile({
+        context: { req, res },
+        organizationId,
+        token,
+    })
 
-    if (!user) {
-        console.error(`[🧵 Reply] User not found for token`)
-        res.status(401).json({ error: 'Unauthorized' })
+    if (!userProfile || userProfileError) {
+        console.error(`[🧵 Question] Error fetching user profile`)
+        res.status(500)
+
+        if (userProfileError) {
+            console.error(`[🧵 Question] ${userProfileError.message}`)
+            res.json({ error: userProfileError.message })
+        }
+
         return
     }
 
-    const { data, error } = await supabaseServerClient({ req, res })
+    const { data, error } = await supabaseServiceRoleClient
         .from<Reply>('squeak_replies')
         .insert({
             body: body,
             message_id: messageId,
-            profile_id: user?.id,
+            organization_id: organizationId,
+            profile_id: userProfile.id,
         })
         .limit(1)
         .single()
@@ -45,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json({ ...data })
 
-    sendReplyNotification(messageId, body)
+    sendReplyNotification(organizationId, messageId, body)
 }
 
 export default handler

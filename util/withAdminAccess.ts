@@ -4,6 +4,7 @@ import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/n
 import { definitions } from '../@types/supabase'
 import { createClient } from '@supabase/supabase-js'
 import type { GetServerSideProps, NextApiHandler } from 'next'
+import getActiveOrganization from './getActiveOrganization'
 
 type Config = definitions['squeak_config']
 type UserReadonlyProfile = definitions['squeak_profiles_readonly']
@@ -18,6 +19,7 @@ type Args =
 const withAdminAccess = (arg: Args) => {
     if (typeof arg === 'function') {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+            const organizationId = getActiveOrganization({ req, res })
             const { user } = await getUser({ req, res })
 
             if (!user) {
@@ -31,7 +33,9 @@ const withAdminAccess = (arg: Args) => {
             const { data: userReadonlyProfile } = await supabaseServerClient({ req, res })
                 .from<UserReadonlyProfile>('squeak_profiles_readonly')
                 .select('role')
-                .eq('id', user?.id)
+                .eq('user_id', user?.id)
+                .eq('organization_id', organizationId)
+                .limit(1)
                 .single()
 
             if (!userReadonlyProfile) {
@@ -58,22 +62,27 @@ const withAdminAccess = (arg: Args) => {
 
                 const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-                const { data: config } = await supabaseClient
-                    .from<Config>('squeak_config')
-                    .select(`preflight_complete`)
-                    .eq('id', 1)
-                    .single()
+                const isMultiTenancy = process.env.MULTI_TENANCY ?? false
 
-                if (!config || !config?.preflight_complete) {
-                    return {
-                        redirect: {
-                            destination: '/setup/welcome',
-                            permanent: false,
-                        },
+                if (!isMultiTenancy) {
+                    const { data: config } = await supabaseClient
+                        .from<Config>('squeak_config')
+                        .select(`preflight_complete`)
+                        .limit(1)
+                        .single()
+
+                    if (!config || !config?.preflight_complete) {
+                        return {
+                            redirect: {
+                                destination: '/setup/welcome',
+                                permanent: false,
+                            },
+                        }
                     }
                 }
 
                 const { user } = await getUser(context)
+                const organizationId = getActiveOrganization(context)
 
                 if (!user) {
                     return {
@@ -87,7 +96,9 @@ const withAdminAccess = (arg: Args) => {
                 const { data: userReadonlyProfile } = await supabaseServerClient(context)
                     .from<UserReadonlyProfile>('squeak_profiles_readonly')
                     .select('role')
-                    .eq('id', user?.id)
+                    .eq('user_id', user?.id)
+                    .eq('organization_id', organizationId)
+                    .limit(1)
                     .single()
 
                 if (!userReadonlyProfile) {

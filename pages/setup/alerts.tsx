@@ -2,13 +2,14 @@ import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import React, { ReactElement } from 'react'
-import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import SlackForm from '../../components/SlackForm'
 import SlackManifestSnippet from '../../components/SlackManifestSnippet'
+import { definitions } from '../../@types/supabase'
+import getActiveOrganization from '../../util/getActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -38,7 +39,7 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel }
                             <Button disabled={!isValid} type="submit">
                                 Continue
                             </Button>
-                            <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                            <button onClick={handleSkip} className="text-accent-light font-semibold">
                                 Skip
                             </button>
                         </>
@@ -65,10 +66,12 @@ export const getServerSideProps = withPreflightCheck({
     authCheck: true,
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        const organizationId = getActiveOrganization(context)
+
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
-            .select(`slack_api_key, slack_question_channel, slack_signing_secret`)
-            .eq('id', 1)
+            .select(`slack_api_key, slack_question_channel`)
+            .eq('organization_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

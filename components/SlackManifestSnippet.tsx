@@ -56,7 +56,7 @@ settings:
 
             <SyntaxHighlighter className="max-h-40 overflow-scroll">{manifest}</SyntaxHighlighter>
 
-            <button onClick={copyToClipboard} className="mt-2 mb-6 text-orange-600 font-semibold flex space-x-2">
+            <button onClick={copyToClipboard} className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2">
                 <span>Copy to clipboard</span>
                 {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
             </button>

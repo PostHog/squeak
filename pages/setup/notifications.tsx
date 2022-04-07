@@ -2,12 +2,13 @@ import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import { ReactElement } from 'react'
-import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import NotificationForm from '../../components/NotificationForm'
+import { definitions } from '../../@types/supabase'
+import getActiveOrganization from '../../util/getActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -44,7 +45,7 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                             <Button disabled={!isValid} type="submit">
                                 Continue
                             </Button>
-                            <button onClick={handleSkip} className="text-orange-600 font-semibold">
+                            <button onClick={handleSkip} className="text-accent-light font-semibold">
                                 Skip
                             </button>
                         </>
@@ -72,10 +73,12 @@ export const getServerSideProps = withPreflightCheck({
     authCheck: true,
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+        const organizationId = getActiveOrganization(context)
+
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
-            .eq('id', 1)
+            .eq('organization_id', organizationId)
             .single()
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

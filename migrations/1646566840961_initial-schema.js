@@ -166,7 +166,4 @@ exports.up = (pgm) => {
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO anon')
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO authenticated')
     pgm.sql('GRANT ALL ON SEQUENCE public.squeak_replies_id_seq TO service_role')
-
-    // Create the initial config row
-    pgm.sql('INSERT INTO squeak_config(id, preflight_complete) VALUES (1, false)')
 }
