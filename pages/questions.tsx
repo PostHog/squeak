@@ -3,6 +3,7 @@ import type { definitions } from '../@types/supabase'
 import type { NextPageWithLayout } from '../@types/types'
 import Avatar from '../components/Avatar'
 import Button from '../components/Button'
+import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
 import getQuestions from '../util/getQuestions'
@@ -35,19 +36,21 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results }) => {
                     const slackTimestamp = question.question.slack_timestamp
                     return (
                         <li className="flex space-x-9">
-                            <div className="p-7 bg-white shadow-md rounded-md flex-grow max-w-[700px]">
-                                <p className="text-[14px] opacity-50">{question.question.slug}</p>
-                                <h3 className="text-red font-bold my-2">{question.question.subject}</h3>
-                                <div>
-                                    <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
-                                </div>
-                                <div className="flex items-end justify-between">
-                                    <Button
-                                        href={`/question/${question.question.id}`}
-                                        className="mt-3 bg-gray-light text-red bg-opacity-20 font-bold"
-                                    >{`${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`}</Button>
-                                    {slackTimestamp && <p className="text-[13px] opacity-30">via Slack</p>}
-                                </div>
+                            <div className="flex-grow max-w-[700px]">
+                                <Surface>
+                                    <p className="text-[14px] opacity-50">{question.question.slug}</p>
+                                    <h3 className="text-red font-bold my-2">{question.question.subject}</h3>
+                                    <div>
+                                        <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
+                                    </div>
+                                    <div className="flex items-end justify-between">
+                                        <Button
+                                            href={`/question/${question.question.id}`}
+                                            className="mt-3 bg-gray-light text-red bg-opacity-20 font-bold"
+                                        >{`${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`}</Button>
+                                        {slackTimestamp && <p className="text-[13px] opacity-30">via Slack</p>}
+                                    </div>
+                                </Surface>
                             </div>
                             <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0">
                                 <Avatar image={firstReply?.profile?.avatar} />
@@ -74,7 +77,7 @@ const Questions: NextPageWithLayout<Props> = ({ results, start }) => {
 Questions.getLayout = function getLayout(page) {
     return (
         <AdminLayout
-            style={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(250px, 1fr) 700px 1fr' }}
+            navStyle={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(250px, 1fr) 700px 1fr' }}
             title={'Questions'}
         >
             {page}

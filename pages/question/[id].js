@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
 import Avatar from '../../components/Avatar'
+import Surface from '../../components/Surface'
 import AdminLayout from '../../layout/AdminLayout'
 import withAdminAccess from '../../util/withAdminAccess'
 
@@ -45,7 +46,7 @@ const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
         }
     }
     return (
-        <button onClick={handleClick} className="text-red-500 font-bold">
+        <button onClick={handleClick} className="text-red font-bold">
             {confirmDelete ? 'Click again to confirm' : 'Delete'}
         </button>
     )
@@ -56,30 +57,34 @@ const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
     const [confirmDelete, setConfirmDelete] = useState(false)
     return (
         !deleted && (
-            <div className={`pt-4 rounded-md w-full transition-opacity`}>
-                <div className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}>
-                    <Avatar className="flex-shrink-0" image={squeak_profiles?.avatar} />
-                    <div className="flex-grow min-w-0">
-                        <p className="m-0 font-semibold">
-                            <span>{squeak_profiles?.first_name || 'Anonymous'}</span>
-                            <span className={`font-normal ml-2`}>{template.render(new Date(created_at))}</span>
-                        </p>
-                        <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
-                            <ReactMarkdown>{body}</ReactMarkdown>
+            <Surface>
+                <div className={`pt-4 rounded-md w-full transition-opacity`}>
+                    <div
+                        className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}
+                    >
+                        <Avatar className="flex-shrink-0" image={squeak_profiles?.avatar} />
+                        <div className="flex-grow min-w-0">
+                            <p className="m-0 font-semibold">
+                                <span>{squeak_profiles?.first_name || 'Anonymous'}</span>
+                                <span className={`font-normal ml-2`}>{template.render(new Date(created_at))}</span>
+                            </p>
+                            <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
+                                <ReactMarkdown>{body}</ReactMarkdown>
+                            </div>
                         </div>
                     </div>
+                    {!hideDelete && (
+                        <p className="text-right">
+                            <DeleteButton
+                                confirmDelete={confirmDelete}
+                                setConfirmDelete={setConfirmDelete}
+                                setDeleted={setDeleted}
+                                id={id}
+                            />
+                        </p>
+                    )}
                 </div>
-                {!hideDelete && (
-                    <p className="text-right">
-                        <DeleteButton
-                            confirmDelete={confirmDelete}
-                            setConfirmDelete={setConfirmDelete}
-                            setDeleted={setDeleted}
-                            id={id}
-                        />
-                    </p>
-                )}
-            </div>
+            </Surface>
         )
     )
 }
@@ -91,11 +96,13 @@ const QuestionView = ({ question }) => {
         <div className="max-w-screen-lg mx-auto">
             <div className="col-span-2">
                 <h1 className="mb-3">{question.question.subject}</h1>
-                <Reply hideDelete {...replies[0]} />
-                <div className="ml-[56px]">
-                    {replies.slice(1).map((reply) => {
-                        return <Reply key={reply.id} {...reply} />
-                    })}
+                <div className="grid gap-y-4">
+                    <Reply hideDelete {...replies[0]} />
+                    <div className="ml-[56px]">
+                        {replies.slice(1).map((reply) => {
+                            return <Reply key={reply.id} {...reply} />
+                        })}
+                    </div>
                 </div>
             </div>
         </div>

@@ -17,10 +17,11 @@ function classNames(...classes: Array<unknown>) {
 
 interface Props {
     title: string
-    style: React.CSSProperties
+    navStyle?: React.CSSProperties
+    contentStyle?: React.CSSProperties
 }
 
-const AdminLayout: React.FunctionComponent<Props> = ({ title, children, style }) => {
+const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const router = useRouter()
     return (
@@ -31,7 +32,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, style })
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 <link rel="icon" href="/favicon.png" />
             </Head>
-            <div className="items-start flex" style={style}>
+            <div className="items-start flex" style={navStyle}>
                 {/* Static sidebar for desktop */}
                 <div className="sticky top-0 max-w-[250px] w-full">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -59,7 +60,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, style })
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col flex-1 col-span-2">
+                <div style={contentStyle} className="flex flex-col flex-1 col-span-2">
                     <main className="flex-1">
                         <div className="py-12">
                             <div>

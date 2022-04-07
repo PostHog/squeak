@@ -4,13 +4,14 @@ import { useUser } from '@supabase/supabase-auth-helpers/react'
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
+import { definitions } from '../@types/supabase'
 import Button from '../components/Button'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
+import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
-import withAdminAccess from '../util/withAdminAccess'
 import useActiveOrganization from '../util/useActiveOrganization'
-import { definitions } from '../@types/supabase'
+import withAdminAccess from '../util/withAdminAccess'
 import { Message as MessageResponse } from './api/slack/messages'
 
 type Config = definitions['squeak_config']
@@ -191,7 +192,7 @@ const Import = () => {
                 </button>
             </div>
             {slackSetup ? (
-                <div className="max-w-[450px]">
+                <Surface className="max-w-[500px]">
                     <SlackManifestSnippet />
                     <SlackForm
                         onSubmit={handleSlackSubmit}
@@ -206,7 +207,7 @@ const Import = () => {
                             </>
                         )}
                     />
-                </div>
+                </Surface>
             ) : (
                 <div className="flex flex-col">
                     <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -333,7 +334,11 @@ const Import = () => {
 }
 
 Import.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title={'Import'}>{page}</AdminLayout>
+    return (
+        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title={'Import'}>
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({

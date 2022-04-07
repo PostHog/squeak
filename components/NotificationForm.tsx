@@ -1,9 +1,9 @@
-import type { definitions } from '../@types/supabase'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
 import Router from 'next/router'
-import useActiveOrganization from '../util/useActiveOrganization'
 import { useToasts } from 'react-toast-notifications'
+import type { definitions } from '../@types/supabase'
+import useActiveOrganization from '../util/useActiveOrganization'
 
 type Config = definitions['squeak_config']
 
@@ -105,7 +105,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                         <label htmlFor="companyDomain">Site URL (without protocol)</label>
                         <Field id="companyDomain" name="companyDomain" placeholder="squeak.posthog.com" />
 
-                        <div className="flex space-x-6 items-center mt-4 mb-12">{actionButtons(isValid)}</div>
+                        <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid)}</div>
                     </Form>
                 )
             }}

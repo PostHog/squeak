@@ -6,10 +6,11 @@ import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import NotificationForm from '../components/NotificationForm'
+import Surface from '../components/Surface'
 import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
-import withAdminAccess from '../util/withAdminAccess'
 import getActiveOrganization from '../util/getActiveOrganization'
+import withAdminAccess from '../util/withAdminAccess'
 
 type Config = definitions['squeak_config']
 
@@ -25,30 +26,34 @@ interface Props {
 const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
     return (
         <div>
-            <h3>Snippet</h3>
-            <p>
-                Great news! You're all setup to receive questions on your site. Here's the snippet if you need to put it
-                on other pages.
-            </p>
-            <CodeSnippet className="max-w-6xl" />
-            <h3>Alerts</h3>
-            <p className="mb-6">Setup outgoing webhooks to alert other services about new questions added to Squeak!</p>
-
-            <WebhookTable />
-            <h3 className="mt-12">Notifications</h3>
-            <p>Manage configuration for reply notifications via Mailgun</p>
-            <hr />
-            <NotificationForm
-                companyDomain={companyDomain}
-                companyName={companyName}
-                mailgunDomain={mailgunDomain}
-                mailgunApiKey={mailgunApiKey}
-                actionButtons={(isValid) => (
-                    <Button disabled={!isValid} type="submit">
-                        Save
-                    </Button>
-                )}
-            />
+            <Surface className="mb-4">
+                <h3>Snippet</h3>
+                <p>
+                    Great news! You're all setup to receive questions on your site. Here's the snippet if you need to
+                    put it on other pages.
+                </p>
+                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-7" />
+            </Surface>
+            <Surface className="mb-4">
+                <h3>Alerts</h3>
+                <p>Setup outgoing webhooks to alert other services about new questions added to Squeak!</p>
+                <WebhookTable />
+            </Surface>
+            <Surface className="mb-4">
+                <h3>Notifications</h3>
+                <p>Manage configuration for reply notifications via Mailgun</p>
+                <NotificationForm
+                    companyDomain={companyDomain}
+                    companyName={companyName}
+                    mailgunDomain={mailgunDomain}
+                    mailgunApiKey={mailgunApiKey}
+                    actionButtons={(isValid) => (
+                        <Button disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
 
             {/* <p>Manage configuration for admin alerts via Slack</p>
             <hr />
@@ -70,7 +75,11 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
 }
 
 Settings.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title="Settings">{page}</AdminLayout>
+    return (
+        <AdminLayout contentStyle={{ maxWidth: 800, margin: '0 auto' }} title="Settings">
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({
