@@ -1,9 +1,10 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
 import Avatar from '../../components/Avatar'
+import Button from '../../components/Button'
+import EditQuestionModal from '../../components/EditQuestionModal'
 import Surface from '../../components/Surface'
 import AdminLayout from '../../layout/AdminLayout'
 import withAdminAccess from '../../util/withAdminAccess'
@@ -89,45 +90,72 @@ const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
     )
 }
 
-const QuestionView = ({ question }) => {
-    const { replies } = question
+const Question = (props) => {
+    const [question, setQuestion] = useState(props.question)
+    const {
+        replies,
+        question: { slug, subject, id },
+    } = question
+    const [modalOpen, setModalOpen] = useState(false)
+    const handleModalSubmit = async () => {
+        const updatedQuestion = await getQuestion(id)
+        setQuestion(updatedQuestion)
+        setModalOpen(false)
+    }
 
     return (
-        <div className="max-w-screen-lg mx-auto">
+        <>
+            {modalOpen && (
+                <EditQuestionModal
+                    values={{ subject, slug, id }}
+                    onClose={() => setModalOpen(false)}
+                    onSubmit={handleModalSubmit}
+                />
+            )}
+            <h1 class=" mb-6">{subject}</h1>
             <div className="col-span-2">
-                <h1 className="mb-3">{question.question.subject}</h1>
                 <div className="grid gap-y-4">
-                    <Reply hideDelete {...replies[0]} />
-                    <div className="ml-[56px]">
-                        {replies.slice(1).map((reply) => {
-                            return <Reply key={reply.id} {...reply} />
-                        })}
+                    <div className="flex space-x-9 items-start">
+                        <div className="flex-grow max-w-[700px]">
+                            <Reply hideDelete {...replies[0]} />
+                            <div className="ml-[56px] mt-4 grid gap-y-4">
+                                {replies.slice(1).map((reply) => {
+                                    return <Reply key={reply.id} {...reply} />
+                                })}
+                            </div>
+                        </div>
+                        <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0 sticky top-10">
+                            <Button onClick={() => setModalOpen(true)} className="w-full">
+                                Edit
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
-const Question = () => {
-    const router = useRouter()
-    const { id } = router.query
-    const [question, setQuestion] = useState(null)
-    useEffect(() => {
-        getQuestion(id).then((question) => {
-            setQuestion(question)
-        })
-    }, [id])
-
-    return question && <QuestionView question={question} />
-}
-
 Question.getLayout = function getLayout(page) {
-    return <AdminLayout>{page}</AdminLayout>
+    const title = page?.props?.question?.question?.subject
+    return (
+        <AdminLayout
+            navStyle={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(250px, 1fr) 700px 1fr' }}
+        >
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
+    async getServerSideProps(context) {
+        const { id } = context.query
+        const question = await getQuestion(id)
+        return {
+            props: { question },
+        }
+    },
 })
 
 export default Question
