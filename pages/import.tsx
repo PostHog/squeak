@@ -196,9 +196,9 @@ const Import = () => {
                         slackApiKey={slackData.slackApiKey}
                         slackQuestionChannel={slackData.slackQuestionChannel}
                         redirect="/import"
-                        actionButtons={(isValid) => (
+                        actionButtons={(isValid, loading) => (
                             <>
-                                <Button disabled={!isValid} type="submit">
+                                <Button loading={loading} disabled={!isValid} type="submit">
                                     Save
                                 </Button>
                             </>

@@ -1,11 +1,14 @@
 import { Dialog } from '@headlessui/react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
+import { useState } from 'react'
 import Button from './Button'
 
 export default function EditQuestionModal({ onClose, values, onSubmit }) {
     const { subject, slug, id } = values
+    const [loading, setLoading] = useState(false)
     const handleSave = async (values) => {
+        setLoading(true)
         const { subject, slug } = values
         await supabaseClient
             .from('squeak_messages')
@@ -45,7 +48,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                                 <Field id="subject" name="subject" placeholder="Subject" />
                                 <label htmlFor="slug">Slug</label>
                                 <Field id="slug" name="slug" placeholder="Slug" />
-                                <Button disabled={!isValid} className="mt-4">
+                                <Button loading={loading} disabled={!isValid} className="mt-4">
                                     Save
                                 </Button>
                             </Form>

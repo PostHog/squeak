@@ -1,9 +1,9 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import Router from 'next/router'
 import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
-import type { definitions } from '../@types/supabase'
-import React, { useCallback, useEffect, useState } from 'react'
 import debounce from 'lodash.debounce'
+import Router from 'next/router'
+import React, { useCallback, useEffect, useState } from 'react'
+import type { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
 type Config = definitions['squeak_config']
 
@@ -74,7 +74,7 @@ interface Props {
     slackApiKey: string
     slackQuestionChannel: string
     redirect?: string
-    actionButtons: (isValid: boolean) => JSX.Element
+    actionButtons: (isValid: boolean, loading: boolean) => JSX.Element
     onSubmit?: (values: InitialValues) => void
 }
 
@@ -91,8 +91,10 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
     onSubmit,
 }) => {
     const { getActiveOrganization } = useActiveOrganization()
+    const [loading, setLoading] = useState(false)
 
     const handleSave = async (values: InitialValues) => {
+        setLoading(true)
         const organizationId = getActiveOrganization()
 
         const { error } = await supabaseClient
@@ -102,7 +104,7 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
                 slack_question_channel: values.slackQuestionChannel,
             })
             .match({ organization_id: organizationId })
-
+        setLoading(false)
         onSubmit && onSubmit(values)
 
         if (!error && redirect) {
@@ -139,7 +141,7 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
                 return (
                     <Form className="mt-6">
                         <SlackFormContent initialValues={initialValues} setFieldValue={setFieldValue} />
-                        <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid)}</div>
+                        <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
                 )
             }}

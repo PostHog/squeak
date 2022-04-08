@@ -1,11 +1,12 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Field, Form, Formik } from 'formik'
-import Button from './Button'
-import type { WebhookValues } from '../@types/types'
-import { definitions } from '../@types/supabase'
-import useActiveOrganization from '../util/useActiveOrganization'
+import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
+import { definitions } from '../@types/supabase'
+import type { WebhookValues } from '../@types/types'
+import useActiveOrganization from '../util/useActiveOrganization'
+import Button from './Button'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
@@ -19,8 +20,11 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
     const { addToast } = useToasts()
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
+    const [saveLoading, setSaveLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
 
     const handleSave = async ({ url }: FormValues) => {
+        setSaveLoading(true)
         if (initialValues) {
             const { error } = await supabaseClient
                 .from<WebhookConfig>('squeak_webhook_config')
@@ -39,13 +43,13 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                 appearance: error ? 'error' : 'success',
             })
         }
-
+        setSaveLoading(false)
         onSubmit()
     }
 
     const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
-
+        setDeleteLoading(true)
         if (!initialValues) {
             return
         }
@@ -54,6 +58,7 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
             .from<WebhookConfig>('squeak_webhook_config')
             .delete()
             .match({ id: initialValues.id, organization_id: organizationId })
+        setDeleteLoading(false)
         onSubmit()
     }
     return (
@@ -87,11 +92,15 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                             <label htmlFor="url">Slack incoming webhook URL</label>
                             <Field id="url" name="url" placeholder="Slack incoming webhook URL" />
                             <div className="flex space-x-2 mt-3">
-                                <Button disabled={!isValid} type="submit">
+                                <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}
                                 </Button>
                                 {initialValues && (
-                                    <Button onClick={handleDelete} className="bg-red-500">
+                                    <Button
+                                        loading={deleteLoading}
+                                        onClick={handleDelete}
+                                        className="bg-transparent text-red font-bold border-2 border-red"
+                                    >
                                         Delete
                                     </Button>
                                 )}
