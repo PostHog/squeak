@@ -38,7 +38,8 @@ const getQuestion = async (id) => {
 }
 
 const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
-    const handleClick = async () => {
+    const handleClick = async (e) => {
+        e.stopPropagation()
         if (confirmDelete) {
             await supabaseClient.from('squeak_replies').delete().match({ id })
             setDeleted(true)
@@ -56,9 +57,12 @@ const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
 const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
     const [deleted, setDeleted] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
+    const handleSurfaceClick = () => {
+        setConfirmDelete(false)
+    }
     return (
         !deleted && (
-            <Surface>
+            <Surface onClick={handleSurfaceClick}>
                 <div className={`pt-4 rounded-md w-full transition-opacity`}>
                     <div
                         className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}
