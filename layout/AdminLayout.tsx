@@ -8,7 +8,7 @@ import Logo from '../components/Logo'
 const navigation = [
     { name: 'All questions', href: '/questions' },
     { name: 'Profiles', href: '/profiles' },
-    { name: 'Import', href: '/import' },
+    { name: 'Slack', href: '/slack' },
     { name: 'Settings', href: '/settings' },
 ]
 

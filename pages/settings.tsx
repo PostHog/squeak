@@ -6,6 +6,8 @@ import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import NotificationForm from '../components/NotificationForm'
+import SlackForm from '../components/SlackForm'
+import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import Surface from '../components/Surface'
 import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
@@ -23,7 +25,14 @@ interface Props {
     slackQuestionChannel: string
 }
 
-const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
+const Settings: NextPageWithLayout<Props> = ({
+    mailgunApiKey,
+    mailgunDomain,
+    companyName,
+    companyDomain,
+    slackApiKey,
+    slackQuestionChannel,
+}) => {
     return (
         <div>
             <Surface className="mb-4">
@@ -32,11 +41,13 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
                     Great news! You're all setup to receive questions on your site. Here's the snippet if you need to
                     put it on other pages.
                 </p>
-                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-7" />
+                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6" />
             </Surface>
             <Surface className="mb-4">
                 <h3>Alerts</h3>
-                <p>Setup outgoing webhooks to alert other services about new questions added to Squeak!</p>
+                <p className="mb-6">
+                    Setup outgoing webhooks to alert other services about new questions added to Squeak!
+                </p>
                 <WebhookTable />
             </Surface>
             <Surface className="mb-4">
@@ -54,22 +65,21 @@ const Settings: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, com
                     )}
                 />
             </Surface>
+            <Surface>
+                <h3>Slack</h3>
+                <p className="mb-6">Manage configuration for importing threads via Slack</p>
+                <SlackManifestSnippet />
 
-            {/* <p>Manage configuration for admin alerts via Slack</p>
-            <hr />
-
-            <p className="my-2 block font-semibold">Instructions</p>
-            <SlackManifestSnippet />
-
-            <SlackForm
-                slackApiKey={slackApiKey}
-                slackQuestionChannel={slackQuestionChannel}
-                actionButtons={(isValid) => (
-                    <Button disabled={!isValid} type="submit">
-                        Save
-                    </Button>
-                )}
-            /> */}
+                <SlackForm
+                    slackApiKey={slackApiKey}
+                    slackQuestionChannel={slackQuestionChannel}
+                    actionButtons={(isValid: boolean) => (
+                        <Button disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
         </div>
     )
 }
