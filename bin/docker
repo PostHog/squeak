@@ -12,5 +12,7 @@ test -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
 
 find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_PUBLIC_SUPABASE_URL#$NEXT_PUBLIC_SUPABASE_URL#g"
 find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_PUBLIC_SUPABASE_ANON_KEY#$NEXT_PUBLIC_SUPABASE_ANON_KEY#g"
+find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_OPT_OUT_TRACKING#${NEXT_PUBLIC_OPT_OUT_TRACKING:=true}#g"
+find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_POSTHOG_API_KEY#${NEXT_PUBLIC_POSTHOG_API_KEY:=dummy-token}#g"
 
 exec "$@"

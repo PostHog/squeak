@@ -1,8 +1,8 @@
 import { User } from '@supabase/gotrue-js'
 import Router from 'next/router'
 import { useState } from 'react'
-import useActiveOrganization from '../../util/useActiveOrganization'
 import ProfileForm from '../ProfileForm'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 
 interface Props {
     user: User

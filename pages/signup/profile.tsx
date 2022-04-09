@@ -5,8 +5,8 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import type { NextPageWithLayout } from '../../@types/types'
 import ProfileForm from '../../components/ProfileForm'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 import LoginLayout from '../../layout/LoginLayout'
-import useActiveOrganization from '../../util/useActiveOrganization'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 
 interface Props {}

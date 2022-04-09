@@ -5,9 +5,10 @@ import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import InviteUser from '../components/InviteUser'
+import useActiveOrganization from '../hooks/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
-import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
 
 type UserProfileView = definitions['squeak_profiles_view']

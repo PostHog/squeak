@@ -5,7 +5,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import type { NextPageWithLayout } from '../@types/types'
 import { GetStaticPropsResult } from 'next'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props {
     isMultiTenancy: boolean

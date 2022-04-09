@@ -1,6 +1,7 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import Router from 'next/router'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import type { definitions } from '../@types/supabase'

@@ -4,6 +4,8 @@ import { definitions } from '../../@types/supabase'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import createUserProfile from '../../util/createUserProfile'
 import createUserProfileReadonly from '../../util/createUserProfileReadonly'
+import trackUserSignup from '../../util/posthog/trackUserSignup'
+import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
 
 type Config = definitions['squeak_config']
 type Organization = definitions['squeak_organizations']
@@ -117,4 +119,7 @@ export default withMultiTenantCheck(async (req, res) => {
     }
 
     res.status(200).json({ userId: user.id, firstName, lastName, organizationId: organization.id, organizationName })
+
+    trackUserSignup(user, { firstName, lastName, role: 'admin' })
+    trackOrganizationSignup(user, organization, {})
 })

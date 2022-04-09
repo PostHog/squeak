@@ -10,8 +10,8 @@ import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import SlackTableSkeleton from '../components/SlackTableSkeleton'
 import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
-import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import { Message as MessageResponse } from './api/slack/messages'
 
 type Config = definitions['squeak_config']

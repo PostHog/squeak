@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
 import { definitions } from '../@types/supabase'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
 
 type WebhookConfig = definitions['squeak_webhook_config']

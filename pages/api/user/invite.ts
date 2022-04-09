@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import absoluteUrl from 'next-absolute-url'
 import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
 import createUserProfile from '../../../util/createUserProfile'
+import trackUserSignup from '../../../util/posthog/trackUserSignup'
 
 export default withAdminAccess(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
@@ -63,4 +64,5 @@ export default withAdminAccess(async (req, res) => {
     }
 
     res.json(true)
+    trackUserSignup(invitedUser, { firstName, role })
 })
