@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import CompanyDetails from '../components/CompanyDetails'
 import NotificationForm from '../components/NotificationForm'
+import ResetPassword from '../components/ResetPassword'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import Surface from '../components/Surface'
@@ -76,7 +77,7 @@ const Settings: NextPageWithLayout<Props> = ({
                     )}
                 />
             </Surface>
-            <Surface>
+            <Surface className="mb-4">
                 <h3>Slack</h3>
                 <p className="mb-6">Manage configuration for importing threads via Slack</p>
                 <SlackManifestSnippet />
@@ -87,6 +88,16 @@ const Settings: NextPageWithLayout<Props> = ({
                     actionButtons={(isValid: boolean, loading: boolean) => (
                         <Button loading={loading} disabled={!isValid} type="submit">
                             Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface>
+                <h3>Change password</h3>
+                <ResetPassword
+                    actionButtons={(isValid: boolean, loading: boolean) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Update
                         </Button>
                     )}
                 />
