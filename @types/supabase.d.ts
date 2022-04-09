@@ -1174,7 +1174,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
-    profile_id?: string;
+    profile_id: string;
   };
   squeak_profiles_view: {
     /**
@@ -1259,7 +1259,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
-    profile_id?: string;
+    profile_id: string;
   };
   squeak_replies_view: {
     /**
