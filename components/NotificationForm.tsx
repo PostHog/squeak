@@ -1,10 +1,11 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import Router from 'next/router'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import type { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import Input from './Input'
 
 type Config = definitions['squeak_config']
 
@@ -59,33 +60,22 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     }
 
     return (
-        <Formik
-            validateOnMount
-            validate={(values) => {
-                const errors: {
-                    mailgunApiKey?: string
-                    mailgunDomain?: string
-                } = {}
-                if (!values.mailgunApiKey) {
-                    errors.mailgunApiKey = 'Required'
-                }
-                if (!values.mailgunDomain) {
-                    errors.mailgunDomain = 'Required'
-                }
-                return errors
-            }}
-            initialValues={initialValues}
-            onSubmit={handleSaveNotifications}
-        >
+        <Formik validateOnMount initialValues={initialValues} onSubmit={handleSaveNotifications}>
             {({ isValid }) => {
                 return (
                     <Form className="mt-6">
-                        <label htmlFor="mailgunApiKey">Mailgun API key</label>
-                        <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
-
-                        <label htmlFor="mailgunDomain">Mailgun domain</label>
-                        <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
-
+                        <Input
+                            label="Mailgun API key"
+                            id="mailgunApiKey"
+                            name="mailgunApiKey"
+                            placeholder="Mailgun API key"
+                        />
+                        <Input
+                            label="Mailgun domain"
+                            id="mailgunDomain"
+                            name="mailgunDomain"
+                            placeholder="Mailgun domain"
+                        />
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
                 )

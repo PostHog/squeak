@@ -1,11 +1,12 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import { WebhookValues } from '../@types/types'
 import useActiveOrganization from '../util/useActiveOrganization'
 import Button from './Button'
+import Input from './Input'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
@@ -78,8 +79,7 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
                 {({ isValid }) => {
                     return (
                         <Form>
-                            <label htmlFor="url">Webhook URL</label>
-                            <Field id="url" name="url" placeholder="Webhook URL" />
+                            <Input label="Webhook URL" id="url" name="url" placeholder="Webhook URL" />
                             <div className="flex space-x-2 mt-3">
                                 <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}

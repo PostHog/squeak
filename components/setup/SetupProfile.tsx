@@ -1,8 +1,8 @@
-import ProfileForm from '../ProfileForm'
-import { useState } from 'react'
-import Router from 'next/router'
 import { User } from '@supabase/gotrue-js'
+import Router from 'next/router'
+import { useState } from 'react'
 import useActiveOrganization from '../../util/useActiveOrganization'
+import ProfileForm from '../ProfileForm'
 
 interface Props {
     user: User
@@ -16,6 +16,7 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [organizationName, setOrganizationName] = useState('')
+    const [url, setUrl] = useState('')
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -62,6 +63,8 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
             </div>
 
             <ProfileForm
+                url={url}
+                setUrl={setUrl}
                 handleSignup={handleSignup}
                 error={error}
                 loading={loading}

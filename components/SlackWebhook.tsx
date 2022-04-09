@@ -1,12 +1,13 @@
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import type { WebhookValues } from '../@types/types'
 import useActiveOrganization from '../util/useActiveOrganization'
 import Button from './Button'
+import Input from './Input'
 
 type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
@@ -89,8 +90,12 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                 {({ isValid }) => {
                     return (
                         <Form>
-                            <label htmlFor="url">Slack incoming webhook URL</label>
-                            <Field id="url" name="url" placeholder="Slack incoming webhook URL" />
+                            <Input
+                                label="Slack incoming webhook URL"
+                                id="url"
+                                name="url"
+                                placeholder="Slack incoming webhook URL"
+                            />
                             <div className="flex space-x-2 mt-3">
                                 <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}

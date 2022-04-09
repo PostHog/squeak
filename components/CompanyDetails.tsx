@@ -1,10 +1,11 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import Router from 'next/router'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import type { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import Input from './Input'
 
 type Config = definitions['squeak_config']
 
@@ -80,11 +81,21 @@ const CompanyDetails: React.VoidFunctionComponent<Props> = ({
             {({ isValid }) => {
                 return (
                     <Form className="mt-6">
-                        <label htmlFor="companyName">Company name</label>
-                        <Field id="companyName" name="companyName" placeholder="Squeak" />
+                        <Input
+                            label="Company name"
+                            id="companyName"
+                            name="companyName"
+                            placeholder="Squeak"
+                            helperText="Shows as the sender in email notifications"
+                        />
 
-                        <label htmlFor="companyDomain">Site URL</label>
-                        <Field id="companyDomain" name="companyDomain" placeholder="https://squeak.posthog.com" />
+                        <Input
+                            label="Site URL"
+                            id="companyDomain"
+                            name="companyDomain"
+                            placeholder="https://squeak.posthog.com"
+                            helperText="With protocol: eg https://squeak.posthog.com"
+                        />
 
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>

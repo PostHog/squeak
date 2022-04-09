@@ -1,7 +1,8 @@
 import { Dialog } from '@headlessui/react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { useState } from 'react'
+import Input from '../components/Input'
 import Button from './Button'
 
 export default function EditQuestionModal({ onClose, values, onSubmit }) {
@@ -42,12 +43,8 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                     {({ isValid }) => {
                         return (
                             <Form>
-                                <label className="mt-0" htmlFor="subject">
-                                    Subject
-                                </label>
-                                <Field id="subject" name="subject" placeholder="Subject" />
-                                <label htmlFor="slug">Slug</label>
-                                <Field id="slug" name="slug" placeholder="Slug" />
+                                <Input label="Subject" id="subject" name="subject" placeholder="Subject" />
+                                <Input label="Slug" id="slug" name="slug" placeholder="Slug" />
                                 <Button loading={loading} disabled={!isValid} className="mt-4">
                                     Save
                                 </Button>

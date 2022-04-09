@@ -1,10 +1,12 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { Field, Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
+import { Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
 import debounce from 'lodash.debounce'
 import Router from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
 import type { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import Input from './Input'
+import Select from './Select'
 type Config = definitions['squeak_config']
 
 type SlackFormContentProps = Pick<FormikComputedProps<InitialValues>, 'initialValues'> &
@@ -50,20 +52,21 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
 
     return (
         <Form className="mt-6">
-            <label htmlFor="slackApiKey">Slack Bot User OAuth Token</label>
-            <Field onChange={handleAPIKeyChange} id="slackApiKey" name="slackApiKey" placeholder="xoxb-your-token" />
+            <Input
+                label="Slack Bot User OAuth Token"
+                onChange={handleAPIKeyChange}
+                id="slackApiKey"
+                name="slackApiKey"
+                placeholder="xoxb-your-token"
+            />
             {channels.length > 0 && (
                 <>
-                    <label htmlFor="slackQuestionChannel">Slack question channel</label>
-                    <Field as="select" id="slackQuestionChannel" name="slackQuestionChannel">
-                        {channels.map(({ name, id }) => {
-                            return (
-                                <option key={id} value={id}>
-                                    {name}
-                                </option>
-                            )
-                        })}
-                    </Field>
+                    <Select
+                        options={channels}
+                        label="Slack question channel"
+                        id="slackQuestionChannel"
+                        name="slackQuestionChannel"
+                    />
                 </>
             )}
         </Form>
