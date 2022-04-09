@@ -12,7 +12,7 @@ type Context =
       }
 
 interface Params {
-    organizationId: number | string
+    organizationId: string
     published?: boolean
     slug?: string
     start?: number
