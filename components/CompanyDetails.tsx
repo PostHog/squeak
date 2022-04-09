@@ -9,20 +9,20 @@ import useActiveOrganization from '../util/useActiveOrganization'
 type Config = definitions['squeak_config']
 
 interface Props {
-    mailgunApiKey: string
-    mailgunDomain: string
+    companyName: string
+    companyDomain: string
     redirect?: string
     actionButtons: (isValid: boolean, loading: boolean) => JSX.Element
 }
 
 interface InitialValues {
-    mailgunApiKey: string
-    mailgunDomain: string
+    companyName: string
+    companyDomain: string
 }
 
-const NotificationForm: React.VoidFunctionComponent<Props> = ({
-    mailgunApiKey,
-    mailgunDomain,
+const CompanyDetails: React.VoidFunctionComponent<Props> = ({
+    companyName,
+    companyDomain,
     redirect,
     actionButtons,
 }) => {
@@ -37,8 +37,8 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
         const { error } = await supabaseClient
             .from<Config>('squeak_config')
             .update({
-                mailgun_api_key: values.mailgunApiKey,
-                mailgun_domain: values.mailgunDomain,
+                company_name: values.companyName,
+                company_domain: values.companyDomain,
             })
             .match({ organization_id: organizationId })
 
@@ -46,7 +46,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             Router.push(redirect)
         }
 
-        addToast(error ? error.message : 'Notification settings saved', {
+        addToast(error ? error.message : 'Details saved', {
             appearance: error ? 'error' : 'success',
         })
 
@@ -54,8 +54,8 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     }
 
     const initialValues: InitialValues = {
-        mailgunApiKey: mailgunApiKey,
-        mailgunDomain: mailgunDomain,
+        companyName: companyName,
+        companyDomain: companyDomain,
     }
 
     return (
@@ -63,14 +63,14 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             validateOnMount
             validate={(values) => {
                 const errors: {
-                    mailgunApiKey?: string
-                    mailgunDomain?: string
+                    companyName?: string
+                    companyDomain?: string
                 } = {}
-                if (!values.mailgunApiKey) {
-                    errors.mailgunApiKey = 'Required'
+                if (!values.companyName) {
+                    errors.companyName = 'Required'
                 }
-                if (!values.mailgunDomain) {
-                    errors.mailgunDomain = 'Required'
+                if (!values.companyDomain) {
+                    errors.companyDomain = 'Required'
                 }
                 return errors
             }}
@@ -80,11 +80,11 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             {({ isValid }) => {
                 return (
                     <Form className="mt-6">
-                        <label htmlFor="mailgunApiKey">Mailgun API key</label>
-                        <Field id="mailgunApiKey" name="mailgunApiKey" placeholder="Mailgun API key" />
+                        <label htmlFor="companyName">Company name</label>
+                        <Field id="companyName" name="companyName" placeholder="Squeak" />
 
-                        <label htmlFor="mailgunDomain">Mailgun domain</label>
-                        <Field id="mailgunDomain" name="mailgunDomain" placeholder="Mailgun domain" />
+                        <label htmlFor="companyDomain">Site URL</label>
+                        <Field id="companyDomain" name="companyDomain" placeholder="https://squeak.posthog.com" />
 
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
@@ -94,4 +94,4 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     )
 }
 
-export default NotificationForm
+export default CompanyDetails

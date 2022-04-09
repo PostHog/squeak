@@ -7,7 +7,6 @@ const Skeleton = () => {
                 <input
                     type="checkbox"
                     className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
-                    checked={false}
                 />
             </td>
 
@@ -28,7 +27,7 @@ const Skeleton = () => {
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 animate-pulse">
                 <input className="max-w-[250px] border-opacity-40" />
             </td>
-            <div className="absolute inset-0 w-full h-full" />
+            <td className="absolute inset-0 w-full h-full" />
         </tr>
     )
 }

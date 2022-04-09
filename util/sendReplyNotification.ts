@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
+/* eslint-enable @typescript-eslint/no-var-requires */
+import type { definitions } from '../@types/supabase'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const Mailgun = require('mailgun.js')
 const formData = require('form-data')
-/* eslint-enable @typescript-eslint/no-var-requires */
-
-import type { definitions } from '../@types/supabase'
+const { URL } = require('url')
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
@@ -127,8 +127,10 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         key: mailgun_api_key,
     })
 
+    const url = new URL(company_domain)
+
     const mailgunData = {
-        from: `${company_name} <noreply@${company_domain}>`,
+        from: `${company_name} <noreply@${url.hostname}>`,
         to: email,
         subject: `Someone answered your question on ${company_domain}!`,
         text: `Hey,\n\nSomeone answered your question on ${company_domain}!\n\nQuestion:\n${message.subject}\n${question.body}\n\nReply:\n${body}\n\nThanks,\n\n${company_name}`,

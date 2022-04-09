@@ -20,9 +20,10 @@ interface Props {
     title: string
     navStyle?: React.CSSProperties
     contentStyle?: React.CSSProperties
+    hideTitle?: boolean
 }
 
-const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle }) => {
+const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle, hideTitle }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const router = useRouter()
 
@@ -78,9 +79,11 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                 <div style={contentStyle} className="flex flex-col flex-1 col-span-2">
                     <main className="flex-1">
                         <div className="py-12">
-                            <div>
-                                <h1 className=" mb-6">{title}</h1>
-                            </div>
+                            {!hideTitle && (
+                                <div>
+                                    <h1 className=" mb-6">{title}</h1>
+                                </div>
+                            )}
                             <div>{children}</div>
                         </div>
                     </main>

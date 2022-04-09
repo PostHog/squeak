@@ -88,7 +88,7 @@ const Slack = () => {
                     slack_timestamp: ts,
                     created_at: ts ? new Date(parseInt(ts) * 1000).toISOString() : '',
                     subject: subject || 'No subject',
-                    slug: [slug],
+                    slug: slug.split(','),
                     published: !!subject && !!slug,
                     organization_id: organizationId,
                 })
@@ -163,7 +163,7 @@ const Slack = () => {
                     organizationId,
                     channel: slack_question_channel,
                 }),
-            }).then((res) => res.json())
+            }).then((res) => (res.ok ? res.json() : []))
             setLoadingQuestions(false)
             setQuestions(messages)
         }

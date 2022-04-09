@@ -31,7 +31,7 @@ const getQuestions = async (context: Context, params: Params) => {
 
     if (published) messagesQuery.eq('published', published)
     if (slug) messagesQuery.contains('slug', [slug])
-    if (start && end) messagesQuery.range(start, end)
+    messagesQuery.range(start, end)
 
     const { data: messages = [], count = 0, error } = await messagesQuery
 
@@ -50,7 +50,7 @@ const getQuestions = async (context: Context, params: Params) => {
                         .select(
                             `
                          id, body, created_at,
-                         profile:squeak_profiles!squeak_replies_profile_id_fkey (
+                         profile:squeak_profiles!replies_profile_id_fkey (
                              id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
                         )
                         `

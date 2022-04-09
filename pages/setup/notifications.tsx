@@ -2,24 +2,22 @@ import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import { ReactElement } from 'react'
+import { definitions } from '../../@types/supabase'
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
-import SetupLayout from '../../layout/SetupLayout'
-import withPreflightCheck from '../../util/withPreflightCheck'
 import NotificationForm from '../../components/NotificationForm'
-import { definitions } from '../../@types/supabase'
+import SetupLayout from '../../layout/SetupLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
+import withPreflightCheck from '../../util/withPreflightCheck'
 
 type Config = definitions['squeak_config']
 
 interface Props {
     mailgunApiKey: string
     mailgunDomain: string
-    companyName: string
-    companyDomain: string
 }
 
-const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, companyName, companyDomain }) => {
+const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain }) => {
     const handleSkip = () => {
         Router.push('/setup/alerts')
     }
@@ -37,12 +35,10 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                 <NotificationForm
                     mailgunApiKey={mailgunApiKey}
                     mailgunDomain={mailgunDomain}
-                    companyName={companyName}
-                    companyDomain={companyDomain}
                     redirect="/setup/alerts"
-                    actionButtons={(isValid) => (
+                    actionButtons={(isValid, loading) => (
                         <>
-                            <Button disabled={!isValid} type="submit">
+                            <Button loading={loading} disabled={!isValid} type="submit">
                                 Continue
                             </Button>
                             <button onClick={handleSkip} className="text-accent-light font-semibold">
@@ -87,8 +83,6 @@ export const getServerSideProps = withPreflightCheck({
             props: {
                 mailgunApiKey: config?.mailgun_api_key || '',
                 mailgunDomain: config?.mailgun_domain || '',
-                companyName: config?.company_name || '',
-                companyDomain: config?.company_domain || '',
             },
         }
     },

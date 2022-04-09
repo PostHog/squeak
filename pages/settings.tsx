@@ -5,6 +5,7 @@ import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
+import CompanyDetails from '../components/CompanyDetails'
 import NotificationForm from '../components/NotificationForm'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
@@ -44,6 +45,18 @@ const Settings: NextPageWithLayout<Props> = ({
                 <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6" />
             </Surface>
             <Surface className="mb-4">
+                <h3>Company details</h3>
+                <CompanyDetails
+                    companyDomain={companyDomain}
+                    companyName={companyName}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
                 <h3>Alerts</h3>
                 <p className="mb-6">
                     Setup outgoing webhooks to alert other services about new questions added to Squeak!
@@ -54,12 +67,10 @@ const Settings: NextPageWithLayout<Props> = ({
                 <h3>Notifications</h3>
                 <p>Manage configuration for reply notifications via Mailgun</p>
                 <NotificationForm
-                    companyDomain={companyDomain}
-                    companyName={companyName}
                     mailgunDomain={mailgunDomain}
                     mailgunApiKey={mailgunApiKey}
-                    actionButtons={(isValid) => (
-                        <Button disabled={!isValid} type="submit">
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
                             Save
                         </Button>
                     )}
@@ -73,8 +84,8 @@ const Settings: NextPageWithLayout<Props> = ({
                 <SlackForm
                     slackApiKey={slackApiKey}
                     slackQuestionChannel={slackQuestionChannel}
-                    actionButtons={(isValid: boolean) => (
-                        <Button disabled={!isValid} type="submit">
+                    actionButtons={(isValid: boolean, loading: boolean) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
                             Save
                         </Button>
                     )}

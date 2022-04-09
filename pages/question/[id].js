@@ -1,12 +1,12 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
 import Avatar from '../../components/Avatar'
-import Button from '../../components/Button'
 import EditQuestionModal from '../../components/EditQuestionModal'
 import Surface from '../../components/Surface'
 import AdminLayout from '../../layout/AdminLayout'
+import getActiveOrganization from '../../util/getActiveOrganization'
 import withAdminAccess from '../../util/withAdminAccess'
 
 const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
@@ -24,7 +24,7 @@ const getQuestion = async (id) => {
                 id,
                 created_at,
                 body,
-                squeak_profiles!squeak_replies_profile_id_fkey (
+                squeak_profiles!replies_profile_id_fkey (
                     first_name, last_name, avatar
                 )
                 `
@@ -63,7 +63,7 @@ const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
     return (
         !deleted && (
             <Surface onClick={handleSurfaceClick}>
-                <div className={`pt-4 rounded-md w-full transition-opacity`}>
+                <div className={`rounded-md w-full transition-opacity`}>
                     <div
                         className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}
                     >
@@ -79,7 +79,7 @@ const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
                         </div>
                     </div>
                     {!hideDelete && (
-                        <p className="text-right">
+                        <p className="text-right m-0">
                             <DeleteButton
                                 confirmDelete={confirmDelete}
                                 setConfirmDelete={setConfirmDelete}
@@ -100,6 +100,7 @@ const Question = (props) => {
         replies,
         question: { slug, subject, id },
     } = question
+    const { domain } = props
     const [modalOpen, setModalOpen] = useState(false)
     const handleModalSubmit = async () => {
         const updatedQuestion = await getQuestion(id)
@@ -116,22 +117,34 @@ const Question = (props) => {
                     onSubmit={handleModalSubmit}
                 />
             )}
-            <h1 class=" mb-6">{subject}</h1>
+            <h1>{subject}</h1>
+            <ul className="flex items-center space-x-2 ">
+                {question.question.slug?.map((slug) => {
+                    const url = new URL(domain).origin + slug.trim()
+                    return (
+                        <li>
+                            <a href={url} target="_blank" className="text-[14px] opacity-50 text-inherit">
+                                {url}
+                            </a>
+                        </li>
+                    )
+                })}
+            </ul>
+            <button onClick={() => setModalOpen(true)} className="mb-6 font-bold text-red">
+                Edit
+            </button>
             <div className="col-span-2">
                 <div className="grid gap-y-4">
                     <div className="flex space-x-9 items-start">
                         <div className="flex-grow max-w-[700px]">
-                            <Reply hideDelete {...replies[0]} />
+                            <div className="mr-[56px]">
+                                <Reply hideDelete {...replies[0]} />
+                            </div>
                             <div className="ml-[56px] mt-4 grid gap-y-4">
                                 {replies.slice(1).map((reply) => {
                                     return <Reply key={reply.id} {...reply} />
                                 })}
                             </div>
-                        </div>
-                        <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0 sticky top-10">
-                            <Button onClick={() => setModalOpen(true)} className="w-full">
-                                Edit
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -142,22 +155,26 @@ const Question = (props) => {
 
 Question.getLayout = function getLayout(page) {
     const title = page?.props?.question?.question?.subject
-    return (
-        <AdminLayout
-            navStyle={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(250px, 1fr) 700px 1fr' }}
-        >
-            {page}
-        </AdminLayout>
-    )
+    return <AdminLayout contentStyle={{ maxWidth: 700, width: '100%', margin: '0 auto' }}>{page}</AdminLayout>
 }
 
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
     async getServerSideProps(context) {
         const { id } = context.query
+        const organizationId = await getActiveOrganization(context)
         const question = await getQuestion(id)
+
+        const {
+            data: { company_domain },
+        } = await supabaseServerClient(context)
+            .from('squeak_config')
+            .select('company_domain')
+            .eq('organization_id', organizationId)
+            .single()
+
         return {
-            props: { question },
+            props: { question, domain: company_domain },
         }
     },
 })
