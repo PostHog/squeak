@@ -15,7 +15,7 @@ type Context =
       }
 
 interface Args {
-    organizationId: number
+    organizationId: string
     context: Context
     user?: User
     token?: string
@@ -26,7 +26,7 @@ interface Result {
     error?: Error
 }
 
-const lookupUserProfile = async (context: Context, user: User, organizationId: number): Promise<Result> => {
+const lookupUserProfile = async (context: Context, user: User, organizationId: string): Promise<Result> => {
     const { data: userProfileReadonly, error: userProfileReadonlyError } = await supabaseServerClient(context)
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .select('profile_id')

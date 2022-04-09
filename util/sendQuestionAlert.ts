@@ -4,7 +4,7 @@ import { definitions } from '../@types/supabase'
 type WebhookConfig = definitions['squeak_webhook_config']
 
 const sendQuestionAlert = async (
-    organizationId: number,
+    organizationId: string,
     messageId: number,
     subject: string,
     body: string,

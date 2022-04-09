@@ -12,7 +12,7 @@ type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
-const sendReplyNotification = async (organizationId: number, messageId: number, body: string) => {
+const sendReplyNotification = async (organizationId: string, messageId: number, body: string) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
