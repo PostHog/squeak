@@ -9,7 +9,7 @@ const sendQuestionAlert = async (
     subject: string,
     body: string,
     slug: string,
-    profileId: number
+    profileId: string
 ) => {
     const supabaseServiceUserClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
