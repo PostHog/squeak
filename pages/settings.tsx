@@ -1,6 +1,6 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
@@ -11,9 +11,11 @@ import ResetPassword from '../components/ResetPassword'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import Surface from '../components/Surface'
+import Toggle from '../components/Toggle'
 import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
+import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
 
 type Config = definitions['squeak_config']
@@ -25,6 +27,7 @@ interface Props {
     companyDomain: string
     slackApiKey: string
     slackQuestionChannel: string
+    publishAutomatically: boolean
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -34,7 +37,22 @@ const Settings: NextPageWithLayout<Props> = ({
     companyDomain,
     slackApiKey,
     slackQuestionChannel,
+    publishAutomatically,
 }) => {
+    const [autoPublish, setAutopublish] = useState(publishAutomatically)
+    const { getActiveOrganization } = useActiveOrganization()
+
+    const handleAutoPublish = async () => {
+        const organizationId = getActiveOrganization()
+        await supabaseClient
+            .from('squeak_config')
+            .update({
+                publish_automatically: !autoPublish,
+            })
+            .match({ organization_id: organizationId })
+        setAutopublish(!autoPublish)
+    }
+
     return (
         <div>
             <Surface className="mb-4">
@@ -44,6 +62,12 @@ const Settings: NextPageWithLayout<Props> = ({
                     put it on other pages.
                 </p>
                 <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6" />
+                <Toggle
+                    className="mt-6"
+                    checked={autoPublish}
+                    setChecked={handleAutoPublish}
+                    label="Publish automatically"
+                />
             </Surface>
             <Surface className="mb-4">
                 <h3>Company details</h3>
@@ -122,7 +146,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel`
+                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, publish_automatically`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -137,6 +161,7 @@ export const getServerSideProps = withAdminAccess({
                 companyDomain: config?.company_domain || '',
                 slackApiKey: config?.slack_api_key || '',
                 slackQuestionChannel: config?.slack_question_channel || '',
+                publishAutomatically: config?.publish_automatically,
             },
         }
     },
