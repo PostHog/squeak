@@ -119,14 +119,8 @@ const Question = (props) => {
                     onSubmit={handleModalSubmit}
                 />
             )}
-            <div className="flex items-start space-x-4 justify-between mr-[56px]">
-                <h1 className="m-0">{subject}</h1>
-                <button onClick={() => setModalOpen(true)} className="font-bold text-red">
-                    Edit
-                </button>
-            </div>
-
-            <ul className="flex items-center space-x-2 mb-6">
+            <h1 className="m-0">{subject}</h1>
+            <ul className="flex items-center space-x-2">
                 {question.question.slug?.map((slug) => {
                     const url = new URL(domain).origin + slug.trim()
                     return (
@@ -138,6 +132,9 @@ const Question = (props) => {
                     )
                 })}
             </ul>
+            <button onClick={() => setModalOpen(true)} className="font-bold text-red mb-6">
+                Edit
+            </button>
             <div className="col-span-2">
                 <div className="grid gap-y-4">
                     <div className="flex space-x-9 items-start">
