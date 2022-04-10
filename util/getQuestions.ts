@@ -27,7 +27,7 @@ const getQuestions = async (context: Context, params: Params) => {
         .from<Message>('squeak_messages')
         .select('subject, id, slug, created_at, published, slack_timestamp', { count: 'exact' })
         .eq('organization_id', organizationId)
-        .order('created_at')
+        .order('created_at', { ascending: false })
 
     if (published) messagesQuery.eq('published', published)
     if (slug) messagesQuery.contains('slug', [slug])
@@ -57,7 +57,7 @@ const getQuestions = async (context: Context, params: Params) => {
                         )
                         .eq('message_id', question.id)
                         .eq('organization_id', organizationId)
-                        .order('created_at')
+                        .order('created_at', { ascending: false })
                         .then((data) => ({
                             question,
                             replies: data?.data || [],

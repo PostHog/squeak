@@ -1,5 +1,6 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import groupBy from 'lodash.groupby'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import type { definitions } from '../@types/supabase'
@@ -8,6 +9,8 @@ import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
+import dateToDays from '../util/dateToDays'
+import dayFormat from '../util/dayFormat'
 import getActiveOrganization from '../util/getActiveOrganization'
 import getQuestions from '../util/getQuestions'
 import withAdminAccess from '../util/withAdminAccess'
@@ -31,6 +34,10 @@ interface Props {
 
 const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, start }) => {
     const { questions } = results
+    const grouped = groupBy(questions, (question) => {
+        const { created_at } = question.question
+        return dateToDays(created_at)
+    })
     return (
         <div>
             <h1 className=" mb-6">
@@ -44,63 +51,78 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                     </p>
                 </Surface>
             ) : (
-                <ul className="grid gap-4">
-                    {questions.map((question: Question) => {
-                        const [firstReply] = question.replies
-                        const replyCount = question.replies.length - 1
-                        const slackTimestamp = question.question.slack_timestamp
-
+                <ul className="grid gap-2">
+                    {Object.keys(grouped).map((days) => {
                         return (
-                            <li className="flex space-x-9">
-                                <div className="flex-grow max-w-[700px]">
-                                    <Surface>
-                                        <div className="flex items-center justify-between">
-                                            <ul className="flex items-center space-x-2">
-                                                {question.question.slug?.map((slug) => {
-                                                    const url = new URL(domain).origin + slug.trim()
-                                                    return (
-                                                        <li>
-                                                            <a
-                                                                href={url}
-                                                                target="_blank"
-                                                                className="text-[14px] opacity-50 text-inherit"
-                                                            >
-                                                                {url}
-                                                            </a>
-                                                        </li>
-                                                    )
-                                                })}
-                                            </ul>
+                            <li>
+                                <h4 className="text-[14px] opacity-30 m-0 font-bold">{dayFormat(Number(days))}</h4>
+                                <ul className="grid gap-4">
+                                    {grouped[days].map((question: Question) => {
+                                        const [firstReply] = question.replies
+                                        const replyCount = question.replies.length - 1
+                                        const slackTimestamp = question.question.slack_timestamp
 
-                                            {question.question.published && (
-                                                <span className="flex-shrink-0" title="Published">
-                                                    <CheckCircleIcon className="w-6 text-green-500" />
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h3 className="text-red font-bold my-2">{question.question.subject}</h3>
-                                        <div>
-                                            <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
-                                        </div>
-                                        <div className="flex items-end justify-between">
-                                            <Button
-                                                href={`/question/${question.question.id}`}
-                                                className="mt-3 bg-gray-light text-red bg-opacity-20 font-bold"
-                                            >{`${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`}</Button>
-                                            {slackTimestamp && <p className="text-[13px] opacity-30">via Slack</p>}
-                                        </div>
-                                    </Surface>
-                                </div>
-                                <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0">
-                                    <Avatar image={firstReply?.profile?.avatar} />
-                                    <div className="opacity-50">
-                                        <p className="font-bold">{`${
-                                            slackTimestamp
-                                                ? 'Slack User'
-                                                : `${firstReply.profile?.first_name} ${firstReply.profile?.last_name}`
-                                        }`}</p>
-                                    </div>
-                                </div>
+                                        return (
+                                            <li className="flex space-x-9">
+                                                <div className="flex-grow max-w-[700px]">
+                                                    <Surface>
+                                                        <div className="flex items-center justify-between">
+                                                            <ul className="flex items-center space-x-2">
+                                                                {question.question.slug?.map((slug) => {
+                                                                    const url = new URL(domain).origin + slug.trim()
+                                                                    return (
+                                                                        <li>
+                                                                            <a
+                                                                                href={url}
+                                                                                target="_blank"
+                                                                                className="text-[14px] opacity-50 text-inherit"
+                                                                            >
+                                                                                {url}
+                                                                            </a>
+                                                                        </li>
+                                                                    )
+                                                                })}
+                                                            </ul>
+
+                                                            {question.question.published && (
+                                                                <span className="flex-shrink-0" title="Published">
+                                                                    <CheckCircleIcon className="w-6 text-green-500" />
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h3 className="text-red font-bold my-2">
+                                                            {question.question.subject}
+                                                        </h3>
+                                                        <div>
+                                                            <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
+                                                        </div>
+                                                        <div className="flex items-end justify-between">
+                                                            <Button
+                                                                href={`/question/${question.question.id}`}
+                                                                className="mt-3 bg-gray-light text-red bg-opacity-20 font-bold"
+                                                            >{`${replyCount} ${
+                                                                replyCount === 1 ? 'reply' : 'replies'
+                                                            }`}</Button>
+                                                            {slackTimestamp && (
+                                                                <p className="text-[13px] opacity-30">via Slack</p>
+                                                            )}
+                                                        </div>
+                                                    </Surface>
+                                                </div>
+                                                <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0">
+                                                    <Avatar image={firstReply?.profile?.avatar} />
+                                                    <div className="opacity-50">
+                                                        <p className="font-bold">{`${
+                                                            slackTimestamp
+                                                                ? 'Slack User'
+                                                                : `${firstReply.profile?.first_name} ${firstReply.profile?.last_name}`
+                                                        }`}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
                             </li>
                         )
                     })}

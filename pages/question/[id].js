@@ -6,6 +6,8 @@ import Avatar from '../../components/Avatar'
 import EditQuestionModal from '../../components/EditQuestionModal'
 import Surface from '../../components/Surface'
 import AdminLayout from '../../layout/AdminLayout'
+import dateToDays from '../../util/dateToDays'
+import dayFormat from '../../util/dayFormat'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import withAdminAccess from '../../util/withAdminAccess'
 
@@ -71,7 +73,7 @@ const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
                         <div className="flex-grow min-w-0">
                             <p className="m-0 font-semibold">
                                 <span>{squeak_profiles?.first_name || 'Anonymous'}</span>
-                                <span className={`font-normal ml-2`}>{template.render(new Date(created_at))}</span>
+                                <span className={`ml-2 opacity-30 font-bold`}>{dayFormat(dateToDays(created_at))}</span>
                             </p>
                             <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
                                 <ReactMarkdown>{body}</ReactMarkdown>
