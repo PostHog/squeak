@@ -5,9 +5,10 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Input from '../components/Input'
 import Button from './Button'
+import Checkbox from './Checkbox'
 
 export default function EditQuestionModal({ onClose, values, onSubmit }) {
-    const { subject, slug, id } = values
+    const { subject, slug, id, published } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -15,10 +16,10 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
 
     const handleSave = async (values) => {
         setLoading(true)
-        const { subject, slug } = values
+        const { subject, slug, published } = values
         await supabaseClient
             .from('squeak_messages')
-            .update({ subject, slug: slug.split(',') })
+            .update({ subject, slug: slug.split(','), published })
             .match({ id })
         onSubmit()
     }
@@ -63,6 +64,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                     initialValues={{
                         subject,
                         slug: slug.join(','),
+                        published,
                     }}
                     onSubmit={handleSave}
                 >
@@ -71,6 +73,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                             <Form>
                                 <Input label="Subject" id="subject" name="subject" placeholder="Subject" />
                                 <Input label="Slug" id="slug" name="slug" placeholder="Slug" />
+                                <Checkbox label="Published" id="published" name="published" />
                                 <div className="flex justify-between">
                                     <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
                                         Save

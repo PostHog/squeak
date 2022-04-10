@@ -16,7 +16,7 @@ const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 const getQuestion = async (id) => {
     const { data: question } = await supabaseClient
         .from('squeak_messages')
-        .select('subject, id, slug, created_at')
+        .select('subject, id, slug, created_at, published')
         .eq('id', id)
         .single()
     return supabaseClient
@@ -100,7 +100,7 @@ const Question = (props) => {
     const [question, setQuestion] = useState(props.question)
     const {
         replies,
-        question: { slug, subject, id },
+        question: { slug, subject, id, published },
     } = question
     const { domain } = props
     const [modalOpen, setModalOpen] = useState(false)
@@ -114,7 +114,7 @@ const Question = (props) => {
         <>
             {modalOpen && (
                 <EditQuestionModal
-                    values={{ subject, slug, id }}
+                    values={{ subject, slug, id, published }}
                     onClose={() => setModalOpen(false)}
                     onSubmit={handleModalSubmit}
                 />
