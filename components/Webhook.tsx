@@ -29,7 +29,7 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
             const { error } = await supabaseClient
                 .from<WebhookConfig>('squeak_webhook_config')
                 .update({ url })
-                .match({ id: initialValues.id, organinization_id: organizationId })
+                .match({ id: initialValues.id, organization_id: organizationId })
 
             addToast(error ? error.message : 'Webhook updated', {
                 appearance: error ? 'error' : 'success',
@@ -79,7 +79,7 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
                 {({ isValid }) => {
                     return (
                         <Form>
-                            <Input label="Webhook URL" id="url" name="url" placeholder="Webhook URL" />
+                            <Input label="Webhook URL" id="url" name="url" type="url" placeholder="Webhook URL" />
                             <div className="flex space-x-2 mt-3">
                                 <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}

@@ -3,6 +3,8 @@ import getQuestions from '../../util/getQuestions'
 import NextCors from 'nextjs-cors'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    console.log(req.headers.origin)
+
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
