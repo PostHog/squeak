@@ -187,7 +187,7 @@ const Slack = () => {
                         onSubmit={handleSlackSubmit}
                         slackApiKey={slackData.slackApiKey}
                         slackQuestionChannel={slackData.slackQuestionChannel}
-                        redirect="/import"
+                        redirect="/slack"
                         actionButtons={(isValid, loading) => (
                             <>
                                 <Button loading={loading} disabled={!isValid} type="submit">
