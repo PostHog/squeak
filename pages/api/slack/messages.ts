@@ -1,8 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import formatSlackMessage from '../../../util/formatSlackMessage'
 import type { ConversationsHistoryResponse } from '@slack/web-api/dist/response/ConversationsHistoryResponse'
 import type { ConversationsRepliesResponse } from '@slack/web-api/dist/response/ConversationsRepliesResponse'
+import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { NextApiRequest, NextApiResponse } from 'next'
+import xss from 'xss'
+import formatSlackMessage from '../../../util/formatSlackMessage'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { WebClient } = require('@slack/web-api')
@@ -66,7 +67,12 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
             client_msg_id: client_msg_id,
             subject: '',
             slug: '',
-            body: message?.blocks ? formatSlackMessage(message?.blocks[0]?.elements || []) : message?.text,
+            body: message?.blocks
+                ? formatSlackMessage(message?.blocks[0]?.elements || [])
+                : xss(message?.text || '', {
+                      whiteList: {},
+                      stripIgnoreTag: true,
+                  }),
             replies,
         })
     }

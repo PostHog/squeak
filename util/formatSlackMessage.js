@@ -1,3 +1,5 @@
+import xss from 'xss'
+
 export default function formatSlackElements(elements, apiKey) {
     const types = {
         text: (el) => {
@@ -31,5 +33,8 @@ export default function formatSlackElements(elements, apiKey) {
             }
         }
     }
-    return message.join('')
+    return xss(message.join(''), {
+        whiteList: {},
+        stripIgnoreTag: true,
+    })
 }
