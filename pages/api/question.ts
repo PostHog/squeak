@@ -23,12 +23,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { slug, subject, organizationId, token } = JSON.parse(req.body)
 
-    if (!slug || !subject || !req.body.body || !organizationId || !token) {
+    if (!slug || !subject || !JSON.parse(req.body).body || !organizationId || !token) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
 
-    const body = xss(req.body.body, {
+    const body = xss(JSON.parse(req.body).body, {
         whiteList: {},
         stripIgnoreTag: true,
     })
