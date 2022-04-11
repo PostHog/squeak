@@ -42,8 +42,8 @@ export default function SlackTableSkeleton() {
     }, [])
     return (
         <>
-            {[...Array(skeletonsToShow)].map(() => (
-                <Skeleton />
+            {[...Array(skeletonsToShow)].map((value, index) => (
+                <Skeleton key={`skeleton-${index}`} />
             ))}
         </>
     )

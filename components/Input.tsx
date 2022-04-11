@@ -1,6 +1,17 @@
 import { Field } from 'formik'
+import type { ChangeEvent } from 'react'
 
-export default function Input({
+interface Props {
+    id: string
+    label: string
+    name: string
+    placeholder: string
+    helperText?: string
+    errorMessage?: string
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+const Input: React.FunctionComponent<Props> = ({
     label,
     helperText,
     id,
@@ -8,14 +19,7 @@ export default function Input({
     placeholder,
     errorMessage,
     ...other
-}: {
-    label: string
-    helperText?: string
-    id: string
-    name: string
-    placeholder: string
-    errorMessage?: string
-}) {
+}) => {
     return (
         <div className="mb-6">
             <label className="text-[16px] font-semibold opacity-75 my-2" htmlFor={id}>
@@ -33,3 +37,5 @@ export default function Input({
         </div>
     )
 }
+
+export default Input

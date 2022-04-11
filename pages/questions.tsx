@@ -17,10 +17,12 @@ import withAdminAccess from '../util/withAdminAccess'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
+type Profile = definitions['squeak_profiles']
+type ReplyWithProfile = Pick<Reply, 'body'> & { profile: Pick<Profile, 'first_name' | 'last_name' | 'avatar'> }
 
 interface Question {
     question: Message
-    replies: Array<Reply>
+    replies: Array<ReplyWithProfile>
 }
 
 interface Props {
@@ -29,12 +31,13 @@ interface Props {
         count: number
     }
     start: number
-    domain: string
+    domain: string | null
 }
 
 const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, start }) => {
     const { questions } = results
-    const grouped = groupBy(questions, (question) => {
+
+    const grouped = groupBy(questions, (question: Question) => {
         const { created_at } = question.question
         return dateToDays(created_at)
     })
@@ -54,7 +57,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                 <ul className="grid gap-2">
                     {Object.keys(grouped).map((days) => {
                         return (
-                            <li>
+                            <li key={days}>
                                 <h4 className="text-[14px] opacity-30 m-0 font-bold">{dayFormat(Number(days))}</h4>
                                 <ul className="grid gap-4">
                                     {grouped[days].map((question: Question) => {
@@ -63,21 +66,24 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                         const slackTimestamp = question.question.slack_timestamp
 
                                         return (
-                                            <li className="flex space-x-9">
+                                            <li key={`question-${question.question.id}`} className="flex space-x-9">
                                                 <div className="flex-grow max-w-[700px]">
                                                     <Surface>
                                                         <div className="flex items-center justify-between">
                                                             <ul className="flex items-center space-x-2">
                                                                 {question.question.slug?.map((slug) => {
-                                                                    const url = new URL(domain).origin + slug.trim()
+                                                                    const url = domain ? new URL(domain).origin : ''
+                                                                    const questionLink = url + (slug as string).trim()
+
                                                                     return (
-                                                                        <li>
+                                                                        <li key={questionLink}>
                                                                             <a
-                                                                                href={url}
+                                                                                href={questionLink}
                                                                                 target="_blank"
                                                                                 className="text-[14px] opacity-50 text-inherit"
+                                                                                rel="noreferrer"
                                                                             >
-                                                                                {url}
+                                                                                {questionLink}
                                                                             </a>
                                                                         </li>
                                                                     )
@@ -173,6 +179,7 @@ export const getServerSideProps = withAdminAccess({
             .select('company_domain')
             .eq('organization_id', organizationId)
             .single()
+
         const { data, error } = await getQuestions(context, { start, organizationId })
 
         if (error) {

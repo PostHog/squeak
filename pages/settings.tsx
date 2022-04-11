@@ -47,7 +47,7 @@ const Settings: NextPageWithLayout<Props> = ({
         await supabaseClient
             .from('squeak_config')
             .update({
-                publish_automatically: !autoPublish,
+                question_auto_publish: !autoPublish,
             })
             .match({ organization_id: organizationId })
         setAutopublish(!autoPublish)
@@ -146,7 +146,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, publish_automatically`
+                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -161,7 +161,7 @@ export const getServerSideProps = withAdminAccess({
                 companyDomain: config?.company_domain || '',
                 slackApiKey: config?.slack_api_key || '',
                 slackQuestionChannel: config?.slack_question_channel || '',
-                publishAutomatically: config?.publish_automatically,
+                publishAutomatically: config?.question_auto_publish || false,
             },
         }
     },

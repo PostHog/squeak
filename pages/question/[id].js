@@ -1,7 +1,6 @@
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import tinytime from 'tinytime'
 import Avatar from '../../components/Avatar'
 import EditQuestionModal from '../../components/EditQuestionModal'
 import Surface from '../../components/Surface'
@@ -10,8 +9,6 @@ import dateToDays from '../../util/dateToDays'
 import dayFormat from '../../util/dayFormat'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import withAdminAccess from '../../util/withAdminAccess'
-
-const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
 const getQuestion = async (id) => {
     const { data: question } = await supabaseClient
@@ -122,11 +119,18 @@ const Question = (props) => {
             <h1 className="m-0">{subject}</h1>
             <ul className="flex items-center space-x-2">
                 {question.question.slug?.map((slug) => {
-                    const url = new URL(domain).origin + slug.trim()
+                    const url = domain ? new URL(domain).origin : ''
+                    const questionLink = url + slug.trim()
+
                     return (
-                        <li>
-                            <a href={url} target="_blank" className="text-[14px] opacity-50 text-inherit">
-                                {url}
+                        <li key={questionLink}>
+                            <a
+                                href={url}
+                                target="_blank"
+                                className="text-[14px] opacity-50 text-inherit"
+                                rel="noreferrer"
+                            >
+                                {questionLink}
                             </a>
                         </li>
                     )
@@ -156,8 +160,12 @@ const Question = (props) => {
 }
 
 Question.getLayout = function getLayout(page) {
-    const title = page?.props?.question?.question?.subject
-    return <AdminLayout contentStyle={{ maxWidth: 700, width: '100%', margin: '0 auto' }}>{page}</AdminLayout>
+    const title = page?.props?.question?.question?.subject || 'Question'
+    return (
+        <AdminLayout title={title} contentStyle={{ maxWidth: 700, width: '100%', margin: '0 auto' }}>
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({

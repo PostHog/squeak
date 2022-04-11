@@ -44,9 +44,9 @@ const Logo: React.VoidFunctionComponent<Props> = ({ className }) => {
                     width="233.498"
                     height="103.958"
                     filterUnits="userSpaceOnUse"
-                    color-interpolation-filters="sRGB"
+                    colorInterpolationFilters="sRGB"
                 >
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feFlood floodOpacity="0" result="BackgroundImageFix" />
                     <feColorMatrix
                         in="SourceAlpha"
                         type="matrix"
@@ -143,8 +143,8 @@ const Logo: React.VoidFunctionComponent<Props> = ({ className }) => {
                     y2="78.0495"
                     gradientUnits="userSpaceOnUse"
                 >
-                    <stop stop-color="#F54E00" />
-                    <stop offset="1" stop-color="#DC6726" />
+                    <stop stopColor="#F54E00" />
+                    <stop offset="1" stopColor="#DC6726" />
                 </linearGradient>
                 <linearGradient
                     id="paint1_linear_361_4902"
@@ -154,8 +154,8 @@ const Logo: React.VoidFunctionComponent<Props> = ({ className }) => {
                     y2="77.9018"
                     gradientUnits="userSpaceOnUse"
                 >
-                    <stop stop-color="#FA6A28" />
-                    <stop offset="1" stop-color="#D04504" />
+                    <stop stopColor="#FA6A28" />
+                    <stop offset="1" stopColor="#D04504" />
                 </linearGradient>
             </defs>
         </svg>
