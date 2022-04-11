@@ -1,14 +1,14 @@
-import { NextPageWithLayout } from '../@types/types'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { GetStaticPropsResult } from 'next'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
+import { definitions } from '../@types/supabase'
+import { NextPageWithLayout } from '../@types/types'
+import InviteUser from '../components/InviteUser'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
-import { definitions } from '../@types/supabase'
-import withAdminAccess from '../util/withAdminAccess'
-import { GetStaticPropsResult } from 'next'
-import InviteUser from '../components/InviteUser'
 import useActiveOrganization from '../util/useActiveOrganization'
-import { useToasts } from 'react-toast-notifications'
+import withAdminAccess from '../util/withAdminAccess'
 
 type UserProfileView = definitions['squeak_profiles_view']
 
@@ -54,7 +54,11 @@ const Users: NextPageWithLayout<Props> = () => {
 }
 
 Users.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title="Profiles">{page}</AdminLayout>
+    return (
+        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Profiles">
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({

@@ -7,8 +7,8 @@ body {
     @apply bg-light;
     padding: 0;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-        Helvetica Neue, sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+        Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
@@ -20,7 +20,7 @@ a {
 }
 
 h1 {
-    @apply text-4xl font-semibold;
+    @apply text-4xl font-bold;
 }
 h3 {
     @apply text-2xl font-semibold;
@@ -28,7 +28,7 @@ h3 {
 
 p,
 li {
-    @apply my-2;
+    @apply my-2 text-[16px];
 }
 
 input,

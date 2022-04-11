@@ -1,6 +1,6 @@
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
+import { definitions } from '../@types/supabase'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -25,13 +25,13 @@ const getQuestions = async (context: Context, params: Params) => {
 
     const messagesQuery = supabaseServerClient(context)
         .from<Message>('squeak_messages')
-        .select('subject, id, slug, created_at, published', { count: 'exact' })
+        .select('subject, id, slug, created_at, published, slack_timestamp', { count: 'exact' })
         .eq('organization_id', organizationId)
-        .order('created_at')
+        .order('created_at', { ascending: false })
 
     if (published) messagesQuery.eq('published', published)
     if (slug) messagesQuery.contains('slug', [slug])
-    if (start && end) messagesQuery.range(start, end)
+    messagesQuery.range(start, end)
 
     const { data: messages = [], count = 0, error } = await messagesQuery
 
@@ -57,7 +57,7 @@ const getQuestions = async (context: Context, params: Params) => {
                         )
                         .eq('message_id', question.id)
                         .eq('organization_id', organizationId)
-                        .order('created_at')
+                        .order('created_at', { ascending: false })
                         .then((data) => ({
                             question,
                             replies: data?.data || [],

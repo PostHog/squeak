@@ -1,11 +1,14 @@
+import '@fontsource/nunito'
+import '@fontsource/nunito/600.css'
+import '@fontsource/nunito/800.css'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { UserProvider } from '@supabase/supabase-auth-helpers/react'
 import type { AppProps } from 'next/app'
+import { ToastProvider } from 'react-toast-notifications'
 import type { NextPageWithLayout } from '../@types/types'
+import Toast from '../components/Toast'
 import ErrorLayout from '../layout/ErrorLayout'
 import '../styles/globals.css'
-import { ToastProvider } from 'react-toast-notifications'
-import Toast from '../components/Toast'
 
 type AppPropsWithLayout = AppProps & {
     Component: NextPageWithLayout

@@ -1,16 +1,17 @@
-import { CogIcon } from '@heroicons/react/outline'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
+import { definitions } from '../@types/supabase'
 import Button from '../components/Button'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
+import SlackTableSkeleton from '../components/SlackTableSkeleton'
+import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
-import withAdminAccess from '../util/withAdminAccess'
 import useActiveOrganization from '../util/useActiveOrganization'
-import { definitions } from '../@types/supabase'
+import withAdminAccess from '../util/withAdminAccess'
 import { Message as MessageResponse } from './api/slack/messages'
 
 type Config = definitions['squeak_config']
@@ -22,7 +23,7 @@ interface SlackData {
     slackQuestionChannel: string
 }
 
-const Import = () => {
+const Slack = () => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
 
@@ -40,6 +41,7 @@ const Import = () => {
         slackApiKey: '',
         slackQuestionChannel: '',
     })
+    const [loadingQuestions, setLoadingQuestions] = useState(false)
 
     useLayoutEffect(() => {
         const isIndeterminate = selectedQuestions.length > 0 && selectedQuestions.length < questions.length
@@ -86,7 +88,7 @@ const Import = () => {
                     slack_timestamp: ts,
                     created_at: ts ? new Date(parseInt(ts) * 1000).toISOString() : '',
                     subject: subject || 'No subject',
-                    slug: [slug],
+                    slug: slug.split(','),
                     published: !!subject && !!slug,
                     organization_id: organizationId,
                 })
@@ -136,6 +138,7 @@ const Import = () => {
 
     const getQuestions = useCallback(async () => {
         if (!isLoading) {
+            setLoadingQuestions(true)
             const { data } = await supabaseClient
                 .from<Config>('squeak_config')
                 .select(`slack_api_key, slack_question_channel`)
@@ -160,8 +163,8 @@ const Import = () => {
                     organizationId,
                     channel: slack_question_channel,
                 }),
-            }).then((res) => res.json())
-
+            }).then((res) => (res.ok ? res.json() : []))
+            setLoadingQuestions(false)
             setQuestions(messages)
         }
     }, [isLoading, organizationId])
@@ -177,36 +180,23 @@ const Import = () => {
 
     return (
         <>
-            <div className="flex items-center space-x-4 mt-8 mb-4">
-                <div className="flex items-center space-x-2">
-                    <button className="text-lg font-bold text-gray-500 border-b-2 border-gray-500">Slack</button>
-                    <button onClick={() => setSlackSetup(!slackSetup)}>
-                        <CogIcon
-                            className={`w-5 transition-colors ${slackSetup ? 'text-gray-500' : 'text-gray-400'}`}
-                        />
-                    </button>
-                </div>
-                <button className="text-lg font-bold text-gray-300">
-                    CSV <span className="text-xs">(coming soon!)</span>
-                </button>
-            </div>
             {slackSetup ? (
-                <div className="max-w-[450px]">
+                <Surface className="max-w-[500px]">
                     <SlackManifestSnippet />
                     <SlackForm
                         onSubmit={handleSlackSubmit}
                         slackApiKey={slackData.slackApiKey}
                         slackQuestionChannel={slackData.slackQuestionChannel}
-                        redirect="/import"
-                        actionButtons={(isValid) => (
+                        redirect="/slack"
+                        actionButtons={(isValid, loading) => (
                             <>
-                                <Button disabled={!isValid} type="submit">
+                                <Button loading={loading} disabled={!isValid} type="submit">
                                     Save
                                 </Button>
                             </>
                         )}
                     />
-                </div>
+                </Surface>
             ) : (
                 <div className="flex flex-col">
                     <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -270,57 +260,70 @@ const Import = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
-                                        {questions.map((message, index) => {
-                                            const { ts, body, reply_count, slug, subject } = message
-                                            return (
-                                                <tr
-                                                    key={ts}
-                                                    className={
-                                                        selectedQuestions.includes(message) ? 'bg-gray-50' : undefined
-                                                    }
-                                                >
-                                                    <td className="relative w-12 px-6 sm:w-16 sm:px-8">
-                                                        {selectedQuestions.includes(message) && (
-                                                            <div className="absolute inset-y-0 left-0 w-0.5 bg-orange-600" />
-                                                        )}
-                                                        <input
-                                                            type="checkbox"
-                                                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
-                                                            value={ts}
-                                                            checked={selectedQuestions.includes(message)}
-                                                            onChange={(e) =>
-                                                                setSelectedQuestions(
-                                                                    e.target.checked
-                                                                        ? [...selectedQuestions, message]
-                                                                        : selectedQuestions.filter((q) => q !== message)
-                                                                )
-                                                            }
-                                                        />
-                                                    </td>
+                                        {loadingQuestions ? (
+                                            <SlackTableSkeleton />
+                                        ) : (
+                                            questions.map((message, index) => {
+                                                const { ts, body, reply_count, slug, subject } = message
+                                                return (
+                                                    <tr
+                                                        key={ts}
+                                                        className={
+                                                            selectedQuestions.includes(message)
+                                                                ? 'bg-gray-50'
+                                                                : undefined
+                                                        }
+                                                    >
+                                                        <td className="relative w-12 px-6 sm:w-16 sm:px-8">
+                                                            {selectedQuestions.includes(message) && (
+                                                                <div className="absolute inset-y-0 left-0 w-0.5 bg-orange-600" />
+                                                            )}
+                                                            <input
+                                                                type="checkbox"
+                                                                className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
+                                                                value={ts}
+                                                                checked={selectedQuestions.includes(message)}
+                                                                onChange={(e) =>
+                                                                    setSelectedQuestions(
+                                                                        e.target.checked
+                                                                            ? [...selectedQuestions, message]
+                                                                            : selectedQuestions.filter(
+                                                                                  (q) => q !== message
+                                                                              )
+                                                                    )
+                                                                }
+                                                            />
+                                                        </td>
 
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                        {ts ? template.render(new Date(parseInt(ts) * 1000)) : 'N/A'}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                        {reply_count}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                        <div className="overflow-hidden text-ellipsis max-w-[450px]">
-                                                            <ReactMarkdown>{body || ''}</ReactMarkdown>
-                                                        </div>
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                        <input
-                                                            onChange={(e) => updateSubject(e, index)}
-                                                            value={subject}
-                                                        />
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                        <input onChange={(e) => updateSlug(e, index)} value={slug} />
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })}
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                            {ts
+                                                                ? template.render(new Date(parseInt(ts) * 1000))
+                                                                : 'N/A'}
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                            {reply_count}
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
+                                                            <div className="overflow-hidden text-ellipsis max-w-[450px]">
+                                                                <ReactMarkdown>{body || ''}</ReactMarkdown>
+                                                            </div>
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
+                                                            <input
+                                                                onChange={(e) => updateSubject(e, index)}
+                                                                value={subject}
+                                                            />
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
+                                                            <input
+                                                                onChange={(e) => updateSlug(e, index)}
+                                                                value={slug}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -332,8 +335,12 @@ const Import = () => {
     )
 }
 
-Import.getLayout = function getLayout(page: ReactElement) {
-    return <AdminLayout title={'Import'}>{page}</AdminLayout>
+Slack.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title={'Slack'}>
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({
@@ -345,4 +352,4 @@ export const getServerSideProps = withAdminAccess({
     },
 })
 
-export default Import
+export default Slack
