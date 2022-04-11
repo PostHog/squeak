@@ -28,7 +28,10 @@ const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
                 .single()
                 .then(({ data }) => {
                     setAllowedOrigins((data?.allowed_origins as Array<string>) || [])
-                    setInitialValues({ allowedOrigins: data?.allowed_origins as Array<string>, allowedOrigin: '' })
+                    setInitialValues({
+                        allowedOrigins: (data?.allowed_origins as Array<string>) || [],
+                        allowedOrigin: '',
+                    })
                 })
         }
     }, [isUserLoading, organizationId])

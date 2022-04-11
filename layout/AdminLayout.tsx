@@ -2,7 +2,6 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 import Logo from '../components/Logo'
 
 const navigation = [
@@ -24,7 +23,6 @@ interface Props {
 }
 
 const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle, hideTitle }) => {
-    const [sidebarOpen, setSidebarOpen] = useState(false)
     const router = useRouter()
 
     const handleLogout = () => {
