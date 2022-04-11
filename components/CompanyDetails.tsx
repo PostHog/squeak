@@ -10,20 +10,20 @@ import Input from './Input'
 type Config = definitions['squeak_config']
 
 interface Props {
-    mailgunApiKey: string
-    mailgunDomain: string
+    companyName: string
+    companyDomain: string
     redirect?: string
     actionButtons: (isValid: boolean, loading: boolean) => JSX.Element
 }
 
 interface InitialValues {
-    mailgunApiKey: string
-    mailgunDomain: string
+    companyName: string
+    companyDomain: string
 }
 
-const NotificationForm: React.VoidFunctionComponent<Props> = ({
-    mailgunApiKey,
-    mailgunDomain,
+const CompanyDetails: React.VoidFunctionComponent<Props> = ({
+    companyName,
+    companyDomain,
     redirect,
     actionButtons,
 }) => {
@@ -38,8 +38,8 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
         const { error } = await supabaseClient
             .from<Config>('squeak_config')
             .update({
-                mailgun_api_key: values.mailgunApiKey,
-                mailgun_domain: values.mailgunDomain,
+                company_name: values.companyName,
+                company_domain: values.companyDomain,
             })
             .match({ organization_id: organizationId })
 
@@ -47,7 +47,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             Router.push(redirect)
         }
 
-        addToast(error ? error.message : 'Notification settings saved', {
+        addToast(error ? error.message : 'Details saved', {
             appearance: error ? 'error' : 'success',
         })
 
@@ -55,27 +55,48 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     }
 
     const initialValues: InitialValues = {
-        mailgunApiKey: mailgunApiKey,
-        mailgunDomain: mailgunDomain,
+        companyName: companyName,
+        companyDomain: companyDomain,
     }
 
     return (
-        <Formik validateOnMount initialValues={initialValues} onSubmit={handleSaveNotifications}>
+        <Formik
+            validateOnMount
+            validate={(values) => {
+                const errors: {
+                    companyName?: string
+                    companyDomain?: string
+                } = {}
+                if (!values.companyName) {
+                    errors.companyName = 'Required'
+                }
+                if (!values.companyDomain) {
+                    errors.companyDomain = 'Required'
+                }
+                return errors
+            }}
+            initialValues={initialValues}
+            onSubmit={handleSaveNotifications}
+        >
             {({ isValid }) => {
                 return (
                     <Form className="mt-6">
                         <Input
-                            label="Mailgun API key"
-                            id="mailgunApiKey"
-                            name="mailgunApiKey"
-                            placeholder="Mailgun API key"
+                            label="Company name"
+                            id="companyName"
+                            name="companyName"
+                            placeholder="Squeak"
+                            helperText="Shows as the sender in email notifications"
                         />
+
                         <Input
-                            label="Mailgun domain"
-                            id="mailgunDomain"
-                            name="mailgunDomain"
-                            placeholder="Mailgun domain"
+                            label="Site URL"
+                            id="companyDomain"
+                            name="companyDomain"
+                            placeholder="https://squeak.posthog.com"
+                            helperText="With protocol: eg https://squeak.posthog.com"
                         />
+
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
                 )
@@ -84,4 +105,4 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     )
 }
 
-export default NotificationForm
+export default CompanyDetails

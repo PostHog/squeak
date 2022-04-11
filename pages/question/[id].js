@@ -1,18 +1,19 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import tinytime from 'tinytime'
 import Avatar from '../../components/Avatar'
+import EditQuestionModal from '../../components/EditQuestionModal'
+import Surface from '../../components/Surface'
 import AdminLayout from '../../layout/AdminLayout'
+import dateToDays from '../../util/dateToDays'
+import dayFormat from '../../util/dayFormat'
+import getActiveOrganization from '../../util/getActiveOrganization'
 import withAdminAccess from '../../util/withAdminAccess'
-
-const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
 const getQuestion = async (id) => {
     const { data: question } = await supabaseClient
         .from('squeak_messages')
-        .select('subject, id, slug, created_at')
+        .select('subject, id, slug, created_at, published')
         .eq('id', id)
         .single()
     return supabaseClient
@@ -36,7 +37,8 @@ const getQuestion = async (id) => {
 }
 
 const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
-    const handleClick = async () => {
+    const handleClick = async (e) => {
+        e.stopPropagation()
         if (confirmDelete) {
             await supabaseClient.from('squeak_replies').delete().match({ id })
             setDeleted(true)
@@ -45,7 +47,7 @@ const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
         }
     }
     return (
-        <button onClick={handleClick} className="text-red-500 font-bold">
+        <button onClick={handleClick} className="text-red font-bold">
             {confirmDelete ? 'Click again to confirm' : 'Delete'}
         </button>
     )
@@ -54,73 +56,137 @@ const DeleteButton = ({ id, setDeleted, confirmDelete, setConfirmDelete }) => {
 const Reply = ({ squeak_profiles, body, created_at, id, hideDelete }) => {
     const [deleted, setDeleted] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
+    const handleSurfaceClick = () => {
+        setConfirmDelete(false)
+    }
     return (
         !deleted && (
-            <div className={`pt-4 rounded-md w-full transition-opacity`}>
-                <div className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}>
-                    <Avatar className="flex-shrink-0" image={squeak_profiles?.avatar} />
-                    <div className="flex-grow min-w-0">
-                        <p className="m-0 font-semibold">
-                            <span>{squeak_profiles?.first_name || 'Anonymous'}</span>
-                            <span className={`font-normal ml-2`}>{template.render(new Date(created_at))}</span>
-                        </p>
-                        <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
-                            <ReactMarkdown>{body}</ReactMarkdown>
+            <Surface onClick={handleSurfaceClick}>
+                <div className={`rounded-md w-full transition-opacity`}>
+                    <div
+                        className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}
+                    >
+                        <Avatar className="flex-shrink-0" image={squeak_profiles?.avatar} />
+                        <div className="flex-grow min-w-0">
+                            <p className="m-0 font-semibold">
+                                <span>{squeak_profiles?.first_name || 'Anonymous'}</span>
+                                <span className={`ml-2 opacity-30 font-bold`}>{dayFormat(dateToDays(created_at))}</span>
+                            </p>
+                            <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
+                                <ReactMarkdown>{body}</ReactMarkdown>
+                            </div>
                         </div>
                     </div>
+                    {!hideDelete && (
+                        <p className="text-right m-0">
+                            <DeleteButton
+                                confirmDelete={confirmDelete}
+                                setConfirmDelete={setConfirmDelete}
+                                setDeleted={setDeleted}
+                                id={id}
+                            />
+                        </p>
+                    )}
                 </div>
-                {!hideDelete && (
-                    <p className="text-right">
-                        <DeleteButton
-                            confirmDelete={confirmDelete}
-                            setConfirmDelete={setConfirmDelete}
-                            setDeleted={setDeleted}
-                            id={id}
-                        />
-                    </p>
-                )}
-            </div>
+            </Surface>
         )
     )
 }
 
-const QuestionView = ({ question }) => {
-    const { replies } = question
+const Question = (props) => {
+    const [question, setQuestion] = useState(props.question)
+    const {
+        replies,
+        question: { slug, subject, id, published },
+    } = question
+    const { domain } = props
+    const [modalOpen, setModalOpen] = useState(false)
+    const handleModalSubmit = async () => {
+        const updatedQuestion = await getQuestion(id)
+        setQuestion(updatedQuestion)
+        setModalOpen(false)
+    }
 
     return (
-        <div className="max-w-screen-lg mx-auto">
+        <>
+            {modalOpen && (
+                <EditQuestionModal
+                    values={{ subject, slug, id, published }}
+                    onClose={() => setModalOpen(false)}
+                    onSubmit={handleModalSubmit}
+                />
+            )}
+            <h1 className="m-0">{subject}</h1>
+            <ul className="flex items-center space-x-2">
+                {question.question.slug?.map((slug) => {
+                    const url = domain ? new URL(domain).origin : ''
+                    const questionLink = url + slug.trim()
+
+                    return (
+                        <li key={questionLink}>
+                            <a
+                                href={url}
+                                target="_blank"
+                                className="text-[14px] opacity-50 text-inherit"
+                                rel="noreferrer"
+                            >
+                                {questionLink}
+                            </a>
+                        </li>
+                    )
+                })}
+            </ul>
+            <button onClick={() => setModalOpen(true)} className="font-bold text-red mb-6">
+                Edit
+            </button>
             <div className="col-span-2">
-                <h1 className="mb-3">{question.question.subject}</h1>
-                <Reply hideDelete {...replies[0]} />
-                <div className="ml-[56px]">
-                    {replies.slice(1).map((reply) => {
-                        return <Reply key={reply.id} {...reply} />
-                    })}
+                <div className="grid gap-y-4">
+                    <div className="flex space-x-9 items-start">
+                        <div className="flex-grow max-w-[700px]">
+                            <div className="mr-[56px]">
+                                <Reply hideDelete {...replies[0]} />
+                            </div>
+                            <div className="ml-[56px] mt-4 grid gap-y-4">
+                                {replies.slice(1).map((reply) => {
+                                    return <Reply key={reply.id} {...reply} />
+                                })}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
-const Question = () => {
-    const router = useRouter()
-    const { id } = router.query
-    const [question, setQuestion] = useState(null)
-    useEffect(() => {
-        getQuestion(id).then((question) => {
-            setQuestion(question)
-        })
-    }, [id])
-
-    return question && <QuestionView question={question} />
-}
-
 Question.getLayout = function getLayout(page) {
-    return <AdminLayout>{page}</AdminLayout>
+    const title = page?.props?.question?.question?.subject || 'Question'
+    return (
+        <AdminLayout title={title} contentStyle={{ maxWidth: 700, width: '100%', margin: '0 auto' }}>
+            {page}
+        </AdminLayout>
+    )
 }
 
 export const getServerSideProps = withAdminAccess({
     redirectTo: '/login',
+    async getServerSideProps(context) {
+        const { id } = context.query
+        const organizationId = await getActiveOrganization(context)
+        const question = await getQuestion(id)
+
+        const {
+            data: { company_domain },
+        } = await supabaseServerClient(context)
+            .from('squeak_config')
+            .select('company_domain')
+            .eq('organization_id', organizationId)
+            .single()
+
+        return {
+            props: { question, domain: company_domain },
+        }
+    },
 })
 
 export default Question

@@ -1,13 +1,13 @@
-import type { ReactElement } from 'react'
-import LoginLayout from '../../layout/LoginLayout'
-import type { NextPageWithLayout } from '../../@types/types'
-import { useState } from 'react'
-import Router from 'next/router'
-import withMultiTenantCheck from '../../util/withMultiTenantCheck'
-import { GetStaticPropsResult } from 'next'
 import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
+import { GetStaticPropsResult } from 'next'
+import Router from 'next/router'
+import type { ReactElement } from 'react'
+import { useState } from 'react'
+import type { NextPageWithLayout } from '../../@types/types'
 import ProfileForm from '../../components/ProfileForm'
+import LoginLayout from '../../layout/LoginLayout'
 import useActiveOrganization from '../../util/useActiveOrganization'
+import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 
 interface Props {}
 
@@ -19,6 +19,7 @@ const Profile: NextPageWithLayout<Props> = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [organizationName, setOrganizationName] = useState('')
+    const [url, setUrl] = useState('')
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -27,7 +28,7 @@ const Profile: NextPageWithLayout<Props> = () => {
         setLoading(true)
         const response = await fetch('/api/signup', {
             method: 'POST',
-            body: JSON.stringify({ firstName, lastName, organizationName }),
+            body: JSON.stringify({ firstName, lastName, organizationName, url }),
         })
 
         if (!response.ok) {
@@ -54,6 +55,8 @@ const Profile: NextPageWithLayout<Props> = () => {
             setLastName={setLastName}
             organizationName={organizationName}
             setOrganizationName={setOrganizationName}
+            url={url}
+            setUrl={setUrl}
         />
     )
 }

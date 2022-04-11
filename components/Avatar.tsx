@@ -1,10 +1,8 @@
-import Image from 'next/image'
-
 export default function Avatar({ image, className }: { image?: string; className?: string }) {
     return (
         <div className={`w-[40px] h-[40px] overflow-hidden rounded-full ${className}`}>
             {image ? (
-                <Image className="w-full h-full" alt="" src={image} />
+                <img className="w-full h-full" alt="" src={image} />
             ) : (
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
