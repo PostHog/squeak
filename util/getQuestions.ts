@@ -57,7 +57,7 @@ const getQuestions = async (context: Context, params: Params) => {
                         )
                         .eq('message_id', question.id)
                         .eq('organization_id', organizationId)
-                        .order('created_at', { ascending: false })
+                        .order('created_at', { ascending: true })
                         .then((data) => ({
                             question,
                             replies: data?.data || [],
