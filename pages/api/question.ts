@@ -1,9 +1,10 @@
+import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import xss from 'xss'
 import { definitions } from '../../@types/supabase'
-import sendQuestionAlert from '../../util/sendQuestionAlert'
 import getUserProfile from '../../util/getUserProfile'
-import { createClient } from '@supabase/supabase-js'
+import sendQuestionAlert from '../../util/sendQuestionAlert'
 
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -19,12 +20,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { slug, subject, body, organizationId, token } = JSON.parse(req.body)
+    const { slug, subject, organizationId, token } = JSON.parse(req.body)
 
-    if (!slug || !subject || !body || !organizationId || !token) {
+    if (!slug || !subject || !req.body.body || !organizationId || !token) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
+
+    const body = xss(req.body.body, {
+        whiteList: {},
+        stripIgnoreTag: true,
+    })
 
     const { data: userProfile, error: userProfileError } = await getUserProfile({
         context: { req, res },
