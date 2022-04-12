@@ -13,7 +13,7 @@ import withAdminAccess from '../../util/withAdminAccess'
 const getQuestion = async (id) => {
     const { data: question } = await supabaseClient
         .from('squeak_messages')
-        .select('subject, id, slug, created_at, published')
+        .select('subject, id, slug, created_at, published, resolved')
         .eq('id', id)
         .single()
     return supabaseClient
@@ -97,7 +97,7 @@ const Question = (props) => {
     const [question, setQuestion] = useState(props.question)
     const {
         replies,
-        question: { slug, subject, id, published },
+        question: { slug, subject, id, published, resolved },
     } = question
     const { domain } = props
     const [modalOpen, setModalOpen] = useState(false)
@@ -111,7 +111,7 @@ const Question = (props) => {
         <>
             {modalOpen && (
                 <EditQuestionModal
-                    values={{ subject, slug, id, published }}
+                    values={{ subject, slug, id, published, resolved }}
                     onClose={() => setModalOpen(false)}
                     onSubmit={handleModalSubmit}
                 />

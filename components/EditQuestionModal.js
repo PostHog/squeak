@@ -8,7 +8,7 @@ import Button from './Button'
 import Checkbox from './Checkbox'
 
 export default function EditQuestionModal({ onClose, values, onSubmit }) {
-    const { subject, slug, id, published } = values
+    const { subject, slug, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -16,10 +16,10 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
 
     const handleSave = async (values) => {
         setLoading(true)
-        const { subject, slug, published } = values
+        const { subject, slug, published, resolved } = values
         await supabaseClient
             .from('squeak_messages')
-            .update({ subject, slug: slug.split(','), published })
+            .update({ subject, slug: slug.split(','), published, resolved })
             .match({ id })
         onSubmit()
     }
@@ -65,6 +65,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                         subject,
                         slug: slug.join(','),
                         published,
+                        resolved,
                     }}
                     onSubmit={handleSave}
                 >
@@ -73,7 +74,10 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                             <Form>
                                 <Input label="Subject" id="subject" name="subject" placeholder="Subject" />
                                 <Input label="Slug" id="slug" name="slug" placeholder="Slug" />
-                                <Checkbox label="Published" id="published" name="published" />
+                                <div className="flex items-center space-x-4">
+                                    <Checkbox label="Published" id="published" name="published" />
+                                    <Checkbox label="Resolved" id="resolved" name="resolved" />
+                                </div>
                                 <div className="flex justify-between">
                                     <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
                                         Save
