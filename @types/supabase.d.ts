@@ -234,6 +234,8 @@ export interface paths {
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
                     organization_id?: parameters['rowFilter.squeak_messages.organization_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
+                    resolved?: parameters['rowFilter.squeak_messages.resolved']
+                    resolved_reply_id?: parameters['rowFilter.squeak_messages.resolved_reply_id']
                     /** Filtering Columns */
                     select?: parameters['select']
                     /** Ordering */
@@ -292,6 +294,8 @@ export interface paths {
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
                     organization_id?: parameters['rowFilter.squeak_messages.organization_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
+                    resolved?: parameters['rowFilter.squeak_messages.resolved']
+                    resolved_reply_id?: parameters['rowFilter.squeak_messages.resolved_reply_id']
                 }
                 header: {
                     /** Preference */
@@ -314,6 +318,8 @@ export interface paths {
                     slack_timestamp?: parameters['rowFilter.squeak_messages.slack_timestamp']
                     organization_id?: parameters['rowFilter.squeak_messages.organization_id']
                     profile_id?: parameters['rowFilter.squeak_messages.profile_id']
+                    resolved?: parameters['rowFilter.squeak_messages.resolved']
+                    resolved_reply_id?: parameters['rowFilter.squeak_messages.resolved_reply_id']
                 }
                 body: {
                     /** squeak_messages */
@@ -1127,6 +1133,14 @@ export interface definitions {
          * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
          */
         profile_id?: string
+        /** Format: boolean */
+        resolved: boolean
+        /**
+         * Format: bigint
+         * @description Note:
+         * This is a Foreign Key to `squeak_replies.id`.<fk table='squeak_replies' column='id'/>
+         */
+        resolved_reply_id?: number
     }
     squeak_organizations: {
         /** Format: text */
@@ -1399,6 +1413,10 @@ export interface parameters {
     'rowFilter.squeak_messages.organization_id': string
     /** Format: uuid */
     'rowFilter.squeak_messages.profile_id': string
+    /** Format: boolean */
+    'rowFilter.squeak_messages.resolved': string
+    /** Format: bigint */
+    'rowFilter.squeak_messages.resolved_reply_id': string
     /** @description squeak_organizations */
     'body.squeak_organizations': definitions['squeak_organizations']
     /** Format: text */
