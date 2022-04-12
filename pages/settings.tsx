@@ -1,5 +1,6 @@
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
+import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
@@ -69,7 +70,6 @@ const Settings: NextPageWithLayout<Props> = ({
                     label="Publish new questions automatically"
                     helper="Disable to moderate questions before they appear on your site"
                 />
-
             </Surface>
             <Surface className="mb-4">
                 <h3>Company details</h3>
@@ -105,7 +105,10 @@ const Settings: NextPageWithLayout<Props> = ({
             </Surface>
             <Surface className="mb-4">
                 <h3>Slack</h3>
-                <p className="mb-6">Manage configuration for importing threads via Slack. (Imported posts appear on the <a href="/slack">Import Slack threads</a> page.)</p>
+                <p className="mb-6">
+                    Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
+                    <Link href="/slack">Import Slack threads</Link> page.)
+                </p>
                 <SlackManifestSnippet />
 
                 <SlackForm
