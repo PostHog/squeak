@@ -170,6 +170,8 @@ Squeak! also supports generic outgoing webhooks. Great for Zapier automations! E
 
 It can be installed on a single page template, or in a snippet references across your site like a layout template.
 
+Note: If you use React, install the `squeak-react` package instead with `yarn add squeak-react`
+
 ### Customization
 
 Set color variables in CSS to override default colors:
