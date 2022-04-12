@@ -4,8 +4,9 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-        "dev": "next dev",
-        "build": "next build",
+        "copy-scripts": "mkdir -p public/snippet && cp node_modules/squeak-snippet/dist/squeak.js* public/snippet/",
+        "dev": "yarn copy-scripts && next dev",
+        "build": "yarn copy-scripts && next build",
         "start": "next start",
         "lint": "next lint",
         "migrate": "node-pg-migrate"
@@ -38,6 +39,7 @@
         "react-syntax-highlighter": "^15.4.5",
         "react-toast-notifications": "^2.5.1",
         "tinytime": "^0.2.6",
+        "squeak-snippet": "^0.1.3",
         "xss": "^1.0.11"
     },
     "devDependencies": {
