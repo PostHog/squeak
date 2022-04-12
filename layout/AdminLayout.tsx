@@ -6,9 +6,9 @@ import { useState } from 'react'
 import Logo from '../components/Logo'
 
 const navigation = [
-    { name: 'All questions', href: '/questions' },
+    { name: 'Questions', href: '/questions' },
     { name: 'Profiles', href: '/profiles' },
-    { name: 'Slack', href: '/slack' },
+    { name: 'Import Slack threads', href: '/slack' },
     { name: 'Settings', href: '/settings' },
 ]
 
@@ -42,9 +42,9 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
             </Head>
             <div className="items-start flex" style={navStyle}>
                 {/* Static sidebar for desktop */}
-                <div className="sticky top-0 max-w-[250px] w-full">
+                <div className="sticky top-0 max-w-[300px] w-full">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="flex-1 flex flex-col min-h-0">
+                    <div className="flex-1 flex flex-col min-h-0 pr-4">
                         <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
                             <div className="flex items-center flex-shrink-0">
                                 <Logo />
@@ -81,7 +81,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                         <div className="py-12">
                             {!hideTitle && (
                                 <div>
-                                    <h1 className=" mb-6">{title}</h1>
+                                    <h1 className="pb-2">{title}</h1>
                                 </div>
                             )}
                             <div>{children}</div>

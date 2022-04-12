@@ -199,6 +199,7 @@ const Slack = () => {
                 </Surface>
             ) : (
                 <div className="flex flex-col">
+                    <p className="pb-4">Import recent Slack threads and display them on specific pages of your site. (This is a great way to rescue valuable community threads from Slack and let others benefit from that content where it's relevant.)</p>
                     <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">

@@ -43,7 +43,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
     })
     return (
         <div>
-            <h1 className=" mb-6">
+            <h1 className="mb-2">
                 Questions <span className="text-[14px] opacity-50 font-semibold">by date</span>
             </h1>
             {questions.length <= 0 ? (
@@ -67,20 +67,35 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
 
                                         return (
                                             <li key={`question-${question.question.id}`} className="flex space-x-9">
-                                                <div className="flex-grow max-w-[700px]">
+                                                <div className="flex-grow max-w-[700px] relative">
                                                     <Surface>
+
+
+                                                        {question.question.published && (
+                                                            <span className="absolute right-6 top-6" title="Published">
+                                                                <CheckCircleIcon className="w-8 text-green-500" />
+                                                            </span>
+                                                        )}
+                                                        <Button
+                                                                href={`/question/${question.question.id}`}
+                                                            >
+                                                            <h3 className="text-red font-bold my-0 pr-12">
+                                                                {question.question.subject}
+                                                            </h3>
+                                                        </Button>
                                                         <div className="flex items-center justify-between">
                                                             <ul className="flex items-center space-x-2">
+                                                                <li className="text-sm opacity-50 text-inherit">Appears on:</li>
                                                                 {question.question.slug?.map((slug) => {
                                                                     const url = domain ? new URL(domain).origin : ''
                                                                     const questionLink = url + (slug as string).trim()
 
                                                                     return (
-                                                                        <li key={questionLink}>
+                                                                        <li key={questionLink} className="pb-0">
                                                                             <a
                                                                                 href={questionLink}
                                                                                 target="_blank"
-                                                                                className="text-[14px] opacity-50 text-inherit"
+                                                                                className="text-sm opacity-50 text-inherit"
                                                                                 rel="noreferrer"
                                                                             >
                                                                                 {questionLink}
@@ -89,16 +104,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                                     )
                                                                 })}
                                                             </ul>
-
-                                                            {question.question.published && (
-                                                                <span className="flex-shrink-0" title="Published">
-                                                                    <CheckCircleIcon className="w-6 text-green-500" />
-                                                                </span>
-                                                            )}
                                                         </div>
-                                                        <h3 className="text-red font-bold my-2">
-                                                            {question.question.subject}
-                                                        </h3>
                                                         <div>
                                                             <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
                                                         </div>
@@ -115,14 +121,16 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                         </div>
                                                     </Surface>
                                                 </div>
-                                                <div className="flex space-x-3 max-w-[200px] w-full flex-shrink-0">
-                                                    <Avatar image={firstReply?.profile?.avatar} />
-                                                    <div className="opacity-50">
-                                                        <p className="font-bold">{`${
-                                                            slackTimestamp
-                                                                ? 'Slack User'
-                                                                : `${firstReply.profile?.first_name} ${firstReply.profile?.last_name}`
-                                                        }`}</p>
+                                                <div className="flex items-start max-w-[200px] w-full flex-shrink-0 py-8">
+                                                    <div className="flex items-center space-x-3">
+                                                        <Avatar image={firstReply?.profile?.avatar} />
+                                                        <div className="opacity-50 text-xs">
+                                                            <p className="font-semibold">{`${
+                                                                slackTimestamp
+                                                                    ? 'Slack User'
+                                                                    : `${firstReply.profile?.first_name} ${firstReply.profile?.last_name}`
+                                                            }`}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </li>
