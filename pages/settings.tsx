@@ -17,6 +17,7 @@ import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
 import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
+import Link from 'next/link'
 
 type Config = definitions['squeak_config']
 
@@ -69,7 +70,6 @@ const Settings: NextPageWithLayout<Props> = ({
                     label="Publish new questions automatically"
                     helper="Disable to moderate questions before they appear on your site"
                 />
-
             </Surface>
             <Surface className="mb-4">
                 <h3>Company details</h3>
@@ -105,7 +105,13 @@ const Settings: NextPageWithLayout<Props> = ({
             </Surface>
             <Surface className="mb-4">
                 <h3>Slack</h3>
-                <p className="mb-6">Manage configuration for importing threads via Slack. (Imported posts appear on the <a href="/slack">Import Slack threads</a> page.)</p>
+                <p className="mb-6">
+                    Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
+                    <Link href="/slack" passHref>
+                        <a>Import Slack threads</a>
+                    </Link>{' '}
+                    page.)
+                </p>
                 <SlackManifestSnippet />
 
                 <SlackForm
