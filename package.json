@@ -5,7 +5,7 @@
     "private": true,
     "scripts": {
         "copy-scripts": "mkdir -p public/snippet && cp node_modules/squeak-snippet/dist/squeak.js* public/snippet/",
-        "dev": "next dev",
+        "dev": "yarn copy-scripts && next dev",
         "build": "yarn copy-scripts && next build",
         "start": "next start",
         "lint": "next lint",
