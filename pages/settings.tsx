@@ -1,5 +1,6 @@
 import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
+import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
@@ -17,7 +18,6 @@ import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
 import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
-import Link from 'next/link'
 
 type Config = definitions['squeak_config']
 

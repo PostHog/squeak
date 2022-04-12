@@ -8,7 +8,7 @@ import Button from './Button'
 import Checkbox from './Checkbox'
 
 export default function EditQuestionModal({ onClose, values, onSubmit }) {
-    const { subject, slug, id, published } = values
+    const { subject, slug, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -16,10 +16,10 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
 
     const handleSave = async (values) => {
         setLoading(true)
-        const { subject, slug, published } = values
+        const { subject, slug, published, resolved } = values
         await supabaseClient
             .from('squeak_messages')
-            .update({ subject, slug: slug.split(','), published })
+            .update({ subject, slug: slug.split(','), published, resolved })
             .match({ id })
         onSubmit()
     }
@@ -31,6 +31,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
             return setConfirmDelete(true)
         } else {
             setDeleting(true)
+            await supabaseClient.from('squeak_messages').update({ resolved_reply_id: null }).match({ id })
             await supabaseClient.from('squeak_replies').delete().match({ message_id: id })
             await supabaseClient.from('squeak_messages').delete().match({ id })
             router.push('/questions')
@@ -65,15 +66,34 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                         subject,
                         slug: slug.join(','),
                         published,
+                        resolved,
                     }}
                     onSubmit={handleSave}
                 >
                     {({ isValid }) => {
                         return (
                             <Form>
-                                <Input label="Title" id="subject" name="subject" placeholder="Title" helperText="SEO-friendly text, also used to derive permalink" />
-                                <Input label="Show this question on..." id="slug" name="slug" placeholder="Slug" helperText="URL(s) where this question should appear. (Separate multiple relative URLs with commas. Ex: /docs/api, /docs/other-url)" />
-                                <Checkbox label="Published" id="published" name="published" helperText="Uncheck to hide from page(s)" />
+                                <Input
+                                    label="Title"
+                                    id="subject"
+                                    name="subject"
+                                    placeholder="Title"
+                                    helperText="SEO-friendly text, also used to derive permalink"
+                                />
+                                <Input
+                                    label="Show this question on..."
+                                    id="slug"
+                                    name="slug"
+                                    placeholder="Slug"
+                                    helperText="URL(s) where this question should appear. (Separate multiple relative URLs with commas. Ex: /docs/api, /docs/other-url)"
+                                />
+                                <Checkbox
+                                    label="Published"
+                                    id="published"
+                                    name="published"
+                                    helperText="Uncheck to hide from page(s)"
+                                />
+                                <Checkbox label="Resolved" id="resolved" name="resolved" />
                                 <div className="flex justify-between">
                                     <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
                                         Save
