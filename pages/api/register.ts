@@ -3,6 +3,7 @@ import NextCors from 'nextjs-cors'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import createUserProfile from '../../util/createUserProfile'
 import createUserProfileReadonly from '../../util/createUserProfileReadonly'
+import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 
 // This API route is for registering a new user from the JS snippet.
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -10,6 +11,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
     })
+
+    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+
+    if (allowedOriginError) {
+        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
+        return
+    }
 
     const { token, organizationId, firstName, lastName, avatar } = JSON.parse(req.body)
 

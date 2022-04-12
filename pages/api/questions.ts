@@ -1,14 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import getQuestions from '../../util/getQuestions'
 import NextCors from 'nextjs-cors'
+import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log(req.headers.origin)
-
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
     })
+
+    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+
+    if (allowedOriginError) {
+        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
+        return
+    }
 
     const params = JSON.parse(req.body)
     const { data, error } = await getQuestions({ req, res }, params)

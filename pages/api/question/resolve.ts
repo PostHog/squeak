@@ -3,19 +3,22 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { definitions } from '../../../@types/supabase'
 import getUserProfile from '../../../util/getUserProfile'
+import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 
 type Message = definitions['squeak_messages']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
-    )
-
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
     })
+
+    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+
+    if (allowedOriginError) {
+        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
+        return
+    }
 
     const { token, messageId, replyId, organizationId, resolved } = JSON.parse(req.body)
 
@@ -41,6 +44,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         return
     }
+
+    const supabaseServiceRoleClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    )
 
     const { data: message, error: messageError } = await supabaseServiceRoleClient
         .from<Message>('squeak_messages')

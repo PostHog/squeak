@@ -5,21 +5,24 @@ import xss from 'xss'
 import { definitions } from '../../../@types/supabase'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
+import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
-    )
-
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         origin: '*',
     })
+
+    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+
+    if (allowedOriginError) {
+        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
+        return
+    }
 
     const { slug, subject, organizationId, token } = JSON.parse(req.body)
 
@@ -50,6 +53,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         return
     }
+
+    const supabaseServiceRoleClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    )
 
     const { data: config, error: configError } = await supabaseServiceRoleClient
         .from<Config>('squeak_config')
