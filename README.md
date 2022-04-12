@@ -150,9 +150,13 @@ Squeak! allows you to add alerts via outgoing webhooks to notify external servic
 
 The next time a new question is received, each webhook URL is called.
 
-#### Slack notification
+#### Slack notifications
 
 To set up Slack notifications, follow the instructions in [this article](https://api.slack.com/messaging/webhooks). Once you've received your unique webhook URL, add it to your alerts table. Once added, a Slack notification will be received every time a new question is asked.
+
+1. Create a new [Slack app](https://api.slack.com/apps) (using "from scratch" option)
+2. After creating, click _Incoming webhooks_, enable, then _Add new webhook to workspace_
+3. Copy new webhook URL from Slack, paste into Squeak! settings
 
 #### Outgoing webhook
 
@@ -186,6 +190,16 @@ This can be added to your widget's embed code by inserting the following above t
 </style>
 ```
 
+### Importing Slack threads
+  
+1. Visit Slack tab and follow instructions to create an app from manifest
+1. Install where the threads are (presumably with users) that you'd like to port over to Squeak!
+1. Paste (YAML) manifest from `/slack`
+1. Install to workspace
+1. Click _Oauth and permissions_
+1. Under _OAuth Tokens for Your Workspace_, copy _Bot User OAuth Token_ and add it to Slack
+1. (These instructions are a WIP)
+  
 ---
 
 ## More info about tokens and how they're used
