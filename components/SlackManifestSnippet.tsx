@@ -54,7 +54,7 @@ settings:
                 , from the following app manifest:
             </p>
 
-            <SyntaxHighlighter className="max-h-40 overflow-scroll">{manifest}</SyntaxHighlighter>
+            <SyntaxHighlighter className="max-h-40 overflow-scroll text-sm rounded">{manifest}</SyntaxHighlighter>
 
             <button onClick={copyToClipboard} className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2">
                 <span>Copy to clipboard</span>

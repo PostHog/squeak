@@ -94,7 +94,7 @@ const CompanyDetails: React.VoidFunctionComponent<Props> = ({
                             id="companyDomain"
                             name="companyDomain"
                             placeholder="https://squeak.posthog.com"
-                            helperText="With protocol: eg https://squeak.posthog.com"
+                            helperText="The root URL where Squeak! is installed, with protocol like: https://squeak.posthog.com"
                         />
 
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>

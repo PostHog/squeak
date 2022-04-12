@@ -67,7 +67,7 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
                     <>
                         <p className="mb-4">Run the following SQL in your project to create tables and columns</p>
 
-                        <SyntaxHighlighter language="sql" className="max-w-2xl max-h-96 rounded-md">
+                        <SyntaxHighlighter language="sql" className="max-w-2xl shadow !p-4 max-h-96 rounded-md !bg-white text-xs border border-solid border-gray">
                             {sql}
                         </SyntaxHighlighter>
 

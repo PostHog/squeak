@@ -62,7 +62,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
         </form>
     ) : (
         <Button onClick={() => setShowInput(true)} className={className} {...rest}>
-            Invite User
+            Invite a moderator/admin
         </Button>
     )
 }

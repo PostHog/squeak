@@ -61,13 +61,15 @@ const Settings: NextPageWithLayout<Props> = ({
                     Great news! You're all setup to receive questions on your site. Here's the snippet if you need to
                     put it on other pages.
                 </p>
-                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6" />
+                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6 !px-8 text-sm !mb-2" />
                 <Toggle
                     className="mt-6"
                     checked={autoPublish}
                     setChecked={handleAutoPublish}
-                    label="Publish automatically"
+                    label="Publish new questions automatically"
+                    helper="Disable to moderate questions before they appear on your site"
                 />
+
             </Surface>
             <Surface className="mb-4">
                 <h3>Company details</h3>
@@ -103,7 +105,7 @@ const Settings: NextPageWithLayout<Props> = ({
             </Surface>
             <Surface className="mb-4">
                 <h3>Slack</h3>
-                <p className="mb-6">Manage configuration for importing threads via Slack</p>
+                <p className="mb-6">Manage configuration for importing threads via Slack. (Imported posts appear on the <a href="/slack">Import Slack threads</a> page.)</p>
                 <SlackManifestSnippet />
 
                 <SlackForm

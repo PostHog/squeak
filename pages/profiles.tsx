@@ -40,15 +40,18 @@ const Users: NextPageWithLayout<Props> = () => {
 
     return (
         <>
+            <div className="flex space-between items-center">
+                <p className="pb-4 flex-1">This lists all users in your database.</p>
+                <InviteUser
+                    className="mb-6"
+                    onInvite={() => {
+                        fetchProfiles()
+                    }}
+                />
+            </div>
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <ProfileTable profiles={profiles} />
             </div>
-            <InviteUser
-                className="mt-6 float-right"
-                onInvite={() => {
-                    fetchProfiles()
-                }}
-            />
         </>
     )
 }
@@ -57,6 +60,8 @@ Users.getLayout = function getLayout(page: ReactElement) {
     return (
         <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Profiles">
             {page}
+
+            <p className="pb-4">Roles: <br /><strong>Users</strong> can ask questions and post responses <br /><strong>Moderators</strong> can sign in here to manage/remove questions/replies <br /><strong>Admins</strong> can administer user roles</p>
         </AdminLayout>
     )
 }

@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import xss from 'xss'
-import { definitions } from '../../@types/supabase'
-import getUserProfile from '../../util/getUserProfile'
-import sendQuestionAlert from '../../util/sendQuestionAlert'
+import { definitions } from '../../../@types/supabase'
+import getUserProfile from '../../../util/getUserProfile'
+import sendQuestionAlert from '../../../util/sendQuestionAlert'
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']

@@ -10,12 +10,12 @@ interface Props {}
 const Welcome: NextPageWithLayout<Props> = () => {
     return (
         <div>
-            <p className="mb-0 font-semibold opacity-70">Accounts you'll need:</p>
+            <p className="font-bold opacity-70 mb-4">Accounts you'll need:</p>
 
             <table>
                 <tr>
-                    <td>Supabase</td>
-                    <td>Database hosting</td>
+                    <td className="pr-8">Supabase</td>
+                    <td>Database hosting, authentication</td>
                 </tr>
                 <tr>
                     <td>Mailgun</td>
@@ -23,7 +23,7 @@ const Welcome: NextPageWithLayout<Props> = () => {
                 </tr>
                 <tr>
                     <td>Slack</td>
-                    <td>Moderator notifications</td>
+                    <td>Moderator alerts, import community threads</td>
                 </tr>
             </table>
 
@@ -31,7 +31,12 @@ const Welcome: NextPageWithLayout<Props> = () => {
                 Continue
             </Button>
 
-            <p className="opacity-70">This should take about 5 mins if you’re already signed up with these services.</p>
+            <p className="opacity-70">This should take about 10 mins if you’re already signed up with these services.</p>
+
+            <hr className="my-8" />
+
+            <p className="opacity-70"><strong>Want to get set up even faster?</strong> <a href="https://app.squeak.posthog.com" className="text-semibold">Try Squeak! Cloud</a></p>
+
         </div>
     )
 }
@@ -40,7 +45,7 @@ Welcome.getLayout = function getLayout(page: ReactElement) {
     return (
         <SetupLayout
             title="Let's get to Squeakin'!"
-            subtitle="This wizard runs through the process of connecting to the services you’ll need to run Squeak!"
+            subtitle="This wizard runs through the process of connecting to the services you’ll need to self-host Squeak!"
         >
             {page}
         </SetupLayout>
