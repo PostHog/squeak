@@ -124,6 +124,7 @@ const Question = (props) => {
 
                     return (
                         <li key={questionLink}>
+                            <span className="text-[14px] opacity-50 text-inherit">Appears on: </span>
                             <a
                                 href={url}
                                 target="_blank"
@@ -137,7 +138,7 @@ const Question = (props) => {
                 })}
             </ul>
             <button onClick={() => setModalOpen(true)} className="font-bold text-red mb-6">
-                Edit
+                Thread options
             </button>
             <div className="col-span-2">
                 <div className="grid gap-y-4">

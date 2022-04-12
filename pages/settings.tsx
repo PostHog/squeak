@@ -107,7 +107,10 @@ const Settings: NextPageWithLayout<Props> = ({
                 <h3>Slack</h3>
                 <p className="mb-6">
                     Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
-                    <Link href="/slack">Import Slack threads</Link> page.)
+                    <Link href="/slack" passHref>
+                        <a>Import Slack threads</a>
+                    </Link>{' '}
+                    page.)
                 </p>
                 <SlackManifestSnippet />
 

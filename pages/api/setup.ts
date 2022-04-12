@@ -35,7 +35,7 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName } = JSON.parse(req.body)
+    const { firstName, lastName, organizationName, url } = JSON.parse(req.body)
 
     if (!firstName || !lastName || !organizationName) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -69,6 +69,8 @@ export default withPreflightCheck(async (req, res) => {
         .insert({
             organization_id: organization.id,
             preflight_complete: false,
+            company_domain: url,
+            company_name: organizationName,
         })
         .limit(1)
         .single()

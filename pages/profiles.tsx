@@ -61,7 +61,10 @@ Users.getLayout = function getLayout(page: ReactElement) {
         <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Profiles">
             {page}
 
-            <p className="pb-4">Roles: <br /><strong>Users</strong> can ask questions and post responses <br /><strong>Moderators</strong> can sign in here to manage/remove questions/replies <br /><strong>Admins</strong> can administer user roles</p>
+            <p className="pt-4">
+                <strong>Users</strong> can ask questions and post responses <br />
+                <strong>Moderators</strong> can sign in here to manage/remove questions/replies <br />
+                <strong>Admins</strong> can administer user roles</p>
         </AdminLayout>
     )
 }

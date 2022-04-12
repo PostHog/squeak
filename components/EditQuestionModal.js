@@ -73,12 +73,27 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                     {({ isValid }) => {
                         return (
                             <Form>
-                                <Input label="Subject" id="subject" name="subject" placeholder="Subject" />
-                                <Input label="Slug" id="slug" name="slug" placeholder="Slug" />
-                                <div className="flex items-center space-x-4">
-                                    <Checkbox label="Published" id="published" name="published" />
-                                    <Checkbox label="Resolved" id="resolved" name="resolved" />
-                                </div>
+                                <Input
+                                    label="Title"
+                                    id="subject"
+                                    name="subject"
+                                    placeholder="Title"
+                                    helperText="SEO-friendly text, also used to derive permalink"
+                                />
+                                <Input
+                                    label="Show this question on..."
+                                    id="slug"
+                                    name="slug"
+                                    placeholder="Slug"
+                                    helperText="URL(s) where this question should appear. (Separate multiple relative URLs with commas. Ex: /docs/api, /docs/other-url)"
+                                />
+                                <Checkbox
+                                    label="Published"
+                                    id="published"
+                                    name="published"
+                                    helperText="Uncheck to hide from page(s)"
+                                />
+                                <Checkbox label="Resolved" id="resolved" name="resolved" />
                                 <div className="flex justify-between">
                                     <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
                                         Save
@@ -88,7 +103,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
                                         onClick={handleDelete}
                                         className="mt-4 bg-transparent text-red border-red border-2"
                                     >
-                                        {confirmDelete ? 'Click again to confirm' : 'Delete'}
+                                        {confirmDelete ? 'Permanently delete from site?' : 'Delete thread'}
                                     </Button>
                                 </div>
                             </Form>

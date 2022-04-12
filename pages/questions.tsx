@@ -74,14 +74,14 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                                 <CheckCircleIcon className="w-8 text-green-500" />
                                                             </span>
                                                         )}
-                                                        <Link href={`/question/${question.question.id}`}>
-                                                            <a>
-                                                                <h3 className="text-red font-bold my-0 pr-12">
-                                                                    {question.question.subject}
-                                                                </h3>
-                                                            </a>
-                                                        </Link>
-
+                                                        <Button
+                                                            href={`/question/${question.question.id}`}
+                                                            className="bg-white text-left !p-0"
+                                                        >
+                                                            <h3 className="text-red font-bold my-0 pr-12">
+                                                                {question.question.subject}
+                                                            </h3>
+                                                        </Button>
                                                         <div className="flex items-center justify-between">
                                                             <ul className="flex items-center space-x-2">
                                                                 <li className="text-sm opacity-50 text-inherit">
@@ -112,7 +112,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                         <div className="flex items-end justify-between">
                                                             <Button
                                                                 href={`/question/${question.question.id}`}
-                                                                className="mt-3 bg-gray-light text-red bg-opacity-20 font-bold"
+                                                                className="mt-3 bg-gray-light text-red bg-opacity-10 font-bold hover:bg-opacity-20 active:bg-opacity-25"
                                                             >{`${replyCount} ${
                                                                 replyCount === 1 ? 'reply' : 'replies'
                                                             }`}</Button>
@@ -143,11 +143,11 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                     })}
                 </ul>
             )}
-            <nav className="py-3 flex items-center justify-between px-6 max-w-[700px]" aria-label="Pagination">
+            <nav className="py-3 flex items-center justify-between max-w-[700px]" aria-label="Pagination">
                 <div className="hidden sm:block">
                     <p className="text-sm text-gray-700">
-                        Showing <span className="font-medium">{start + 1}</span> to{' '}
-                        <span className="font-medium">{start + (results.count < 20 ? results.count : 20)}</span> of{' '}
+                        {/* Showing <span className="font-medium">{start + 1}</span> to{' '}
+                        <span className="font-medium">{start + (results.count < 20 ? results.count : 20)}</span> of{' '} */}
                         <span className="font-medium">{results.count}</span> results
                     </p>
                 </div>
