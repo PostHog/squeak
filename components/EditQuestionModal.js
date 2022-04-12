@@ -31,6 +31,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
             return setConfirmDelete(true)
         } else {
             setDeleting(true)
+            await supabaseClient.from('squeak_messages').update({ resolved_reply_id: null }).match({ id })
             await supabaseClient.from('squeak_replies').delete().match({ message_id: id })
             await supabaseClient.from('squeak_messages').delete().match({ id })
             router.push('/questions')
