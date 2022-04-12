@@ -60,6 +60,7 @@ export default withMultiTenantCheck(async (req, res) => {
             organization_id: organization.id,
             preflight_complete: true,
             company_domain: url,
+            company_name: organizationName,
         })
         .limit(1)
         .single()

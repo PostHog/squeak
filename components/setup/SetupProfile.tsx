@@ -25,7 +25,7 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
         setLoading(true)
         const response = await fetch('/api/setup', {
             method: 'POST',
-            body: JSON.stringify({ firstName, lastName, organizationName }),
+            body: JSON.stringify({ firstName, lastName, organizationName, url }),
         })
 
         if (!response.ok) {
