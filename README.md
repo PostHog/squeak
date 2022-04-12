@@ -27,8 +27,13 @@ _Be sure to save your database password. You'll need this later._
 
 We've made it easy to [deploy to DigitalOcean](https://cloud.digitalocean.com/apps/new?repo=https://github.com/posthog/squeak/tree/master&refcode=6a26a2c395b0&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge).
 
+1. On step one, choose _Detect from source code_
+1. On step 2 (environment vars), under Web, click edit, an
+
 ## 3. Configure server's environment variables
 
+1. Delete `SUPABASE_SERVICE_ROLE_KEY`, then re-add 
+2. 
 Find these in Supabase at:
 
 ```
