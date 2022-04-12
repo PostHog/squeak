@@ -4,7 +4,7 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-        "copy-scripts": "mkdir -p public/snippet && cp node_modules/squeak-js/dist/squeak.js* public/snippet/",
+        "copy-scripts": "mkdir -p public/snippet && cp node_modules/squeak-snippet/dist/squeak.js* public/snippet/",
         "dev": "next dev",
         "build": "yarn copy-scripts && next build",
         "start": "next start",
