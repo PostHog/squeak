@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import getUserProfile from '../../../util/getUserProfile'
 import { definitions } from '../../../@types/supabase'
+import getUserProfile from '../../../util/getUserProfile'
 
 type Message = definitions['squeak_messages']
 
@@ -17,7 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { token, messageId, replyId, organizationId } = JSON.parse(req.body)
+    const { token, messageId, replyId, organizationId, resolved } = JSON.parse(req.body)
 
     if (!messageId || !token || !organizationId) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -45,7 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { data: message, error: messageError } = await supabaseServiceRoleClient
         .from<Message>('squeak_messages')
         .update({
-            resolved: true,
+            resolved,
             resolved_reply_id: replyId || null,
         })
         .match({ id: messageId, organization_id: organizationId })
