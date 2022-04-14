@@ -24,7 +24,7 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
     };
     var d = document,
         s = d.createElement("script");
-    s.src = "//${typeof window !== 'undefined' && window.location.host}/snippet/squeak.js";
+    s.src = "//dfpw97x0gednn.cloudfront.net/squeak.js";
     (d.head || d.body).appendChild(s);
 })();
 </script>`
