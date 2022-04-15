@@ -8,7 +8,9 @@ import { GetStaticPropsResult } from 'next'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import SignupForm from '../../components/SignupForm'
 
-interface Props {}
+interface Props {
+    isMultiTenancy: boolean
+}
 
 const Signup: NextPageWithLayout<Props> = () => {
     const [error, setError] = useState<string | null>(null)
@@ -61,16 +63,26 @@ const Signup: NextPageWithLayout<Props> = () => {
     )
 }
 
-Signup.getLayout = function getLayout(page: ReactElement) {
-    return <LoginLayout title="Sign up for an account">{page}</LoginLayout>
+Signup.getLayout = function getLayout(page: ReactElement<Props>) {
+    return <LoginLayout 
+        title='Sign up for an account' 
+        subtitle={
+            page.props.isMultiTenancy && (
+                <p className="mt-4 text-center text-lg text-gray-600 max-w-prose mx-auto">
+                    Squeak! is a Q&A widget that lets your users ask questions on any page of your website or docs. Learn more at <a href="https://squeak.posthog.com">squeak.posthog.com</a>.
+                </p>
+            )
+        }
+    >{page}</LoginLayout>
 }
 
-export const getServerSideProps = withMultiTenantCheck({
-    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
-        return {
-            props: {},
-        }
-    },
-})
+
+export const getServerSideProps = (): GetStaticPropsResult<Props> => {
+    return {
+        props: {
+            isMultiTenancy: (process.env.MULTI_TENANCY as unknown as boolean) ?? false,
+        },
+    }
+}
 
 export default Signup
