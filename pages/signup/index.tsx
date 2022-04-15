@@ -1,12 +1,11 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { GetStaticPropsResult } from 'next'
+import Link from 'next/link'
 import Router from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import LoginLayout from '../../layout/LoginLayout'
 import type { NextPageWithLayout } from '../../@types/types'
-import Link from 'next/link'
-import { GetStaticPropsResult } from 'next'
-import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import SignupForm from '../../components/SignupForm'
+import LoginLayout from '../../layout/LoginLayout'
 
 interface Props {
     isMultiTenancy: boolean
@@ -64,18 +63,22 @@ const Signup: NextPageWithLayout<Props> = () => {
 }
 
 Signup.getLayout = function getLayout(page: ReactElement<Props>) {
-    return <LoginLayout 
-        title='Sign up for an account' 
-        subtitle={
-            page.props.isMultiTenancy && (
-                <p className="mt-4 text-center text-lg text-gray-600 max-w-prose mx-auto">
-                    Squeak! is a Q&A widget that lets your users ask questions on any page of your website or docs. Learn more at <a href="https://squeak.posthog.com">squeak.posthog.com</a>.
-                </p>
-            )
-        }
-    >{page}</LoginLayout>
+    return (
+        <LoginLayout
+            title="Sign up for an account"
+            subtitle={
+                page.props.isMultiTenancy && (
+                    <p className="mt-4 text-center text-lg text-gray-600 max-w-prose mx-auto">
+                        Squeak! is a Q&A widget that lets your users ask questions on any page of your website or docs.
+                        Learn more at <a href="https://squeak.posthog.com">squeak.posthog.com</a>.
+                    </p>
+                )
+            }
+        >
+            {page}
+        </LoginLayout>
+    )
 }
-
 
 export const getServerSideProps = (): GetStaticPropsResult<Props> => {
     return {
