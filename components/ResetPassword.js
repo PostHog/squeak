@@ -12,7 +12,7 @@ export default function ResetPassword({ actionButtons }) {
         if (error) {
             setErrorMessage(error.message)
         } else {
-            setErrorMessage('')
+            setErrorMessage('Password has been updated')
         }
         setLoading(false)
     }
