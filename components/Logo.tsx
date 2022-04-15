@@ -7,8 +7,6 @@ const Logo: React.VoidFunctionComponent<Props> = ({ className }) => {
     return (
         <svg
             className={classNames(className, 'w-full')}
-            width="238"
-            height="110"
             viewBox="0 0 238 110"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

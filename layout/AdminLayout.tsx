@@ -56,7 +56,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                                             className={classNames(
                                                 router.pathname === item.href
                                                     ? 'bg-gray-light bg-opacity-20 !text-red font-bold'
-                                                    : 'hover:text-gray-600',
+                                                    : 'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black',
                                                 'group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
                                             )}
                                         >
@@ -67,7 +67,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                                 <button
                                     onClick={handleLogout}
                                     className={classNames(
-                                        'hover:text-gray-600 group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                        'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black group rounded-md flex w-full items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
                                     )}
                                 >
                                     Logout

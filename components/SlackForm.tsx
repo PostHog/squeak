@@ -53,19 +53,21 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
     return (
         <Form className="mt-6">
             <Input
-                label="Slack Bot User OAuth Token"
+                label="2. Slack Bot User OAuth Token"
                 onChange={handleAPIKeyChange}
                 id="slackApiKey"
                 name="slackApiKey"
                 placeholder="xoxb-your-token"
+                helperText='Find this on the OAuth & Permissions page'
             />
             {channels.length > 0 && (
                 <>
                     <Select
                         options={channels}
-                        label="Slack question channel"
+                        label="3. Slack question channel"
                         id="slackQuestionChannel"
                         name="slackQuestionChannel"
+                        helperText='Channel where new questions alerts should be sent'
                     />
                 </>
             )}

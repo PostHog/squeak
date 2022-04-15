@@ -130,12 +130,12 @@ Login.getLayout = function getLayout(page: ReactElement<Props>) {
             title="Sign in to your account"
             subtitle={
                 page.props.isMultiTenancy && (
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Or{' '}
+                    <p className="mt-4 text-center text-sm text-gray-600">
+                        Not using Squeak! yet?{' '}
                         <Link href="/signup" passHref>
-                            <a href="#" className="font-medium text-accent-light hover:text-accent-light">
-                                sign up for an account
-                            </a>
+                            <span className="font-semibold cursor-pointer text-accent-light hover:text-accent-light">
+                                Sign up for an account
+                            </span>
                         </Link>
                     </p>
                 )

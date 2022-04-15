@@ -46,8 +46,8 @@ settings:
 
     return (
         <>
-            <p>
-                Create a Slack App at{' '}
+            <p className='font-semibold'>
+                1. Create a Slack App at{' '}
                 <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
                     https://api.slack.com/apps
                 </a>

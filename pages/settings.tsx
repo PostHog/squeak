@@ -57,14 +57,18 @@ const Settings: NextPageWithLayout<Props> = ({
     return (
         <div>
             <Surface className="mb-4">
-                <h3>Snippet</h3>
+                <h3 className='font-bold'>Snippet</h3>
                 <p>
-                    Great news! You're all setup to receive questions on your site. Here's the snippet if you need to
-                    put it on other pages.
+                    Embed this JavaScript snippet on any page where you want Squeak! to appear.
+                </p>
+                <p>
+                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables from above.
                 </p>
                 <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6 !px-8 text-sm !mb-2" />
+
+                <h3 className='font-bold pt-8'>Moderation options</h3>
                 <Toggle
-                    className="mt-6"
+                    className="pt-1"
                     checked={autoPublish}
                     setChecked={handleAutoPublish}
                     label="Publish new questions automatically"
@@ -72,7 +76,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
-                <h3>Company details</h3>
+                <h3 className='font-bold'>Company details</h3>
                 <CompanyDetails
                     companyDomain={companyDomain}
                     companyName={companyName}
@@ -84,15 +88,15 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
-                <h3>Alerts</h3>
+                <h3 className='font-bold'>Alerts</h3>
                 <p className="mb-6">
-                    Setup outgoing webhooks to alert other services about new questions added to Squeak!
+                    Setup outgoing webhooks to alert other services (like Slack) about new questions added to Squeak!
                 </p>
                 <WebhookTable />
             </Surface>
             <Surface className="mb-4">
-                <h3>Notifications</h3>
-                <p>Manage configuration for reply notifications via Mailgun</p>
+                <h3 className='font-bold'>Email notifications</h3>
+                <p>Configure emails that question askers will receive when someone answers their question.</p>
                 <NotificationForm
                     mailgunDomain={mailgunDomain}
                     mailgunApiKey={mailgunApiKey}
@@ -104,7 +108,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
-                <h3>Slack</h3>
+                <h3 className='font-bold'>Import threads from Slack</h3>
                 <p className="mb-6">
                     Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
                     <Link href="/slack" passHref>
@@ -112,6 +116,11 @@ const Settings: NextPageWithLayout<Props> = ({
                     </Link>{' '}
                     page.)
                 </p>
+
+                <p>
+                    Note: This is specifically for importing threads from Slack. To receive notifications when a user posts a question on your site, visit the Alerts section above.
+                </p>
+                <hr className="my-8" />
                 <SlackManifestSnippet />
 
                 <SlackForm
@@ -125,7 +134,8 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface>
-                <h3>Change password</h3>
+                <h3 className='font-bold'>Change password</h3>
+                <p>Careful, we only ask for it once (because your time is valuable).</p>
                 <ResetPassword
                     actionButtons={(isValid: boolean, loading: boolean) => (
                         <Button loading={loading} disabled={!isValid} type="submit">

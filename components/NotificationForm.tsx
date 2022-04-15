@@ -69,12 +69,14 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                             id="mailgunApiKey"
                             name="mailgunApiKey"
                             placeholder="Mailgun API key"
+                            helperText='Mailgun → User → API Keys → Private API Key'
                         />
                         <Input
                             label="Mailgun domain"
                             id="mailgunDomain"
                             name="mailgunDomain"
                             placeholder="Mailgun domain"
+                            helperText='Choose the sending domain from Sending → Domains'
                         />
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
