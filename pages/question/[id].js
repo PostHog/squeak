@@ -100,7 +100,7 @@ const Question = (props) => {
         question: { slug, subject, id, published, resolved },
     } = question
     const { domain } = props
-    const [modalOpen, setModalOpen] = useState(false)
+    const [setModalOpen] = useState(false)
     const handleModalSubmit = async () => {
         const updatedQuestion = await getQuestion(id)
         setQuestion(updatedQuestion)
@@ -143,7 +143,7 @@ const Question = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className='mt-12 lg:mt-0 max-w-sm'>
+                <div className="mt-12 lg:mt-0 max-w-sm">
                     <h3 className="font-bold mb-4 text-xl">Thread options</h3>
                     <EditQuestionModal
                         values={{ subject, slug, id, published, resolved }}
@@ -159,7 +159,7 @@ const Question = (props) => {
 Question.getLayout = function getLayout(page) {
     const title = page?.props?.question?.question?.subject || 'Question'
     return (
-        <AdminLayout title={title} hideTitle={true} contentStyle={{  }}>
+        <AdminLayout title={title} hideTitle={true} contentStyle={{}}>
             {page}
         </AdminLayout>
     )

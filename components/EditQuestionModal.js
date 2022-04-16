@@ -6,7 +6,7 @@ import Input from '../components/Input'
 import Button from './Button'
 import Checkbox from './Checkbox'
 
-export default function EditQuestionModal({ onClose, values, onSubmit }) {
+export default function EditQuestionModal({ values, onSubmit }) {
     const { subject, slug, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
@@ -42,10 +42,7 @@ export default function EditQuestionModal({ onClose, values, onSubmit }) {
     }
 
     return (
-        <div
-            onClick={handleContainerClick}
-            className="relative"
-        >
+        <div onClick={handleContainerClick} className="relative">
             <Formik
                 validateOnMount
                 validate={(values) => {
