@@ -76,7 +76,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                         </div>
                     </div>
                 </div>
-                <div style={contentStyle} className="flex flex-col flex-1 col-span-2">
+                <div style={contentStyle} className="flex flex-col flex-1 pr-4 col-span-2">
                     <main className="flex-1">
                         <div className="py-12">
                             {!hideTitle && (
