@@ -109,13 +109,6 @@ const Question = (props) => {
 
     return (
         <>
-            {modalOpen && (
-                <EditQuestionModal
-                    values={{ subject, slug, id, published, resolved }}
-                    onClose={() => setModalOpen(false)}
-                    onSubmit={handleModalSubmit}
-                />
-            )}
             <h1 className="m-0">{subject}</h1>
             <ul className="flex items-center space-x-2">
                 {question.question.slug?.map((slug) => {
@@ -137,23 +130,26 @@ const Question = (props) => {
                     )
                 })}
             </ul>
-            <button onClick={() => setModalOpen(true)} className="font-bold text-red mb-6">
-                Thread options
-            </button>
-            <div className="col-span-2">
-                <div className="grid gap-y-4">
-                    <div className="flex space-x-9 items-start">
-                        <div className="flex-grow max-w-[700px]">
-                            <div className="mr-[56px]">
-                                <Reply hideDelete {...replies[0]} />
-                            </div>
-                            <div className="ml-[56px] mt-4 grid gap-y-4">
-                                {replies.slice(1).map((reply) => {
-                                    return <Reply key={reply.id} {...reply} />
-                                })}
-                            </div>
+            <div className="grid gap-4 lg:grid-cols-[1fr_minmax(200px,_300px)]">
+                <div className="flex space-x-9 items-start lg:mr-8 xl:mr-16">
+                    <div className="flex-grow max-w-[700px]">
+                        <div className="">
+                            <Reply hideDelete {...replies[0]} />
+                        </div>
+                        <div className="grid gap-y-4">
+                            {replies.slice(1).map((reply) => {
+                                return <Reply key={reply.id} {...reply} />
+                            })}
                         </div>
                     </div>
+                </div>
+                <div className='mt-12 lg:mt-0 max-w-sm'>
+                    <h3 className="font-bold mb-4 text-xl">Thread options</h3>
+                    <EditQuestionModal
+                        values={{ subject, slug, id, published, resolved }}
+                        onClose={() => setModalOpen(false)}
+                        onSubmit={handleModalSubmit}
+                    />
                 </div>
             </div>
         </>
@@ -163,7 +159,7 @@ const Question = (props) => {
 Question.getLayout = function getLayout(page) {
     const title = page?.props?.question?.question?.subject || 'Question'
     return (
-        <AdminLayout title={title} hideTitle={true} contentStyle={{ maxWidth: 700, width: '100%', margin: '0 auto' }}>
+        <AdminLayout title={title} hideTitle={true} contentStyle={{  }}>
             {page}
         </AdminLayout>
     )

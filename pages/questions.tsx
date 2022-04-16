@@ -143,7 +143,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                     })}
                 </ul>
             )}
-            <nav className="py-3 flex items-center justify-between max-w-[700px]" aria-label="Pagination">
+            <nav className="py-3 flex items-center justify-between" aria-label="Pagination">
                 <div className="hidden sm:block">
                     <p className="text-sm text-gray-700">
                         {/* Showing <span className="font-medium">{start + 1}</span> to{' '}
