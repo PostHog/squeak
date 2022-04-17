@@ -8,9 +8,9 @@ _Squeak!_ lets you answer user questions, right in your docs. Even better: it le
 
 Visit the [wiki](wiki) for guides on:
 
-1. [Embeddable widget (JavaScript, React)](/PostHog/squeak/wiki/Embeddable-widget-(JS,-React))
-1. [Admin portal](/PostHog/squeak/wiki/admin-portal)
-1. [Integrations](/PostHog/squeak/wiki/integrations)
-1. [Self-hosting](/PostHog/squeak/wiki/self-hosting)
-1. [API](/PostHog/squeak/wiki/api)
-1. [Local development](/PostHog/squeak/wiki/local-development)
+1. [Embeddable widget (JavaScript, React)](https://github.com/PostHog/squeak/wiki/Embeddable-widget-(JS,-React))
+1. [Admin portal](https://github.com/PostHog/squeak/wiki/admin-portal)
+1. [Integrations](https://github.com/PostHog/squeak/wiki/integrations)
+1. [Self-hosting](https://github.com/PostHog/squeak/wiki/self-hosting)
+1. [API](https://github.com/PostHog/squeak/wiki/api)
+1. [Local development](https://github.com/PostHog/squeak/wiki/local-development)
