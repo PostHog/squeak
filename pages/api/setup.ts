@@ -2,11 +2,11 @@ import { createClient } from '@supabase/supabase-js'
 import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
 import { definitions } from '../../@types/supabase'
 import withPreflightCheck from '../../util/withPreflightCheck'
+import createUserProfile from '../../util/createUserProfile'
+import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 
 type Config = definitions['squeak_config']
 type Organization = definitions['squeak_organizations']
-type UserProfile = definitions['squeak_profiles']
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
 // This API route is for user setup in the self-hosted preflight.
 export default withPreflightCheck(async (req, res) => {
@@ -89,14 +89,7 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await supabaseServiceRoleClient
-        .from<UserProfile>('squeak_profiles')
-        .insert({
-            first_name: firstName,
-            last_name: lastName,
-        })
-        .limit(1)
-        .single()
+    const { data: userProfile, error: userProfileError } = await createUserProfile(firstName, lastName)
 
     if (!userProfile || userProfileError) {
         console.error(`[🧵 Setup] Error creating user profile`)
@@ -112,16 +105,12 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { data: userProfileReadonly, error: userProfileReadonlyError } = await supabaseServiceRoleClient
-        .from<UserProfileReadonly>('squeak_profiles_readonly')
-        .insert({
-            role: 'admin',
-            profile_id: userProfile.id,
-            user_id: user.id,
-            organization_id: organization.id,
-        })
-        .limit(1)
-        .single()
+    const { data: userProfileReadonly, error: userProfileReadonlyError } = await createUserProfileReadonly(
+        user.id,
+        organization.id,
+        userProfile.id,
+        'admin'
+    )
 
     if (!userProfileReadonly || userProfileReadonlyError) {
         console.error(`[🧵 Setup] Error creating user readonly profile`)
