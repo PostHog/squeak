@@ -4,4 +4,13 @@
 
 _Squeak!_ lets you answer user questions, right in your docs. Even better: it lets your community support itself.
 
-Docs are a WIP, but temporarily can be found [here](https://watilo.notion.site/Docs-a1e9e845a67a414599cf56d76f941cf2).
+## Docs
+
+Visit the [wiki](wiki) for guides on:
+
+1. [Embeddable widget (JavaScript, React)](wiki/Embeddable-widget-(JS,-React))
+1. [Admin portal](wiki/admin-portal)
+1. [Integrations](wiki/integrations)
+1. [Self-hosting](wiki/self-hosting)
+1. [API](wiki/api)
+1. [Local development](wiki/local-development)
