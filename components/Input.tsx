@@ -26,7 +26,7 @@ const Input = <T,>({ label, helperText, id, name, placeholder, errorMessage, ...
                 id={id}
                 name={name}
                 placeholder={placeholder}
-                className="block px-4 py-2 border-gray-light border rounded-md w-full"
+                className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
             />
             {helperText && <p className="text-[14px] opacity-50">{helperText}</p>}
             {errorMessage && <p className="text-[14px] text-red">{errorMessage}</p>}
