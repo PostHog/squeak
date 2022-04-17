@@ -80,7 +80,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, onSubmit }) => {
                                 id="subject"
                                 name="subject"
                                 placeholder="Title"
-                                helperText="SEO-friendly text, also used to derive permalink"
+                                helperText="SEO-friendly summary of the topic"
                             />
                             <Input
                                 label="Show this question on..."
