@@ -5,6 +5,7 @@ import Router from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
 import type { definitions } from '../@types/supabase'
 import useActiveOrganization from '../util/useActiveOrganization'
+import Link from 'next/link'
 import Input from './Input'
 import Select from './Select'
 type Config = definitions['squeak_config']
@@ -160,7 +161,7 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
                             </li>
                         </ol>
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
-                        <div className='text-[16px] font-semibold opacity-75 mt-4'>After the above setup is complete, visit the <a href='/slack'>Import Slack threads</a> page to see the latest 50 threads you can import.</div>
+                        <div className='text-[16px] font-semibold opacity-75 mt-4'>After the above setup is complete, visit the <Link href='/slack'>Import Slack threads</Link> page to see the latest 50 threads you can import.</div>
                     </Form>
                 )
             }}
