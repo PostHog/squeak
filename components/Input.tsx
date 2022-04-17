@@ -1,25 +1,21 @@
 import { Field } from 'formik'
 import type { ChangeEvent } from 'react'
+import { GenericFieldHTMLAttributes } from 'formik/dist/types'
+import { FieldConfig } from 'formik/dist/Field'
 
-interface Props {
-    id: string
-    label: string
-    name: string
-    placeholder: string
-    helperText?: string
-    errorMessage?: string
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
-}
+type Props<T> = GenericFieldHTMLAttributes &
+    FieldConfig<T> &
+    T & {
+        id: string
+        label: string
+        name: string
+        placeholder: string
+        helperText?: string
+        errorMessage?: string
+        onChange?: (e: ChangeEvent<HTMLInputElement>) => void
+    }
 
-const Input: React.FunctionComponent<Props> = ({
-    label,
-    helperText,
-    id,
-    name,
-    placeholder,
-    errorMessage,
-    ...other
-}) => {
+const Input = <T,>({ label, helperText, id, name, placeholder, errorMessage, ...other }: Props<T>) => {
     return (
         <div className="mb-6">
             <label className="text-[16px] font-semibold opacity-75 my-2" htmlFor={id}>

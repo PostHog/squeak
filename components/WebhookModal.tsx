@@ -1,7 +1,8 @@
-import { Dialog } from '@headlessui/react'
 import Webhook from './Webhook'
 import SlackWebhook from './SlackWebhook'
-import { WebhookValues } from '../@types/types'
+import Modal from './Modal'
+
+import type { WebhookValues } from '../@types/types'
 
 interface Props {
     type?: string
@@ -19,18 +20,14 @@ const WebhookModal: React.VoidFunctionComponent<Props> = ({
     onClose,
 }) => {
     return (
-        <Dialog className="fixed z-10 inset-0 overflow-y-auto" open={open} onClose={onClose}>
-            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-
-            <div className="max-w-md w-full bg-white shadow-md rounded-md p-4 relative mx-auto my-12">
+        <Modal onClose={onClose} open={open}>
+            {
                 {
-                    {
-                        webhook: <Webhook initialValues={initialValues} onSubmit={onSubmit} />,
-                        slack: <SlackWebhook initialValues={initialValues} onSubmit={onSubmit} />,
-                    }[type]
-                }
-            </div>
-        </Dialog>
+                    webhook: <Webhook initialValues={initialValues} onSubmit={onSubmit} />,
+                    slack: <SlackWebhook initialValues={initialValues} onSubmit={onSubmit} />,
+                }[type]
+            }
+        </Modal>
     )
 }
 

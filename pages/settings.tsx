@@ -18,6 +18,7 @@ import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
 import useActiveOrganization from '../util/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
+import AllowedOriginTable from '../components/settings/AllowedOriginTable'
 
 type Config = definitions['squeak_config']
 
@@ -93,6 +94,11 @@ const Settings: NextPageWithLayout<Props> = ({
                     Setup outgoing webhooks to alert other services (like Slack) about new questions added to Squeak!
                 </p>
                 <WebhookTable />
+            </Surface>
+            <Surface className="mb-4">
+                <h3>Allowed Origins</h3>
+                <p className="mb-6">Restrict the origins where Squeak! can show (it defaults to show on all origins)</p>
+                <AllowedOriginTable />
             </Surface>
             <Surface className="mb-4">
                 <h3 className='font-bold'>Email notifications</h3>

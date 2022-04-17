@@ -94,6 +94,7 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                                 label="Slack incoming webhook URL"
                                 id="url"
                                 name="url"
+                                type="url"
                                 placeholder="Slack incoming webhook URL"
                             />
                             <div className="flex space-x-2 mt-3">
