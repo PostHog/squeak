@@ -46,20 +46,23 @@ settings:
 
     return (
         <>
-            <p className='font-semibold'>
-                1. Create a Slack App at{' '}
-                <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
-                    https://api.slack.com/apps
-                </a>
-                , from the following app manifest:
-            </p>
+          <ol className='list-decimal pl-2 ml-4'>
+            <li>
+              <p className='font-semibold'>
+                  <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
+                      Create a Slack App
+                  </a>
+                  {' '}using the following app manifest:
+              </p>
 
-            <SyntaxHighlighter className="max-h-40 overflow-scroll text-sm rounded">{manifest}</SyntaxHighlighter>
+              <SyntaxHighlighter className="max-h-40 overflow-scroll text-sm rounded">{manifest}</SyntaxHighlighter>
 
-            <button onClick={copyToClipboard} className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2">
-                <span>Copy to clipboard</span>
-                {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
-            </button>
+              <button onClick={copyToClipboard} className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2">
+                  <span>Copy to clipboard</span>
+                  {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
+              </button>
+            </li>
+          </ol>
         </>
     )
 }

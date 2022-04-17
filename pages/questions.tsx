@@ -169,7 +169,6 @@ Questions.getLayout = function getLayout(page) {
         <AdminLayout
             hideTitle
             title={'Questions'}
-            navStyle={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(250px, 1fr) 700px 1fr' }}
         >
             {page}
         </AdminLayout>
