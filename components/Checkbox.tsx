@@ -1,6 +1,15 @@
 import { Field } from 'formik'
 
-export default function Checkbox({ label, id, name, className = '', helperText, errorMessage }) {
+interface Props {
+    id: string
+    label: string
+    name: string
+    className?: string
+    helperText?: string
+    errorMessage?: string
+}
+
+const Checkbox: React.FunctionComponent<Props> = ({ label, id, name, className = '', helperText, errorMessage }) => {
     return (
         <div className="mb-6 ">
             <span className="flex space-x-2 items-center">
@@ -20,3 +29,5 @@ export default function Checkbox({ label, id, name, className = '', helperText, 
         </div>
     )
 }
+
+export default Checkbox
