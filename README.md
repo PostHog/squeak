@@ -13,7 +13,7 @@ _Squeak!_ lets you answer user questions, right in your docs. Even better: it le
 
 ## Docs
 
-Visit the [wiki](wiki) for guides on:
+Visit the [wiki](https://github.com/PostHog/squeak/wiki) for guides on:
 
 1. [Embeddable widget (JavaScript, React)](https://github.com/PostHog/squeak/wiki/Embeddable-widget-(JS,-React))
 1. [Admin portal](https://github.com/PostHog/squeak/wiki/admin-portal)
