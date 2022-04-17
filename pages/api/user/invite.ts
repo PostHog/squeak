@@ -1,10 +1,8 @@
 import withAdminAccess from '../../../util/withAdminAccess'
 import { createClient } from '@supabase/supabase-js'
 import absoluteUrl from 'next-absolute-url'
-import { definitions } from '../../../@types/supabase'
-
-type UserProfile = definitions['squeak_profiles']
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
+import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
+import createUserProfile from '../../../util/createUserProfile'
 
 export default withAdminAccess(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
@@ -36,28 +34,27 @@ export default withAdminAccess(async (req, res) => {
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await supabaseServiceRoleClient
-        .from<UserProfile>('squeak_profiles')
-        .insert({ first_name: firstName })
-        .limit(1)
-        .single()
+    const { data: userProfile, error: userProfileError } = await createUserProfile(firstName)
 
-    if (userProfileError) {
-        console.error(`[🧵 Invite] ${userProfileError.message}`)
-        res.status(500).json({ error: userProfileError.message })
+    if (!userProfile || userProfileError) {
+        console.error(`[🧵 Invite] Error inviting user`)
+
+        res.status(500)
+
+        if (userProfileError) {
+            console.error(`[🧵 Invite] ${userProfileError.message}`)
+            res.json({ error: userProfileError.message })
+        }
+
         return
     }
 
-    const { error: userProfileReadonlyError } = await supabaseServiceRoleClient
-        .from<UserProfileReadonly>('squeak_profiles_readonly')
-        .insert({
-            role,
-            profile_id: userProfile.id,
-            user_id: invitedUser.id,
-            organization_id: organizationId,
-        })
-        .limit(1)
-        .single()
+    const { error: userProfileReadonlyError } = await createUserProfileReadonly(
+        invitedUser.id,
+        organizationId,
+        userProfile.id,
+        role
+    )
 
     if (userProfileReadonlyError) {
         console.error(`[🧵 Invite] ${userProfileReadonlyError.message}`)
