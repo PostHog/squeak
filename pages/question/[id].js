@@ -121,10 +121,10 @@ const Question = (props) => {
                             <a
                                 href={url}
                                 target="_blank"
-                                className="text-[14px] opacity-50 text-inherit"
+                                className="text-[14px] opacity-50 hover:opacity-75 text-inherit"
                                 rel="noreferrer"
                             >
-                                {questionLink}
+                                {questionLink} <span className='opacity-75'>↗</span>
                             </a>
                         </li>
                     )
