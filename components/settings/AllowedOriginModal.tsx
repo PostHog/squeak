@@ -94,7 +94,8 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
                     return (
                         <Form>
                             <label htmlFor="allowedOrigin">Allowed origin</label>
-                            <Field id="allowedOrigin" name="allowedOrigin" placeholder="Allowed origin" type="url" />
+                            <Field id="allowedOrigin" name="allowedOrigin" placeholder="https://yoursite.com" type="url" />
+                            <p className='text-sm opacity-70'>Ex: https://yoursite.com</p>
                             <div className="flex space-x-2 mt-3">
                                 <Button disabled={!isValid} type="submit">
                                     {initialValues?.allowedOrigin !== '' ? 'Save' : 'Add'}

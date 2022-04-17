@@ -51,9 +51,10 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
     }, [getChannels, initialValues.slackApiKey])
 
     return (
-        <Form className="mt-6">
+        <Form className="mt-0">
+            <h3 className='font-semibold text-base'>Configure</h3>
             <Input
-                label="2. Slack Bot User OAuth Token"
+                label="Slack Bot User OAuth Token"
                 onChange={handleAPIKeyChange}
                 id="slackApiKey"
                 name="slackApiKey"
@@ -64,7 +65,7 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
                 <>
                     <Select
                         options={channels}
-                        label="3. Slack question channel"
+                        label="Slack question channel"
                         id="slackQuestionChannel"
                         name="slackQuestionChannel"
                         helperText='Channel where new questions alerts should be sent'
@@ -144,9 +145,22 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
         >
             {({ initialValues, isValid, setFieldValue }) => {
                 return (
-                    <Form className="mt-6">
-                        <SlackFormContent initialValues={initialValues} setFieldValue={setFieldValue} />
+                    <Form className="mt-0">
+                        <ol className='list-decimal pl-2 ml-4'>
+                            <li className='h-0 m-0 overflow-hidden leading-[0]'></li>
+                            <li>
+                                <SlackFormContent initialValues={initialValues} setFieldValue={setFieldValue} />
+                            </li>
+                            <li>
+                                <div className='text-[16px] font-semibold opacity-75 my-2'>Install app to workspace</div>
+                            </li>
+                            <li>
+                                <div className='text-[16px] font-semibold opacity-75 my-2'>Add app to channel</div>
+                                <p>Visit the Slack channel (entered in step 2) and type <code className='bg-gray-200 text-sm p-1'>/apps</code>, choose <strong className='font-semibold'>Add apps to this channel</strong>, and install the Squeak app you created in step 1.</p>
+                            </li>
+                        </ol>
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
+                        <div className='text-[16px] font-semibold opacity-75 mt-4'>After the above setup is complete, visit the <a href='/slack'>Import Slack threads</a> page to see the latest 50 threads you can import.</div>
                     </Form>
                 )
             }}

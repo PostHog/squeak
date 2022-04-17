@@ -181,25 +181,31 @@ const Slack = () => {
     return (
         <>
             {slackSetup ? (
-                <Surface className="max-w-[500px]">
-                    <SlackManifestSnippet />
-                    <SlackForm
-                        onSubmit={handleSlackSubmit}
-                        slackApiKey={slackData.slackApiKey}
-                        slackQuestionChannel={slackData.slackQuestionChannel}
-                        redirect="/slack"
-                        actionButtons={(isValid, loading) => (
-                            <>
-                                <Button loading={loading} disabled={!isValid} type="submit">
-                                    Save
-                                </Button>
-                            </>
-                        )}
-                    />
-                </Surface>
+                <>
+                    <h3 className="pb-0 font-bold text-lg">Import recent Slack threads and display them on specific pages of your site.</h3>
+                    <p className="pt-0 mt-0 pb-4">This allows you to answer a question from your Slack community <em>once</em> and let others see your answer where users are most likely to ask it.</p>
+                    <Surface className="max-w-prose">
+                        
+                        <SlackManifestSnippet />
+                        <SlackForm
+                            onSubmit={handleSlackSubmit}
+                            slackApiKey={slackData.slackApiKey}
+                            slackQuestionChannel={slackData.slackQuestionChannel}
+                            redirect="/slack"
+                            actionButtons={(isValid, loading) => (
+                                <>
+                                    <Button loading={loading} disabled={!isValid} type="submit">
+                                        Save
+                                    </Button>
+                                </>
+                            )}
+                        />
+                    </Surface>
+                </>
             ) : (
                 <div className="flex flex-col">
-                    <p className="pb-4">Import recent Slack threads and display them on specific pages of your site. (This is a great way to rescue valuable community threads from Slack and let others benefit from that content where it's relevant.)</p>
+                    <p className="pt-0 text-sm">Note: This page can take 30 seconds to load.</p>
+
                     <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -338,7 +344,7 @@ const Slack = () => {
 
 Slack.getLayout = function getLayout(page: ReactElement) {
     return (
-        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title={'Slack'}>
+        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title={'Import Slack threads'}>
             {page}
         </AdminLayout>
     )

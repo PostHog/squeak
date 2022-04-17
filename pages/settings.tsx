@@ -63,17 +63,19 @@ const Settings: NextPageWithLayout<Props> = ({
                     Embed this JavaScript snippet on any page where you want Squeak! to appear.
                 </p>
                 <p>
-                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables from above.
+                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables from below.
                 </p>
-                <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6 !px-8 text-sm !mb-2" />
+                <div className='overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]'>
+                    <CodeSnippet className="text-sm !px-8" />
+                </div>
 
-                <h3 className='font-bold pt-8'>Moderation options</h3>
+                <h3 className='font-bold'>Moderation settings</h3>
                 <Toggle
                     className="pt-1"
                     checked={autoPublish}
                     setChecked={handleAutoPublish}
                     label="Publish new questions automatically"
-                    helper="Disable to moderate questions before they appear on your site"
+                    helper="Turn this off if you'd like to moderate questions before they appear on your site"
                 />
             </Surface>
             <Surface className="mb-4">
@@ -96,13 +98,13 @@ const Settings: NextPageWithLayout<Props> = ({
                 <WebhookTable />
             </Surface>
             <Surface className="mb-4">
-                <h3>Allowed Origins</h3>
-                <p className="mb-6">Restrict the origins where Squeak! can show (it defaults to show on all origins)</p>
+                <h3 className='font-bold'>Allowed domain(s)</h3>
+                <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
                 <AllowedOriginTable />
             </Surface>
             <Surface className="mb-4">
                 <h3 className='font-bold'>Email notifications</h3>
-                <p>Configure emails that question askers will receive when someone answers their question.</p>
+                <p>Configure emails for users when someone answers their question.</p>
                 <NotificationForm
                     mailgunDomain={mailgunDomain}
                     mailgunApiKey={mailgunApiKey}
