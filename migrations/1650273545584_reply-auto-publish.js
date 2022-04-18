@@ -9,7 +9,7 @@ exports.up = (pgm) => {
             reply_auto_publish: {
                 type: 'boolean',
                 notNull: true,
-                default: false,
+                default: true,
             },
         }
     )
@@ -20,7 +20,7 @@ exports.up = (pgm) => {
             published: {
                 type: 'boolean',
                 notNull: true,
-                default: false,
+                default: true,
             },
         }
     )

@@ -61,8 +61,6 @@ const getQuestions = async (context: Context, params: Params) => {
                         .eq('organization_id', organizationId)
                         .order('created_at', { ascending: true })
 
-                    if (published) repliesQuery.eq('published', published)
-
                     return repliesQuery.then((data) => ({
                         question,
                         replies: data?.data || [],
