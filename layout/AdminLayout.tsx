@@ -40,52 +40,42 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
             </Head>
             <div className="items-start flex" style={navStyle}>
                 {/* Static sidebar for desktop */}
-                <div className="sticky top-0 max-w-[300px] w-full">
+                <div className="sticky top-0 w-full grow-0 shrink-0 basis-[300px] md:mr-8">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="flex-1 flex flex-col min-h-0 pr-4">
-                        <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
-                            <div className="flex items-center flex-shrink-0">
-                                <Logo />
-                            </div>
-                            <nav className="mt-5 flex-1 px-7 space-y-1">
-                                {navigation.map((item) => (
-                                    <Link key={item.name} href={item.href} passHref>
-                                        <a
-                                            className={classNames(
-                                                router.pathname === item.href
-                                                    ? 'bg-gray-light bg-opacity-20 !text-red font-bold'
-                                                    : 'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black',
-                                                'group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
-                                            )}
-                                        >
-                                            {item.name}
-                                        </a>
-                                    </Link>
-                                ))}
-                                <button
-                                    onClick={handleLogout}
-                                    className={classNames(
-                                        'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black group rounded-md flex w-full items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
-                                    )}
-                                >
-                                    Logout
-                                </button>
-                            </nav>
-                        </div>
+                    <div className="pt-8 pb-4 overflow-y-auto">
+                            <Logo />
+                        <nav className="px-7 space-y-1">
+                            {navigation.map((item) => (
+                                <Link key={item.name} href={item.href} passHref>
+                                    <a
+                                        className={classNames(
+                                            router.pathname === item.href
+                                                ? 'bg-gray-light bg-opacity-20 !text-red font-bold'
+                                                : 'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black',
+                                            'group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                        )}
+                                    >
+                                        {item.name}
+                                    </a>
+                                </Link>
+                            ))}
+                            <button
+                                onClick={handleLogout}
+                                className={classNames(
+                                    'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black group rounded-md flex w-full items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                )}
+                            >
+                                Logout
+                            </button>
+                        </nav>
                     </div>
                 </div>
-                <div style={contentStyle} className="flex flex-col flex-1 pr-4 col-span-2">
-                    <main className="flex-1">
-                        <div className="py-12">
-                            {!hideTitle && (
-                                <div>
-                                    <h1 className="pb-2">{title}</h1>
-                                </div>
-                            )}
-                            <div>{children}</div>
-                        </div>
-                    </main>
-                </div>
+                <main style={contentStyle} className="flex flex-col flex-1 pr-4 col-span-2 py-12">
+                    {!hideTitle && (
+                        <h1 className="pb-2">{title}</h1>
+                    )}
+                    {children}
+                </main>
             </div>
         </>
     )
