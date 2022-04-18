@@ -7,6 +7,7 @@ import getUserProfile from '../../util/getUserProfile'
 import sendReplyNotification from '../../util/sendReplyNotification'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 
+type Config = definitions['squeak_config']
 type Reply = definitions['squeak_replies']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -57,6 +58,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         process.env.SUPABASE_SERVICE_ROLE_KEY as string
     )
 
+    const { data: config, error: configError } = await supabaseServiceRoleClient
+        .from<Config>('squeak_config')
+        .select('reply_auto_publish')
+        .eq('organization_id', organizationId)
+        .limit(1)
+        .single()
+
+    if (!config || configError) {
+        console.error(`[🧵 Reply] Error fetching config`)
+        res.status(500)
+
+        if (configError) {
+            console.error(`[🧵 Reply] ${configError.message}`)
+            res.json({ error: configError.message })
+        }
+
+        return
+    }
+
     const { data, error } = await supabaseServiceRoleClient
         .from<Reply>('squeak_replies')
         .insert({
@@ -64,6 +84,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             message_id: messageId,
             organization_id: organizationId,
             profile_id: userProfile.id,
+            published: config.reply_auto_publish,
         })
         .limit(1)
         .single()

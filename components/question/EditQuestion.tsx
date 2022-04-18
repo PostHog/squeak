@@ -2,37 +2,53 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Input from '../components/Input'
-import Button from './Button'
-import Checkbox from './Checkbox'
+import Input from '../Input'
+import Button from '../Button'
+import { definitions } from '../../@types/supabase'
+import Checkbox from '../Checkbox'
 
-export default function EditQuestionModal({ values, onSubmit }) {
+type Question = definitions['squeak_messages']
+type Reply = definitions['squeak_replies']
+
+interface Props {
+    values: Pick<Question, 'id' | 'subject' | 'slug' | 'published' | 'resolved'>
+    replyId: number
+    onSubmit: (values: Pick<Question, 'subject' | 'slug' | 'published' | 'resolved'>) => void
+}
+
+const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
     const { subject, slug, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
 
-    const handleSave = async (values) => {
+    const handleSave = async (values: { subject?: string; slug?: string; published: boolean; resolved: boolean }) => {
         setLoading(true)
-        const { subject, slug, published, resolved } = values
+        const { subject, slug = '', published, resolved } = values
         await supabaseClient
-            .from('squeak_messages')
+            .from<Question>('squeak_messages')
             .update({ subject, slug: slug.split(','), published, resolved })
             .match({ id })
-        onSubmit()
+
+        await supabaseClient.from<Reply>('squeak_replies').update({ published }).match({ id: replyId })
+        onSubmit({ subject, slug: slug.split(','), published, resolved })
+        setLoading(false)
     }
 
-    const handleDelete = async (e) => {
+    const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         e.stopPropagation()
         if (!confirmDelete) {
             return setConfirmDelete(true)
         } else {
             setDeleting(true)
-            await supabaseClient.from('squeak_messages').update({ resolved_reply_id: null }).match({ id })
-            await supabaseClient.from('squeak_replies').delete().match({ message_id: id })
-            await supabaseClient.from('squeak_messages').delete().match({ id })
+            await supabaseClient
+                .from<Question>('squeak_messages')
+                .update({ resolved_reply_id: undefined })
+                .match({ id })
+            await supabaseClient.from<Reply>('squeak_replies').delete().match({ message_id: id })
+            await supabaseClient.from<Question>('squeak_messages').delete().match({ id })
             router.push('/questions')
         }
     }
@@ -45,8 +61,8 @@ export default function EditQuestionModal({ values, onSubmit }) {
         <div onClick={handleContainerClick} className="relative">
             <Formik
                 validateOnMount
-                validate={(values) => {
-                    const errors = {}
+                validate={(values: { subject?: string; slug?: string; published: boolean; resolved: boolean }) => {
+                    const errors: { subject?: string; slug?: string } = {}
                     if (!values.subject) {
                         errors.subject = 'Required'
                     }
@@ -57,7 +73,7 @@ export default function EditQuestionModal({ values, onSubmit }) {
                 }}
                 initialValues={{
                     subject,
-                    slug: slug.join(','),
+                    slug: (slug as Array<string>).join(','),
                     published,
                     resolved,
                 }}
@@ -106,3 +122,5 @@ export default function EditQuestionModal({ values, onSubmit }) {
         </div>
     )
 }
+
+export default EditQuestion
