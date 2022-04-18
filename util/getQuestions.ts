@@ -47,11 +47,11 @@ const getQuestions = async (context: Context, params: Params) => {
         data: {
             questions: await Promise.all(
                 (messages || []).map((question) => {
-                    return supabaseServerClient(context)
+                    const repliesQuery = supabaseServerClient(context)
                         .from<Reply>('squeak_replies')
                         .select(
                             `
-                         id, body, created_at,
+                         id, body, created_at, published,
                          profile:squeak_profiles!replies_profile_id_fkey (
                              id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
                         )
@@ -60,10 +60,13 @@ const getQuestions = async (context: Context, params: Params) => {
                         .eq('message_id', question.id)
                         .eq('organization_id', organizationId)
                         .order('created_at', { ascending: true })
-                        .then((data) => ({
-                            question,
-                            replies: data?.data || [],
-                        }))
+
+                    if (published) repliesQuery.eq('published', published)
+
+                    return repliesQuery.then((data) => ({
+                        question,
+                        replies: data?.data || [],
+                    }))
                 })
             ),
             count: count ?? 0,

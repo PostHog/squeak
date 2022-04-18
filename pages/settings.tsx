@@ -29,7 +29,8 @@ interface Props {
     companyDomain: string
     slackApiKey: string
     slackQuestionChannel: string
-    publishAutomatically: boolean
+    questionAutoPublish: boolean
+    replyAutoPublish: boolean
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -39,45 +40,66 @@ const Settings: NextPageWithLayout<Props> = ({
     companyDomain,
     slackApiKey,
     slackQuestionChannel,
-    publishAutomatically,
+    questionAutoPublish: initialQuestionAutoPublish,
+    replyAutoPublish: initialReplyAutoPublish,
 }) => {
-    const [autoPublish, setAutopublish] = useState(publishAutomatically)
     const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
 
-    const handleAutoPublish = async () => {
-        const organizationId = getActiveOrganization()
+    const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
+    const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
+
+    const handleQuestionAutoPublish = async () => {
         await supabaseClient
             .from('squeak_config')
             .update({
-                question_auto_publish: !autoPublish,
+                question_auto_publish: !questionAutoPublish,
             })
             .match({ organization_id: organizationId })
-        setAutopublish(!autoPublish)
+
+        setQuestionAutoPublish(!questionAutoPublish)
+    }
+
+    const handleReplyAutoPublish = async () => {
+        await supabaseClient
+            .from('squeak_config')
+            .update({
+                reply_auto_publish: !replyAutoPublish,
+            })
+            .match({ organization_id: organizationId })
+
+        setReplyAutoPublish(!replyAutoPublish)
     }
 
     return (
         <div>
             <Surface className="mb-4">
-                <h3 className='font-bold'>Snippet</h3>
+                <h3 className="font-bold">Snippet</h3>
+                <p>Embed this JavaScript snippet on any page where you want Squeak! to appear.</p>
                 <p>
-                    Embed this JavaScript snippet on any page where you want Squeak! to appear.
-                </p>
-                <p>
-                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables from above.
+                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a>{' '}
+                    and copy in the variables from above.
                 </p>
                 <CodeSnippet className="max-w-6xl -ml-7 -mr-7 my-6 !px-8 text-sm !mb-2" />
 
-                <h3 className='font-bold pt-8'>Moderation options</h3>
+                <h3 className="font-bold pt-8">Moderation options</h3>
                 <Toggle
                     className="pt-1"
-                    checked={autoPublish}
-                    setChecked={handleAutoPublish}
+                    checked={questionAutoPublish}
+                    setChecked={handleQuestionAutoPublish}
                     label="Publish new questions automatically"
                     helper="Disable to moderate questions before they appear on your site"
                 />
+                <Toggle
+                    className="pt-1"
+                    checked={replyAutoPublish}
+                    setChecked={handleReplyAutoPublish}
+                    label="Publish new replies automatically"
+                    helper="Disable to moderate replies before they appear on your site"
+                />
             </Surface>
             <Surface className="mb-4">
-                <h3 className='font-bold'>Company details</h3>
+                <h3 className="font-bold">Company details</h3>
                 <CompanyDetails
                     companyDomain={companyDomain}
                     companyName={companyName}
@@ -89,7 +111,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
-                <h3 className='font-bold'>Alerts</h3>
+                <h3 className="font-bold">Alerts</h3>
                 <p className="mb-6">
                     Setup outgoing webhooks to alert other services (like Slack) about new questions added to Squeak!
                 </p>
@@ -101,7 +123,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 <AllowedOriginTable />
             </Surface>
             <Surface className="mb-4">
-                <h3 className='font-bold'>Email notifications</h3>
+                <h3 className="font-bold">Email notifications</h3>
                 <p>Configure emails that question askers will receive when someone answers their question.</p>
                 <NotificationForm
                     mailgunDomain={mailgunDomain}
@@ -114,7 +136,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
-                <h3 className='font-bold'>Import threads from Slack</h3>
+                <h3 className="font-bold">Import threads from Slack</h3>
                 <p className="mb-6">
                     Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
                     <Link href="/slack" passHref>
@@ -124,7 +146,8 @@ const Settings: NextPageWithLayout<Props> = ({
                 </p>
 
                 <p>
-                    Note: This is specifically for importing threads from Slack. To receive notifications when a user posts a question on your site, visit the Alerts section above.
+                    Note: This is specifically for importing threads from Slack. To receive notifications when a user
+                    posts a question on your site, visit the Alerts section above.
                 </p>
                 <hr className="my-8" />
                 <SlackManifestSnippet />
@@ -140,7 +163,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface>
-                <h3 className='font-bold'>Change password</h3>
+                <h3 className="font-bold">Change password</h3>
                 <p>Careful, we only ask for it once (because your time is valuable).</p>
                 <ResetPassword
                     actionButtons={(isValid: boolean, loading: boolean) => (
@@ -170,7 +193,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish`
+                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -185,7 +208,8 @@ export const getServerSideProps = withAdminAccess({
                 companyDomain: config?.company_domain || '',
                 slackApiKey: config?.slack_api_key || '',
                 slackQuestionChannel: config?.slack_question_channel || '',
-                publishAutomatically: config?.question_auto_publish || false,
+                questionAutoPublish: config?.question_auto_publish || false,
+                replyAutoPublish: config?.reply_auto_publish || false,
             },
         }
     },

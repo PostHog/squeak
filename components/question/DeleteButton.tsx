@@ -21,7 +21,7 @@ const DeleteButton: React.FunctionComponent<Props> = ({ id, setDeleted, confirmD
     }
 
     return (
-        <button onClick={handleClick} className="text-red font-bold">
+        <button onClick={handleClick} className="ml-4 text-red font-bold">
             {confirmDelete ? 'Click again to confirm' : 'Delete'}
         </button>
     )

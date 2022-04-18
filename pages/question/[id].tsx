@@ -64,9 +64,9 @@ const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain
                 <div className="flex space-x-9 items-start lg:mr-8 xl:mr-16">
                     <div className="flex-grow max-w-[700px]">
                         <div className="">
-                            <ReplyComponent reply={replies[0]} profile={replies[0].profile} hideDelete />
+                            <ReplyComponent reply={replies[0]} profile={replies[0].profile} hidePublish hideDelete />
                         </div>
-                        <div className="grid gap-y-4">
+                        <div className="grid pl-10 mt-4 gap-y-4">
                             {replies.slice(1).map((reply) => {
                                 return <ReplyComponent key={reply.id} reply={reply} profile={reply.profile} />
                             })}
@@ -75,7 +75,11 @@ const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain
                 </div>
                 <div className="mt-12 lg:mt-0 max-w-sm">
                     <h3 className="font-bold mb-4 text-xl">Thread options</h3>
-                    <EditQuestion values={{ subject, slug, id, published, resolved }} onSubmit={updateQuestion} />
+                    <EditQuestion
+                        values={{ subject, slug, id, published, resolved }}
+                        replyId={replies[0].id}
+                        onSubmit={updateQuestion}
+                    />
                 </div>
             </div>
         </>

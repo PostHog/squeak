@@ -31,6 +31,7 @@ const getQuestion = async (id: string | number): Promise<Response> => {
                 id,
                 created_at,
                 body,
+                published,
                 profile:squeak_profiles!replies_profile_id_fkey (
                     first_name, last_name, avatar
                 )
