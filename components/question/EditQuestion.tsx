@@ -8,13 +8,15 @@ import { definitions } from '../../@types/supabase'
 import Checkbox from '../Checkbox'
 
 type Question = definitions['squeak_messages']
+type Reply = definitions['squeak_replies']
 
 interface Props {
     values: Pick<Question, 'id' | 'subject' | 'slug' | 'published' | 'resolved'>
+    replyId: number
     onSubmit: (values: Pick<Question, 'subject' | 'slug' | 'published' | 'resolved'>) => void
 }
 
-const EditQuestion: React.FunctionComponent<Props> = ({ values, onSubmit }) => {
+const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
     const { subject, slug, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
@@ -25,9 +27,11 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, onSubmit }) => {
         setLoading(true)
         const { subject, slug = '', published, resolved } = values
         await supabaseClient
-            .from('squeak_messages')
+            .from<Question>('squeak_messages')
             .update({ subject, slug: slug.split(','), published, resolved })
             .match({ id })
+
+        await supabaseClient.from<Reply>('squeak_replies').update({ published }).match({ id: replyId })
         onSubmit({ subject, slug: slug.split(','), published, resolved })
         setLoading(false)
     }
@@ -39,9 +43,12 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, onSubmit }) => {
             return setConfirmDelete(true)
         } else {
             setDeleting(true)
-            await supabaseClient.from('squeak_messages').update({ resolved_reply_id: null }).match({ id })
-            await supabaseClient.from('squeak_replies').delete().match({ message_id: id })
-            await supabaseClient.from('squeak_messages').delete().match({ id })
+            await supabaseClient
+                .from<Question>('squeak_messages')
+                .update({ resolved_reply_id: undefined })
+                .match({ id })
+            await supabaseClient.from<Reply>('squeak_replies').delete().match({ message_id: id })
+            await supabaseClient.from<Question>('squeak_messages').delete().match({ id })
             router.push('/questions')
         }
     }

@@ -121,6 +121,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_config.organization_id"];
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
+          reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -183,6 +184,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_config.organization_id"];
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
+          reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
         };
         header: {
           /** Preference */
@@ -209,6 +211,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_config.organization_id"];
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
+          reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
         };
         body: {
           /** squeak_config */
@@ -673,6 +676,7 @@ export interface paths {
           message_id?: parameters["rowFilter.squeak_replies.message_id"];
           organization_id?: parameters["rowFilter.squeak_replies.organization_id"];
           profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+          published?: parameters["rowFilter.squeak_replies.published"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -729,6 +733,7 @@ export interface paths {
           message_id?: parameters["rowFilter.squeak_replies.message_id"];
           organization_id?: parameters["rowFilter.squeak_replies.organization_id"];
           profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+          published?: parameters["rowFilter.squeak_replies.published"];
         };
         header: {
           /** Preference */
@@ -749,6 +754,7 @@ export interface paths {
           message_id?: parameters["rowFilter.squeak_replies.message_id"];
           organization_id?: parameters["rowFilter.squeak_replies.organization_id"];
           profile_id?: parameters["rowFilter.squeak_replies.profile_id"];
+          published?: parameters["rowFilter.squeak_replies.published"];
         };
         body: {
           /** squeak_replies */
@@ -1105,6 +1111,8 @@ export interface definitions {
     question_auto_publish: boolean;
     /** Format: ARRAY */
     allowed_origins?: unknown[];
+    /** Format: boolean */
+    reply_auto_publish: boolean;
   };
   squeak_messages: {
     /**
@@ -1256,6 +1264,8 @@ export interface definitions {
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
     profile_id?: string;
+    /** Format: boolean */
+    published: boolean;
   };
   squeak_replies_feedback: {
     /**
@@ -1402,6 +1412,8 @@ export interface parameters {
   "rowFilter.squeak_config.question_auto_publish": string;
   /** Format: ARRAY */
   "rowFilter.squeak_config.allowed_origins": string;
+  /** Format: boolean */
+  "rowFilter.squeak_config.reply_auto_publish": string;
   /** @description squeak_messages */
   "body.squeak_messages": definitions["squeak_messages"];
   /** Format: bigint */
@@ -1482,6 +1494,8 @@ export interface parameters {
   "rowFilter.squeak_replies.organization_id": string;
   /** Format: uuid */
   "rowFilter.squeak_replies.profile_id": string;
+  /** Format: boolean */
+  "rowFilter.squeak_replies.published": string;
   /** @description squeak_replies_feedback */
   "body.squeak_replies_feedback": definitions["squeak_replies_feedback"];
   /** Format: bigint */

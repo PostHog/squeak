@@ -6,6 +6,7 @@ import dateToDays from '../../util/dateToDays'
 import ReactMarkdown from 'react-markdown'
 import DeleteButton from './DeleteButton'
 import { definitions } from '../../@types/supabase'
+import PublishButton from './PublishButton'
 
 type Reply = definitions['squeak_replies']
 type Profile = definitions['squeak_profiles']
@@ -13,17 +14,26 @@ type Profile = definitions['squeak_profiles']
 interface Props {
     reply: Reply
     profile: Profile
+    hidePublish?: boolean
     hideDelete?: boolean
 }
 
 const Reply: React.FunctionComponent<Props> = ({
-    reply: { id, body, created_at },
+    reply: { id, body, created_at, published: initialPublished },
     profile: { first_name, avatar },
+    hidePublish = false,
     hideDelete = false,
 }) => {
+    console.log(id, initialPublished)
+
+    const [published, setPublished] = useState(initialPublished)
+    const [confirmPublish, setConfirmPublish] = useState(false)
+
     const [deleted, setDeleted] = useState<boolean>(false)
     const [confirmDelete, setConfirmDelete] = useState<boolean>(false)
+
     const handleSurfaceClick = () => {
+        setConfirmPublish(false)
         setConfirmDelete(false)
     }
     return !deleted ? (
@@ -41,16 +51,25 @@ const Reply: React.FunctionComponent<Props> = ({
                         </div>
                     </div>
                 </div>
-                {!hideDelete && (
-                    <p className="text-right m-0">
+                <p className="text-right m-0">
+                    {!hidePublish && (
+                        <PublishButton
+                            id={id}
+                            published={published}
+                            setPublished={setPublished}
+                            confirmPublish={confirmPublish}
+                            setConfirmPublish={setConfirmPublish}
+                        />
+                    )}
+                    {!hideDelete && (
                         <DeleteButton
                             confirmDelete={confirmDelete}
                             setConfirmDelete={setConfirmDelete}
                             setDeleted={setDeleted}
                             id={id}
                         />
-                    </p>
-                )}
+                    )}
+                </p>
             </div>
         </Surface>
     ) : null
