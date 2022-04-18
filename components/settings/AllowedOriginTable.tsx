@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import AllowedOriginModal from './AllowedOriginModal'
-import useActiveOrganization from '../../util/useActiveOrganization'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { definitions } from '../../@types/supabase'
 import { useUser } from '@supabase/supabase-auth-helpers/react'

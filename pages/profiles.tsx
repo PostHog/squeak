@@ -1,7 +1,6 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
-import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import InviteUser from '../components/InviteUser'
@@ -65,7 +64,8 @@ Users.getLayout = function getLayout(page: ReactElement) {
             <p className="pt-4">
                 <strong>Users</strong> can ask questions and post responses <br />
                 <strong>Moderators</strong> can sign in here to manage/remove questions/replies <br />
-                <strong>Admins</strong> can administer user roles</p>
+                <strong>Admins</strong> can administer user roles
+            </p>
         </AdminLayout>
     )
 }

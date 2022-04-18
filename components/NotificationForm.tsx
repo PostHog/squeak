@@ -1,11 +1,10 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import Router from 'next/router'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import type { definitions } from '../@types/supabase'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import Input from './Input'
 
 type Config = definitions['squeak_config']
@@ -70,14 +69,14 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                             id="mailgunApiKey"
                             name="mailgunApiKey"
                             placeholder="Mailgun API key"
-                            helperText='Mailgun → User → API Keys → Private API Key'
+                            helperText="Mailgun → User → API Keys → Private API Key"
                         />
                         <Input
                             label="Mailgun domain"
                             id="mailgunDomain"
                             name="mailgunDomain"
                             placeholder="Mailgun domain"
-                            helperText='Choose the sending domain from Sending → Domains'
+                            helperText="Choose the sending domain from Sending → Domains"
                         />
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>
