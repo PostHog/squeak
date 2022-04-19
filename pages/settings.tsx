@@ -17,7 +17,7 @@ import Toggle from '../components/Toggle'
 import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
 
 type Config = definitions['squeak_config']

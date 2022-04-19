@@ -1,7 +1,7 @@
 import Button from './Button'
 import { useState } from 'react'
 import classNames from 'classnames'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     onInvite?: () => void

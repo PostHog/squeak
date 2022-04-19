@@ -24,8 +24,6 @@ const Reply: React.FunctionComponent<Props> = ({
     hidePublish = false,
     hideDelete = false,
 }) => {
-    console.log(id, initialPublished)
-
     const [published, setPublished] = useState(initialPublished)
     const [confirmPublish, setConfirmPublish] = useState(false)
 

@@ -14,8 +14,8 @@ type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
 const sendReplyNotification = async (organizationId: string, messageId: number, body: string) => {
     const supabaseServiceUserClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
     const { data: config, error: configError } = await supabaseServiceUserClient

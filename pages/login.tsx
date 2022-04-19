@@ -5,7 +5,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import type { NextPageWithLayout } from '../@types/types'
 import { GetStaticPropsResult } from 'next'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props {
     isMultiTenancy: boolean
@@ -149,7 +149,7 @@ Login.getLayout = function getLayout(page: ReactElement<Props>) {
 export const getServerSideProps = (): GetStaticPropsResult<Props> => {
     return {
         props: {
-            isMultiTenancy: (process.env.MULTI_TENANCY as unknown as boolean) ?? false,
+            isMultiTenancy: process.env.MULTI_TENANCY ?? false,
         },
     }
 }
