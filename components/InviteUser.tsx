@@ -36,6 +36,8 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
         })
 
         setShowInput(false)
+        setFirstName('')
+        setEmail('')
     }
 
     return showInput ? (
