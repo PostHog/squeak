@@ -1,5 +1,5 @@
 import { NextPageWithLayout } from '../@types/types'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
@@ -12,7 +12,7 @@ type ProfileReadonly = definitions['squeak_profiles_readonly']
 
 interface Props {}
 
-const Invite: NextPageWithLayout<Props> = () => {
+const Profile: NextPageWithLayout<Props> = () => {
     const { addToast } = useToasts()
     const { user, isLoading } = useUser()
 
@@ -20,6 +20,22 @@ const Invite: NextPageWithLayout<Props> = () => {
     const [lastName, setLastName] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string>('')
+
+    const loadProfile = useCallback(async () => {
+        if (!user) {
+            return
+        }
+
+        const { data } = await supabaseClient
+            .from('squeak_profiles_readonly')
+            .select('id, profile:squeak_profiles(first_name, last_name)')
+            .eq('user_id', user?.id || '')
+            .limit(1)
+            .single()
+
+        setFirstName(data?.profile?.first_name)
+        setLastName(data?.profile?.last_name)
+    }, [user])
 
     const handleSave = async () => {
         if (!user) {
@@ -57,6 +73,10 @@ const Invite: NextPageWithLayout<Props> = () => {
         addToast('Your profile has been updated', { appearance: 'success' })
         Router.push('/login')
     }
+
+    useEffect(() => {
+        loadProfile()
+    }, [loadProfile])
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -130,8 +150,8 @@ const Invite: NextPageWithLayout<Props> = () => {
     )
 }
 
-Invite.getLayout = function getLayout(page: ReactElement<Props>) {
-    return <LoginLayout title="Setup your account">{page}</LoginLayout>
+Profile.getLayout = function getLayout(page: ReactElement<Props>) {
+    return <LoginLayout title="Edit profile">{page}</LoginLayout>
 }
 
-export default Invite
+export default Profile
