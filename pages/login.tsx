@@ -149,7 +149,7 @@ Login.getLayout = function getLayout(page: ReactElement<Props>) {
 export const getServerSideProps = (): GetStaticPropsResult<Props> => {
     return {
         props: {
-            isMultiTenancy: (process.env.MULTI_TENANCY as unknown as boolean) ?? false,
+            isMultiTenancy: process.env.MULTI_TENANCY ?? false,
         },
     }
 }

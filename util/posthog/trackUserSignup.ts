@@ -1,7 +1,11 @@
 import type { User } from '@supabase/gotrue-js'
 import withPostHog from './withPostHog'
 
-const trackUserSignup = async (user: User, properties: Record<string | number, unknown>) => {
+const trackUserSignup = async (
+    user: User,
+    prevDistinctId?: string,
+    properties: Record<string | number, unknown> = {}
+) => {
     await withPostHog(async (client) => {
         client.identify({
             distinctId: user.id,
@@ -10,6 +14,10 @@ const trackUserSignup = async (user: User, properties: Record<string | number, u
                 ...properties,
             },
         })
+
+        if (prevDistinctId) {
+            client.alias({ distinctId: user.id, alias: prevDistinctId })
+        }
 
         client.capture({ distinctId: user.id, event: 'user-sign-up' })
     })

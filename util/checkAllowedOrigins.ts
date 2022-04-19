@@ -26,8 +26,8 @@ const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
 
     // Get a service role Supabase client, so we can fetch the config
     const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
     const { organizationId } = JSON.parse(req.body)
@@ -43,8 +43,6 @@ const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
         .eq('organization_id', organizationId)
         .limit(1)
         .single()
-
-    console.log('Got the config')
 
     // If there was an error fetching the config, we return the error
     if (!data || error) {

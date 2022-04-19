@@ -20,11 +20,13 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 
+# PostHog API Key
+ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_iXNwgHDN3yAAcrjRMztlwVz64uvB3ZCrLnzsF4nhIx4
+
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_SUPABASE_URL=APP_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=APP_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
-ENV NEXT_PUBLIC_POSTHOG_API_KEY=APP_POSTHOG_API_KEY
 
 RUN yarn build
 

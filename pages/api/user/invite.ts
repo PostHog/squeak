@@ -7,8 +7,8 @@ import trackUserSignup from '../../../util/posthog/trackUserSignup'
 
 export default withAdminAccess(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
     const { organizationId, email, role = 'admin', firstName } = JSON.parse(req.body)
@@ -64,5 +64,5 @@ export default withAdminAccess(async (req, res) => {
     }
 
     res.json(true)
-    trackUserSignup(invitedUser, { firstName, role })
+    trackUserSignup(invitedUser, undefined, { firstName, role })
 })

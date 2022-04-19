@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Logo from '../components/Logo'
+import posthog from 'posthog-js'
 import usePostHog from '../hooks/usePostHog'
 
 const navigation = [
@@ -29,6 +30,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
 
     const handleLogout = () => {
         supabaseClient.auth.signOut()
+        posthog?.reset()
         router.push('/login')
     }
 

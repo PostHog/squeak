@@ -19,7 +19,9 @@ const Signup: NextPageWithLayout<Props> = () => {
     useEffect(() => {
         const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
             if (event === 'SIGNED_IN') {
-                Router.push('/signup/profile')
+                setTimeout(() => {
+                    Router.push('/signup/profile')
+                }, 1000)
             }
         })
 
@@ -83,7 +85,7 @@ Signup.getLayout = function getLayout(page: ReactElement<Props>) {
 export const getServerSideProps = (): GetStaticPropsResult<Props> => {
     return {
         props: {
-            isMultiTenancy: (process.env.MULTI_TENANCY as unknown as boolean) ?? false,
+            isMultiTenancy: process.env.MULTI_TENANCY ?? false,
         },
     }
 }

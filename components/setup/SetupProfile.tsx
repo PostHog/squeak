@@ -3,6 +3,7 @@ import Router from 'next/router'
 import { useState } from 'react'
 import ProfileForm from '../ProfileForm'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
+import posthog from 'posthog-js'
 
 interface Props {
     user: User
@@ -25,7 +26,13 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
         setLoading(true)
         const response = await fetch('/api/setup', {
             method: 'POST',
-            body: JSON.stringify({ firstName, lastName, organizationName, url }),
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                organizationName,
+                url,
+                distinctId: posthog?.get_distinct_id(),
+            }),
         })
 
         if (!response.ok) {
@@ -37,6 +44,9 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
         const { userId, organizationId } = await response.json()
 
         await setActiveOrganization(userId, organizationId)
+
+        posthog.identify(userId)
+        posthog.group('organization', `id:${organizationId}`)
 
         Router.push('/setup/notifications')
     }

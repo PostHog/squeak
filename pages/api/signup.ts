@@ -13,8 +13,8 @@ type Organization = definitions['squeak_organizations']
 // This API route is for user signup for a multi tenant application.
 export default withMultiTenantCheck(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
     const { user } = await getUser({ req, res })
@@ -27,7 +27,7 @@ export default withMultiTenantCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName, url } = JSON.parse(req.body)
+    const { firstName, lastName, organizationName, url, distinctId } = JSON.parse(req.body)
 
     if (!firstName || !lastName || !organizationName || !url) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -120,6 +120,6 @@ export default withMultiTenantCheck(async (req, res) => {
 
     res.status(200).json({ userId: user.id, firstName, lastName, organizationId: organization.id, organizationName })
 
-    trackUserSignup(user, { firstName, lastName, role: 'admin' })
+    trackUserSignup(user, distinctId, { firstName, lastName, role: 'admin' })
     trackOrganizationSignup(user, organization, {})
 })
