@@ -33,8 +33,8 @@ const Profile: NextPageWithLayout<Props> = () => {
             .limit(1)
             .single()
 
-        setFirstName(data?.profile?.first_name)
-        setLastName(data?.profile?.last_name)
+        setFirstName(data?.profile?.first_name || '')
+        setLastName(data?.profile?.last_name || '')
     }, [user])
 
     const handleSave = async () => {
