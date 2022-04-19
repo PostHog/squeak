@@ -21,7 +21,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 
 # PostHog API Key
-ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_iXNwgHDN3yAAcrjRMztlwVz64uvB3ZCrLnzsF4nhIx4
+ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_SUPABASE_URL=APP_PUBLIC_SUPABASE_URL
