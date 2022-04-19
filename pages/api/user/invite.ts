@@ -18,7 +18,7 @@ export default withAdminAccess(async (req, res) => {
     const { data: invitedUser, error: invitedUserError } = await supabaseServiceRoleClient.auth.api.inviteUserByEmail(
         email,
         {
-            redirectTo: `${origin}/invite`,
+            redirectTo: `${origin}/profile`,
         }
     )
 
