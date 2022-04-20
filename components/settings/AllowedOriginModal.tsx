@@ -27,7 +27,12 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
                 return
             }
 
-            const allowedOrigins = [...(initialValues?.allowedOrigins || []), allowedOrigin]
+            // Remove the old version of the allowed  origin
+            const filteredValues = initialValues?.allowedOrigins.filter(
+                (origin) => origin !== initialValues?.allowedOrigin
+            )
+
+            const allowedOrigins = [...(filteredValues || []), allowedOrigin]
 
             const { error } = await supabaseClient
                 .from<Config>('squeak_config')
@@ -75,7 +80,6 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
 
     return (
         <Modal onClose={onClose} open={open}>
-            <h3 className="mb-4 text-xl">Allowed origin</h3>
             <Formik
                 validateOnMount
                 validate={(values) => {
@@ -94,8 +98,13 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
                     return (
                         <Form>
                             <label htmlFor="allowedOrigin">Allowed origin</label>
-                            <Field id="allowedOrigin" name="allowedOrigin" placeholder="https://yoursite.com" type="url" />
-                            <p className='text-sm opacity-70'>Ex: https://yoursite.com</p>
+                            <Field
+                                id="allowedOrigin"
+                                name="allowedOrigin"
+                                placeholder="https://yoursite.com"
+                                type="url"
+                            />
+                            <p className="text-sm opacity-70">Ex: https://yoursite.com</p>
                             <div className="flex space-x-2 mt-3">
                                 <Button disabled={!isValid} type="submit">
                                     {initialValues?.allowedOrigin !== '' ? 'Save' : 'Add'}

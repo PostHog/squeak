@@ -11,28 +11,25 @@ type Question = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 
 interface Props {
-    values: Pick<Question, 'id' | 'subject' | 'slug' | 'published' | 'resolved'>
+    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved'>
     replyId: number
-    onSubmit: (values: Pick<Question, 'subject' | 'slug' | 'published' | 'resolved'>) => void
+    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved'>) => void
 }
 
 const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
-    const { subject, slug, id, published, resolved } = values
+    const { subject, id, published, resolved } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
 
-    const handleSave = async (values: { subject?: string; slug?: string; published: boolean; resolved: boolean }) => {
+    const handleSave = async (values: { subject?: string; published: boolean; resolved: boolean }) => {
         setLoading(true)
-        const { subject, slug = '', published, resolved } = values
-        await supabaseClient
-            .from<Question>('squeak_messages')
-            .update({ subject, slug: slug.split(','), published, resolved })
-            .match({ id })
+        const { subject, published, resolved } = values
+        await supabaseClient.from<Question>('squeak_messages').update({ subject, published, resolved }).match({ id })
 
         await supabaseClient.from<Reply>('squeak_replies').update({ published }).match({ id: replyId })
-        onSubmit({ subject, slug: slug.split(','), published, resolved })
+        onSubmit({ subject, published, resolved })
         setLoading(false)
     }
 
@@ -62,19 +59,15 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
             <Formik
                 enableReinitialize
                 validateOnMount
-                validate={(values: { subject?: string; slug?: string; published: boolean; resolved: boolean }) => {
-                    const errors: { subject?: string; slug?: string } = {}
+                validate={(values: { subject?: string; published: boolean; resolved: boolean }) => {
+                    const errors: { subject?: string } = {}
                     if (!values.subject) {
                         errors.subject = 'Required'
-                    }
-                    if (!values.slug) {
-                        errors.slug = 'Required'
                     }
                     return errors
                 }}
                 initialValues={{
                     subject,
-                    slug: (slug as Array<string>).join(','),
                     published,
                     resolved,
                 }}
@@ -90,21 +83,19 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                 placeholder="Title"
                                 helperText="SEO-friendly summary of the topic"
                             />
-                            <Input
-                                label="Show this question on..."
-                                id="slug"
-                                name="slug"
-                                placeholder="Slug"
-                                helperText="Separate multiple relative URLs with commas. Ex: /docs/api, /docs/other-url"
-                            />
                             <Checkbox
                                 label="Published"
                                 id="published"
                                 name="published"
-                                helperText="Uncheck to hide from page(s)"
+                                helperText="Check to show on page(s)"
                             />
-                            <Checkbox label="Resolved" id="resolved" name="resolved" />
-                            <div className="flex justify-between">
+                            <Checkbox
+                                label="Resolved"
+                                id="resolved"
+                                name="resolved"
+                                helperText="Check to mark as solved"
+                            />
+                            <div className="flex space-x-4">
                                 <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
                                     Save
                                 </Button>
@@ -113,7 +104,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                     onClick={handleDelete}
                                     className="mt-4 bg-transparent text-red border-red border-2"
                                 >
-                                    {confirmDelete ? 'Permanently delete from site?' : 'Delete thread'}
+                                    {confirmDelete ? 'Permanently delete from site?' : 'Delete'}
                                 </Button>
                             </div>
                         </Form>
