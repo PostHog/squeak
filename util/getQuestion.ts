@@ -12,7 +12,7 @@ interface Response {
 const getQuestion = async (id: string | number): Promise<Response> => {
     const { data: question } = await supabaseClient
         .from<Question>('squeak_messages')
-        .select('subject, id, slug, created_at, published, resolved')
+        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id')
         .eq('id', id)
         .limit(1)
         .single()
@@ -28,13 +28,10 @@ const getQuestion = async (id: string | number): Promise<Response> => {
         .from<Reply>('squeak_replies')
         .select(
             `
-                id,
-                created_at,
-                body,
-                published,
-                profile:squeak_profiles!replies_profile_id_fkey (
-                    first_name, last_name, avatar
-                )
+            id, body, created_at, published,
+            profile:squeak_profiles!replies_profile_id_fkey (
+                id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
+           )
                 `
         )
         .eq('message_id', question.id)

@@ -2,10 +2,10 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Input from '../Input'
-import Button from '../Button'
 import { definitions } from '../../@types/supabase'
+import Button from '../Button'
 import Checkbox from '../Checkbox'
+import Input from '../Input'
 
 type Question = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
@@ -60,6 +60,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
     return (
         <div onClick={handleContainerClick} className="relative">
             <Formik
+                enableReinitialize
                 validateOnMount
                 validate={(values: { subject?: string; slug?: string; published: boolean; resolved: boolean }) => {
                     const errors: { subject?: string; slug?: string } = {}
