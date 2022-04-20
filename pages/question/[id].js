@@ -1,41 +1,36 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { useUser } from '@supabase/supabase-auth-helpers/react'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
+import EditQuestion from '../../components/question/EditQuestion'
 import AdminLayout from '../../layout/AdminLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
-import withAdminAccess from '../../util/withAdminAccess'
-import { NextPageWithLayout } from '../../@types/types'
 import getQuestion from '../../util/getQuestion'
-import { definitions } from '../../@types/supabase'
-import ReplyComponent from '../../components/question/Reply'
-import EditQuestion from '../../components/question/EditQuestion'
+import withAdminAccess from '../../util/withAdminAccess'
+const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-type Question = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
-type Profile = definitions['squeak_profiles']
-
-interface Props {
-    question: {
-        question: Question
-        replies: Array<Reply & { profile: Profile }>
-    }
-    domain: string
-}
-
-const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain }) => {
+const Question = ({ question: initialQuestion, domain }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
         question: { slug, subject, id, published, resolved },
     } = question
 
-    const updateQuestion = async ({
-        subject,
-        slug,
-        published,
-        resolved,
-    }: Pick<Question, 'subject' | 'slug' | 'published' | 'resolved'>) => {
+    const updateQuestion = async ({ subject, slug, published, resolved }) => {
         setQuestion({ ...question, question: { ...question.question, subject, slug, published, resolved } })
     }
+
+    const handleResolve = (resolved) => {
+        updateQuestion({ resolved, slug, subject, published })
+    }
+
+    const handleSubmit = async () => {
+        const question = await getQuestion(id)
+        setQuestion(question)
+    }
+
+    const { user } = useUser()
+    supabaseClient.auth.user = () => user
 
     return (
         <>
@@ -43,7 +38,7 @@ const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain
             <ul className="flex items-center space-x-2">
                 {question.question.slug?.map((slug) => {
                     const url = domain ? new URL(domain).origin : ''
-                    const questionLink = url + (slug as string).trim()
+                    const questionLink = url + slug.trim()
 
                     return (
                         <li key={questionLink}>
@@ -60,17 +55,17 @@ const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain
                     )
                 })}
             </ul>
-            <div className="grid gap-4 lg:grid-cols-[1fr_minmax(200px,_300px)]">
-                <div className="flex space-x-9 items-start lg:mr-8 xl:mr-16">
+            <div className="grid lg:grid-cols-3 grid-cols-1 gap-8">
+                <div className="flex space-x-9 items-start col-span-2">
                     <div className="flex-grow max-w-[700px]">
-                        <div className="">
-                            <ReplyComponent reply={replies[0]} profile={replies[0].profile} hidePublish hideDelete />
-                        </div>
-                        <div className="grid pl-10 mt-4 gap-y-4">
-                            {replies.slice(1).map((reply) => {
-                                return <ReplyComponent key={reply.id} reply={reply} profile={reply.profile} />
-                            })}
-                        </div>
+                        <SingleQuestion
+                            apiHost="http://localhost:3000"
+                            organizationId="5279d14f-3b03-48fe-af63-4f58274e23b2"
+                            supabase={supabaseClient}
+                            onResolve={handleResolve}
+                            onSubmit={handleSubmit}
+                            question={question}
+                        />
                     </div>
                 </div>
                 <div className="mt-12 lg:mt-0 max-w-sm">
@@ -89,7 +84,7 @@ const Question: NextPageWithLayout<Props> = ({ question: initialQuestion, domain
 Question.getLayout = function getLayout(page) {
     const title = page?.props?.question?.question?.subject || 'Question'
     return (
-        <AdminLayout title={title} hideTitle={true} contentStyle={{}}>
+        <AdminLayout title={title} hideTitle={true} contentStyle={{ maxWidth: 1200, margin: '0 auto' }}>
             {page}
         </AdminLayout>
     )
@@ -105,7 +100,7 @@ export const getServerSideProps = withAdminAccess({
         }
 
         const organizationId = getActiveOrganization(context)
-        const question = await getQuestion(id as string)
+        const question = await getQuestion(id)
 
         const {
             data: { company_domain },
