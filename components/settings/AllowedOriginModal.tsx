@@ -3,7 +3,7 @@ import { Field, Form, Formik } from 'formik'
 import Button from '../Button'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useToasts } from 'react-toast-notifications'
-import useActiveOrganization from '../../util/useActiveOrganization'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { definitions } from '../../@types/supabase'
 import { useCallback } from 'react'
 

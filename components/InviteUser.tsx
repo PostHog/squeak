@@ -1,7 +1,8 @@
 import Button from './Button'
 import { useState } from 'react'
 import classNames from 'classnames'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     onInvite?: () => void
@@ -10,6 +11,8 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, ...rest }) => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
+
+    const { addToast } = useToasts()
 
     const [email, setEmail] = useState('')
     const [firstName, setFirstName] = useState('')
@@ -28,7 +31,13 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
             onInvite()
         }
 
+        addToast('User invited', {
+            appearance: 'success',
+        })
+
         setShowInput(false)
+        setFirstName('')
+        setEmail('')
     }
 
     return showInput ? (

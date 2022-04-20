@@ -67,7 +67,10 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
                     <>
                         <p className="mb-4">Run the following SQL in your project to create tables and columns</p>
 
-                        <SyntaxHighlighter language="sql" className="max-w-2xl shadow !p-4 max-h-96 rounded-md !bg-white text-xs border border-solid border-gray">
+                        <SyntaxHighlighter
+                            language="sql"
+                            className="max-w-2xl shadow !p-4 max-h-96 rounded-md !bg-white text-xs border border-solid border-gray"
+                        >
                             {sql}
                         </SyntaxHighlighter>
 
@@ -90,8 +93,8 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
 export const getServerSideProps = withPreflightCheck({
     redirectTo: '/',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
         const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 

@@ -3,11 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 import absoluteUrl from 'next-absolute-url'
 import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
 import createUserProfile from '../../../util/createUserProfile'
+import trackUserSignup from '../../../util/posthog/trackUserSignup'
 
 export default withAdminAccess(async (req, res) => {
     const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SUPABASE_SERVICE_ROLE_KEY as string
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
     const { organizationId, email, role = 'admin', firstName } = JSON.parse(req.body)
@@ -17,7 +18,7 @@ export default withAdminAccess(async (req, res) => {
     const { data: invitedUser, error: invitedUserError } = await supabaseServiceRoleClient.auth.api.inviteUserByEmail(
         email,
         {
-            redirectTo: `${origin}/login`,
+            redirectTo: `${origin}/profile`,
         }
     )
 
@@ -63,4 +64,5 @@ export default withAdminAccess(async (req, res) => {
     }
 
     res.json(true)
+    trackUserSignup(invitedUser, undefined, { firstName, role })
 })

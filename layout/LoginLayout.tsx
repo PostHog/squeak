@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Logo from '../components/Logo'
 import { ReactNode } from 'react'
+import usePostHog from '../hooks/usePostHog'
 
 interface Props {
     title?: string
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children }) => {
+    usePostHog()
+
     return (
         <div>
             <Head>

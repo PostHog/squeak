@@ -15,7 +15,9 @@ const ForgotPassword: NextPageWithLayout<Props> = () => {
         e.preventDefault()
         setError(null)
 
-        const { error } = await supabaseClient.auth.api.resetPasswordForEmail(email)
+        const { error } = await supabaseClient.auth.api.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/profile`,
+        })
 
         if (error) {
             setError(error.message)

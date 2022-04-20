@@ -1,10 +1,10 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
-import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import { WebhookValues } from '../@types/types'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
+import { useToasts } from 'react-toast-notifications'
 import Button from './Button'
 import Input from './Input'
 

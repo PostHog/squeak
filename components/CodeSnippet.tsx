@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props {
     className?: string

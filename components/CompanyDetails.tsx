@@ -4,7 +4,7 @@ import Router from 'next/router'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import type { definitions } from '../@types/supabase'
-import useActiveOrganization from '../util/useActiveOrganization'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import Input from './Input'
 
 type Config = definitions['squeak_config']

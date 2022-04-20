@@ -5,9 +5,10 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import type { NextPageWithLayout } from '../../@types/types'
 import ProfileForm from '../../components/ProfileForm'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 import LoginLayout from '../../layout/LoginLayout'
-import useActiveOrganization from '../../util/useActiveOrganization'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
+import posthog from 'posthog-js'
 
 interface Props {}
 
@@ -28,7 +29,13 @@ const Profile: NextPageWithLayout<Props> = () => {
         setLoading(true)
         const response = await fetch('/api/signup', {
             method: 'POST',
-            body: JSON.stringify({ firstName, lastName, organizationName, url }),
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                organizationName,
+                url,
+                distinctId: posthog?.get_distinct_id(),
+            }),
         })
 
         if (!response.ok) {
@@ -40,6 +47,9 @@ const Profile: NextPageWithLayout<Props> = () => {
         const { userId, organizationId } = await response.json()
 
         await setActiveOrganization(userId, organizationId)
+
+        posthog.identify(userId)
+        posthog.group('organization', `id:${organizationId}`)
 
         Router.push('/questions')
     }
