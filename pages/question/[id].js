@@ -63,8 +63,9 @@ const Question = ({ question: initialQuestion, organizationId }) => {
 }
 
 Question.getLayout = function getLayout(page) {
+    const title = page?.props?.question?.question?.subject || 'Question'
     return (
-        <AdminLayout title="" contentStyle={{ maxWidth: 1200, margin: '0 auto' }} hideTitle>
+        <AdminLayout title={title} contentStyle={{ maxWidth: 1200, margin: '0 auto' }} hideTitle>
             {page}
         </AdminLayout>
     )
