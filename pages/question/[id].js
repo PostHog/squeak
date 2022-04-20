@@ -9,7 +9,7 @@ import getQuestion from '../../util/getQuestion'
 import withAdminAccess from '../../util/withAdminAccess'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, domain }) => {
+const Question = ({ question: initialQuestion, domain, organizationId }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
@@ -59,8 +59,8 @@ const Question = ({ question: initialQuestion, domain }) => {
                 <div className="flex space-x-9 items-start col-span-2">
                     <div className="flex-grow max-w-[700px]">
                         <SingleQuestion
-                            apiHost="http://localhost:3000"
-                            organizationId="5279d14f-3b03-48fe-af63-4f58274e23b2"
+                            apiHost={`//${typeof window !== 'undefined' && window.location.host}`}
+                            organizationId={organizationId}
                             supabase={supabaseClient}
                             onResolve={handleResolve}
                             onSubmit={handleSubmit}
@@ -111,7 +111,7 @@ export const getServerSideProps = withAdminAccess({
             .single()
 
         return {
-            props: { question, domain: company_domain || '' },
+            props: { question, domain: company_domain || '', organizationId },
         }
     },
 })
