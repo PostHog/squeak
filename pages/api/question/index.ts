@@ -3,9 +3,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import xss from 'xss'
 import { definitions } from '../../../@types/supabase'
+import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
-import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 
 type Config = definitions['squeak_config']
 type Message = definitions['squeak_messages']
@@ -109,7 +109,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             message_id: message.id,
             organization_id: organizationId,
             profile_id: userProfile.id,
-            published: config.question_auto_publish, // Use the question auto publish setting as this reply is technically a question
+            published: true,
         })
         .limit(1)
         .single()
