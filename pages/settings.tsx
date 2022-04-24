@@ -15,9 +15,9 @@ import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import Surface from '../components/Surface'
 import Toggle from '../components/Toggle'
 import WebhookTable from '../components/WebhookTable'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
 import getActiveOrganization from '../util/getActiveOrganization'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
 
 type Config = definitions['squeak_config']
@@ -48,6 +48,7 @@ const Settings: NextPageWithLayout<Props> = ({
 
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
+    const [allQuestions, setAllQuestions] = useState(false)
 
     const handleQuestionAutoPublish = async () => {
         await supabaseClient
@@ -81,10 +82,17 @@ const Settings: NextPageWithLayout<Props> = ({
                     and copy in the variables from below.
                 </p>
                 <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
-                    <CodeSnippet className="text-sm !px-8" />
+                    <CodeSnippet allQuestions={allQuestions} className="text-sm !px-8" />
                 </div>
-
-                <h3 className="font-bold">Moderation settings</h3>
+                <h3 className="font-bold">Snippet settings</h3>
+                <Toggle
+                    className="pt-1"
+                    checked={allQuestions}
+                    setChecked={() => setAllQuestions(!allQuestions)}
+                    label="Display all questions"
+                    helper="Turn this on to display all questions regardless of the pathname"
+                />
+                <h3 className="font-bold mt-6">Moderation settings</h3>
                 <Toggle
                     className="pt-1"
                     checked={questionAutoPublish}
