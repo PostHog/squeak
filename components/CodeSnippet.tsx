@@ -4,9 +4,10 @@ import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props {
     className?: string
+    allQuestions?: boolean
 }
 
-const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
+const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, ...rest }) => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
     const [snippetCopied, setSnippetCopied] = useState(false)
@@ -20,7 +21,12 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ ...rest }) => {
             url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
         },
         apiHost: "//${typeof window !== 'undefined' && window.location.host}",
-        organizationId: "${organizationId}"
+        organizationId: "${organizationId}"${
+        allQuestions
+            ? `,
+        slug: false`
+            : ''
+    }
     };
     var d = document,
         s = d.createElement("script");
