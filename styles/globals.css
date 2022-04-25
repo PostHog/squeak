@@ -83,3 +83,623 @@ label {
         @apply overflow-x-auto -mx-7 px-7 py-4 bg-gray-100 text-sm;
     }
 }
+
+
+.squeak {
+    color: rgba(0, 0, 0, 1);
+    font-size: 16px;
+}
+.squeak *:not(pre *) {
+    box-sizing: border-box;
+}
+.squeak button {
+    background: orange;
+    border: solid 1.5px rgba(29, 74, 255, .85);
+    border-radius: 0.25rem;
+    color: rgba(29, 74, 255, .85);
+    cursor: pointer;
+    font-size: 0.933em;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+}
+.squeak button:hover {
+    border: solid 1.5px rgba(29, 74, 255, .9);
+    color: rgba(29, 74, 255, .9);
+}
+.squeak button:active {
+    border: solid 1.5px rgba(29, 74, 255, 1);
+    color: rgba(29, 74, 255, 1);
+}
+.squeak button[disabled] {
+    background: transparent;
+    border: solid 1.5px rgba(0, 0, 0, .5);
+    color: rgba(0, 0, 0, 1);
+    cursor: not-allowed;
+}
+.squeak .squeak-authentication-form-container {
+    margin-left: 50px;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form-message {
+    background: #fff7e9;
+    border: 1px solid rgba(0, 0, 0, .2);
+    color: #000;
+    border-bottom: none;
+    padding: 1rem;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form-message h4, .squeak .squeak-authentication-form-container .squeak-authentication-form-message p {
+    margin: 0;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form-message h4 {
+    font-size: 1em;
+    padding-bottom: 0.25em;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form-message p {
+    font-size: 0.875em;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form {
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    overflow: hidden;
+    position: relative;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form button {
+    transition: color 0.2s;
+    width: 100%;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form button.active {
+    color: rgba(29, 74, 255, 1);
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form input {
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, .3);
+    display: block;
+    font-size: 0.875em;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form label {
+    display: block;
+    font-size: 0.875em;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+}
+.squeak .squeak-authentication-form-container .squeak-authentication-form .squeak-authentication-form-wrapper {
+    padding: 1.5rem 1.5rem 0.5rem;
+}
+.squeak .squeak-authentication-form-name {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.5rem;
+}
+.squeak .squeak-authentication-navigation {
+    background: rgba(0, 0, 0, .03);
+    border-top: 1px solid rgba(0, 0, 0, .1);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    position: relative;
+}
+.squeak .squeak-authentication-navigation button {
+    font-size: 0.875em;
+    border: none;
+    border-bottom: solid 1px transparent;
+    border-radius: 0;
+    background: none;
+    padding: 0.75rem 0.25rem calc(.75rem + 1px);
+}
+.squeak .squeak-authentication-navigation button:not(.active) {
+    color: rgba(0, 0, 0, .5);
+}
+.squeak .squeak-authentication-navigation button:not(.active):hover {
+    color: rgba(0, 0, 0, .6);
+    border-bottom: 0.5px solid rgba(0, 0, 0, .25);
+}
+.squeak .squeak-authentication-navigation-rail {
+    background: rgba(29, 74, 255, 1);
+    border-radius: 0.25rem;
+    bottom: -1px;
+    height: 2px;
+    left: 0;
+    position: absolute;
+    transition: all 0.2s;
+    width: 50%;
+}
+.squeak .squeak-authentication-navigation-rail.sign-up {
+    transform: translateX(100%);
+}
+.squeak .squeak-avatar-container {
+    float: left;
+    flex-shrink: 0;
+    line-height: 0;
+    margin-right: 10px;
+}
+.squeak .squeak-avatar-container svg path:first-child {
+    fill: rgba(0, 0, 0, .3);
+}
+.squeak .squeak-avatar-container img, .squeak .squeak-avatar-container svg {
+    border-radius: 100px;
+    height: 40px;
+    width: 40px;
+}
+.squeak .squeak-replies .squeak-avatar-container img, .squeak .squeak-replies .squeak-avatar-container svg {
+    border-radius: 100px;
+    height: 25px;
+    width: 25px;
+}
+.squeak .squeak-post-preview-container {
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-bottom: none;
+    display: flex;
+    padding: 0.7rem 1rem;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+.squeak .squeak-post-preview-container .squeak-post-preview {
+    align-items: baseline;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.squeak .squeak-post-preview-container h3, .squeak .squeak-post-preview-container p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.squeak .squeak-post-preview-container h3 {
+    flex: 0 auto;
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 0.5em 0 0;
+    flex-shrink: 0;
+}
+.squeak .squeak-post-preview-container .squeak-post-markdown {
+    flex: 1;
+    font-size: 0.875em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.squeak .squeak-post-preview-container .squeak-post-markdown p {
+    margin: 0;
+}
+.squeak .squeak-post-preview-container .squeak-post-markdown img {
+    max-width: 100%;
+}
+.squeak .squeak-post-preview-container .squeak-button-container {
+    margin-left: 0.25em;
+    white-space: nowrap;
+}
+.squeak .squeak-post-preview-container button {
+    border: 1px solid transparent;
+    color: rgba(29, 74, 255, 1);
+    padding: 0;
+}
+.squeak .squeak-replies, .squeak .squeak-questions {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.squeak .squeak-questions {
+    margin-bottom: 1.5rem;
+}
+.squeak .squeak-questions > li {
+    padding-bottom: 1.25rem;
+}
+.squeak .squeak-questions > li:not(:first-child) {
+    padding-top: 1.25em;
+}
+.squeak .squeak-questions .squeak-reply-buttons-row {
+    margin-left: 35px;
+}
+.squeak .squeak-post {
+    display: flex;
+    flex-direction: column;
+}
+.squeak .squeak-post .squeak-post-content {
+    margin-left: 20px;
+    border-left: 1px dashed rgba(0, 0, 0, .4);
+    padding-left: calc(25px + 5px);
+}
+.squeak .squeak-post .squeak-replies .squeak-post-content {
+    padding-left: calc(25px + 10px);
+}
+.squeak .squeak-question-container .squeak-authentication-form-container {
+    margin-left: 35px;
+}
+.squeak .squeak-post-author {
+    align-items: center;
+    display: flex;
+}
+.squeak .squeak-post-author .squeak-avatar-container {
+    margin-right: 10px;
+}
+.squeak .squeak-post-author > span:last-of-type {
+    display: flex;
+}
+.squeak .squeak-post-author strong {
+    font-weight: 600;
+}
+.squeak .squeak-post-author span {
+    margin-left: 0.5rem;
+}
+.squeak button.squeak-reply-skeleton {
+    background: transparent;
+    border: solid 1.5px rgba(0, 0, 0, .3);
+    padding: 15px;
+    flex: 1;
+    text-align: left;
+}
+.squeak button.squeak-reply-skeleton span {
+    color: rgba(0, 0, 0, .6);
+}
+.squeak button.squeak-reply-skeleton span strong {
+    color: rgba(0, 0, 0, .65);
+    font-weight: bold;
+    text-decoration: underline;
+}
+.squeak button.squeak-reply-skeleton:hover {
+    border: solid 1.5px rgba(0, 0, 0, .5);
+}
+.squeak button.squeak-reply-skeleton:hover span {
+    color: rgba(0, 0, 0, .7);
+}
+.squeak button.squeak-reply-skeleton:hover span strong {
+    color: rgba(0, 0, 0, .75);
+}
+.squeak button:hover .squeak-reply-skeleton strong {
+    color: rgba(0, 0, 0, .9);
+}
+.squeak .squeak-post-timestamp {
+    color: rgba(0, 0, 0, .6);
+    font-size: 0.875em;
+}
+.squeak .squeak-author-badge {
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: calc(.25rem * .75);
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.75em;
+    padding: 0.2rem 0.3rem;
+}
+.squeak .squeak-post h3 {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 0;
+    padding-bottom: 0.25rem;
+}
+.squeak .squeak-replies {
+    margin-left: 20px;
+}
+.squeak .squeak-replies > li {
+    padding: 0 5px 0 calc(25px + 5px);
+    position: relative;
+}
+.squeak .squeak-replies > li .squeak-avatar-container {
+    margin-right: 8px;
+}
+.squeak .squeak-replies > li .squeak-post-author {
+    padding-bottom: 0.25rem;
+}
+.squeak .squeak-replies > li .squeak-post-content {
+    border-left: 0;
+    margin-left: calc(25px + 8px);
+    padding-left: 0;
+    padding-bottom: 0.25rem;
+}
+.squeak .squeak-replies:not(.squeak-thread-resolved) > li {
+    border-left: 1px dashed rgba(0, 0, 0, .4);
+}
+.squeak .squeak-replies:not(.squeak-thread-resolved) > li:before {
+    border-left: none;
+}
+.squeak .squeak-reply-form-container:before, .squeak .squeak-replies li:before {
+    border-left: 1px dashed rgba(0, 0, 0, .4);
+    border-bottom: 1px dashed rgba(0, 0, 0, .4);
+    border-bottom-left-radius: 6px;
+    content: '';
+    height: 13px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 30px;
+}
+.squeak .squeak-replies.squeak-thread-resolved li:not(:last-child) {
+    border-left: 1px dashed rgba(0, 0, 0, .4);
+}
+.squeak .squeak-replies:not(.squeak-thread-resolved) li:before {
+    border-left: none;
+}
+.squeak .squeak-replies.squeak-thread-resolved li:not(:last-child):before {
+    border-left: none;
+}
+.squeak ul.squeak-thread-resolved li:not(.squeak-solution) > div:not(.squeak-other-replies-container) {
+    opacity: 0.6;
+}
+.squeak .squeak-reply-unpublished {
+    opacity: 0.5;
+}
+.squeak .squeak-post-markdown {
+    font-size: 0.933em;
+    line-height: 1.4;
+}
+.squeak .squeak-post-markdown p {
+    margin-top: 0;
+}
+.squeak .squeak-post-markdown ol, .squeak .squeak-post-markdown ul {
+    padding-bottom: 1em;
+}
+.squeak .squeak-post-markdown a {
+    color: rgba(29, 74, 255, 1);
+    text-decoration: none;
+}
+.squeak .squeak-post-markdown pre {
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    margin: 0.75rem 0;
+    max-height: 450px;
+    overflow: scroll;
+    padding: 1rem;
+}
+.squeak .squeak-reply-form-container {
+    margin-left: 20px;
+    padding-right: 20px;
+    padding-left: calc(25px + 8px);
+    position: relative;
+    width: 100%;
+}
+.squeak .squeak-reply-form-container .squeak-avatar-container {
+    float: left;
+    margin-right: 10px;
+    width: 25px;
+}
+.squeak .squeak-reply-form-container .squeak-avatar-container svg, .squeak .squeak-reply-form-container .squeak-avatar-container img {
+    height: 25px;
+    width: 25px;
+}
+.squeak .squeak-reply-form-container > div:nth-of-type(2) {
+    flex-grow: 1;
+}
+.squeak .squeak-reply-buttons {
+    display: flex;
+    flex: 1;
+}
+.squeak .squeak-reply-buttons-row {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 50px;
+}
+.squeak .squeak-by-line {
+    align-items: center;
+    color: rgba(0, 0, 0, .5);
+    display: flex;
+    font-size: 0.813rem;
+}
+.squeak .squeak-by-line a {
+    color: rgba(0, 0, 0, .5);
+    display: flex;
+    margin-left: 0.2rem;
+}
+.squeak .squeak-by-line a:hover {
+    color: rgba(0, 0, 0, .6);
+}
+.squeak .squeak-by-line a:active {
+    color: rgba(0, 0, 0, .55);
+}
+.squeak .squeak-by-line svg path {
+    fill: currentColor;
+}
+.squeak .squeak-logout-button {
+    border: solid 1.5px transparent;
+    background: none;
+    margin-left: auto;
+    opacity: 0.5;
+}
+.squeak .squeak-logout-button:hover {
+    border: solid 1.5px transparent;
+    opacity: 1;
+}
+.squeak .squeak-markdown-logo {
+    line-height: 0;
+    margin: 0 0.5rem 0 0;
+}
+.squeak .squeak-markdown-logo a {
+    color: rgba(0, 0, 0, .3);
+}
+.squeak .squeak-markdown-logo a:hover {
+    color: rgba(0, 0, 0, .4);
+}
+.squeak .squeak > .squeak-form-frame > .squeak-form > .squeak-avatar-container {
+    width: 40px;
+}
+.squeak .squeak-form-frame {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+.squeak .squeak-inputs-wrapper {
+    background: orange;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+.squeak .squeak-inputs-wrapper input[name="subject"] {
+    font-weight: 700;
+}
+.squeak hr {
+    background: rgba(0, 0, 0, .3);
+    border: none;
+    height: 1px;
+    margin: 0;
+}
+.squeak input {
+    background: orange;
+    border: none;
+    color: rgba(0, 0, 0, 1);
+    font-size: 1em;
+    padding: 0.75rem 1rem;
+    width: 100%;
+}
+.squeak textarea {
+    background: orange;
+    border: none;
+    color: rgba(0, 0, 0, 1);
+    font-size: 0.875em;
+    height: 150px;
+    padding: 0.75rem 1rem;
+    resize: none;
+    width: 100%;
+}
+.squeak .squeak-form-richtext {
+    line-height: 0;
+}
+.squeak .squeak-form-richtext-buttons-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+}
+.squeak .squeak-form-richtext-buttons {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 0.5rem;
+}
+.squeak .squeak-form-richtext-buttons button {
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: 0.25rem;
+    color: rgba(0, 0, 0, .5);
+    cursor: pointer;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    margin: 0 1px 0 0;
+    opacity: 1;
+    padding: 0;
+    width: 32px;
+}
+.squeak .squeak-form-richtext-buttons button:hover {
+    background: rgba(0, 0, 0, .15);
+    color: rgba(0, 0, 0, .75);
+}
+.squeak .squeak-form-richtext-buttons button:active {
+    background: rgba(0, 0, 0, .2);
+    color: rgba(0, 0, 0, 1);
+}
+.squeak .squeak-forgot-password {
+    background: transparent;
+    color: rgba(0, 0, 0, .3) !important;
+    border-color: transparent;
+    margin-top: 0.5rem;
+}
+.squeak .squeak-forgot-password:hover, .squeak .squeak-forgot-password:active {
+    border-color: transparent;
+}
+.squeak .squeak-auth-error {
+    background: #fff7e9;
+    margin: -1.5rem -1.5rem 1.5rem;
+    padding: 1.5rem;
+}
+.squeak .squeak-return-to-post {
+    background: none;
+    border: none;
+    color: rgba(29, 74, 255, 1);
+    cursor: pointer;
+    font-size: inherit;
+    font-weight: 600;
+    padding: 0;
+    width: auto !important;
+}
+.squeak .squeak-reply-action-buttons {
+    display: flex;
+    margin-bottom: 1rem;
+    position: relative;
+    top: -0.5em;
+}
+.squeak .squeak-resolve-button, .squeak .squeak-publish-button {
+    margin-right: 0.75rem;
+}
+.squeak .squeak-delete-button {
+    color: red;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    z-index: 1;
+}
+.squeak .squeak-delete-button:hover, .squeak .squeak-delete-button:active {
+    border: none;
+    color: red;
+}
+.squeak .squeak-resolve-button, .squeak .squeak-undo-resolved, .squeak .squeak-publish-button, .squeak .squeak-other-replies {
+    background: none;
+    border: none;
+    padding: 0;
+    color: rgba(29, 74, 255, 1);
+    cursor: pointer;
+}
+.squeak .squeak-resolve-button:hover, .squeak .squeak-undo-resolved:hover, .squeak .squeak-publish-button:hover, .squeak .squeak-other-replies:hover, .squeak .squeak-resolve-button:active, .squeak .squeak-undo-resolved:active, .squeak .squeak-publish-button:active, .squeak .squeak-other-replies:active {
+    border: none;
+}
+.squeak .squeak-undo-resolved {
+    font-size: 0.875em;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+.squeak .squeak-resolve-button, .squeak .squeak-unresolve-button, .squeak .squeak-resolve-text, .squeak .squeak-publish-button, .squeak .squeak-other-replies {
+    font-size: 0.875em;
+    font-weight: 600;
+    z-index: 1;
+}
+.squeak .squeak-other-replies-container {
+    padding-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+.squeak .squeak-other-replies-container .squeak-avatar-container:not(:first-of-type) {
+    margin-left: -1rem;
+    position: relative;
+}
+.squeak .squeak-resolved-badge {
+    border-radius: calc(.25rem * .75);
+    border: 1.5px solid rgba(0, 130, 0, .8);
+    color: rgba(0, 130, 0, .8);
+    font-size: 0.688em;
+    font-weight: 600;
+    padding: 0.2rem 0.3rem;
+    text-transform: uppercase;
+}
+.squeak .squeak-locked-message, .squeak .squeak-approval-required {
+    background: rgba(0, 0, 0, .03);
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 0.25rem;
+    margin-bottom: 0;
+    padding: 0 1rem;
+}
+.squeak .squeak-locked-message p, .squeak .squeak-approval-required p {
+    color: rgba(0, 0, 0, .6);
+    font-size: 0.875em;
+}
+.squeak .squeak-locked-message {
+    text-align: center;
+}
+.squeak .squeak-approval-required {
+    padding-bottom: 1rem;
+}
+.squeak .squeak-approval-required h3 {
+    margin-bottom: 0.5rem;
+}
+.squeak .squeak-approval-required p {
+    font-size: 1em;
+    margin: 0.5rem 0 0.25rem;
+}
+.squeak .squeak-approval-required .squeak-post-button {
+    margin-top: 0.5rem;
+}
