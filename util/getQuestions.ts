@@ -1,4 +1,5 @@
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { createClient } from '@supabase/supabase-js'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 import { definitions } from '../@types/supabase'
 
@@ -43,6 +44,19 @@ const getQuestions = async (context: Context, params: Params) => {
         }
     }
 
+    const supabaseServiceRoleClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+
+    const {
+        data: { show_slack_user_profiles },
+    } = await supabaseServiceRoleClient
+        .from('squeak_config')
+        .select('show_slack_user_profiles')
+        .eq('organization_id', organizationId)
+        .single()
+
     return {
         data: {
             questions: await Promise.all(
@@ -54,7 +68,12 @@ const getQuestions = async (context: Context, params: Params) => {
                          id, body, created_at, published,
                          profile:squeak_profiles!replies_profile_id_fkey (
                              id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
-                        )
+                        )${
+                            show_slack_user_profiles
+                                ? `,
+                        slack_profile:slack_user_id(first_name, avatar)`
+                                : ''
+                        }
                         `
                         )
                         .eq('message_id', question.id)

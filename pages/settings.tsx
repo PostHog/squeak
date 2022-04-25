@@ -31,6 +31,7 @@ interface Props {
     slackQuestionChannel: string
     questionAutoPublish: boolean
     replyAutoPublish: boolean
+    initialShowSlackUserInfo: boolean
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -42,6 +43,7 @@ const Settings: NextPageWithLayout<Props> = ({
     slackQuestionChannel,
     questionAutoPublish: initialQuestionAutoPublish,
     replyAutoPublish: initialReplyAutoPublish,
+    initialShowSlackUserInfo,
 }) => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
@@ -49,6 +51,7 @@ const Settings: NextPageWithLayout<Props> = ({
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
     const [allQuestions, setAllQuestions] = useState(false)
+    const [showSlackUserInfo, setShowSlackUserInfo] = useState(initialShowSlackUserInfo)
 
     const handleQuestionAutoPublish = async () => {
         await supabaseClient
@@ -72,6 +75,17 @@ const Settings: NextPageWithLayout<Props> = ({
         setReplyAutoPublish(!replyAutoPublish)
     }
 
+    const handleShowSlackUserInfo = async () => {
+        await supabaseClient
+            .from('squeak_config')
+            .update({
+                show_slack_user_profiles: !showSlackUserInfo,
+            })
+            .match({ organization_id: organizationId })
+
+        setShowSlackUserInfo(!showSlackUserInfo)
+    }
+
     return (
         <div>
             <Surface className="mb-4">
@@ -91,6 +105,13 @@ const Settings: NextPageWithLayout<Props> = ({
                     setChecked={() => setAllQuestions(!allQuestions)}
                     label="Display all questions"
                     helper="Turn this on to display all questions regardless of the pathname"
+                />
+                <Toggle
+                    className="pt-1"
+                    checked={showSlackUserInfo}
+                    setChecked={handleShowSlackUserInfo}
+                    label="Display Slack user info"
+                    helper="Turn this on to display first name and avatar on Slack messages"
                 />
                 <h3 className="font-bold mt-6">Moderation settings</h3>
                 <Toggle
@@ -203,7 +224,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish`
+                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -220,6 +241,7 @@ export const getServerSideProps = withAdminAccess({
                 slackQuestionChannel: config?.slack_question_channel || '',
                 questionAutoPublish: config?.question_auto_publish || false,
                 replyAutoPublish: config?.reply_auto_publish || false,
+                initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
             },
         }
     },

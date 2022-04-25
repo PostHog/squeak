@@ -9,9 +9,9 @@ import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import SlackTableSkeleton from '../components/SlackTableSkeleton'
 import Surface from '../components/Surface'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { Message as MessageResponse } from './api/slack/messages'
 
 type Config = definitions['squeak_config']
@@ -61,7 +61,36 @@ const Slack = () => {
 
     const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
-    const insertReply = async ({ body, id, created_at }: { body: string; id: number; created_at: Date | null }) => {
+    const insertReply = async ({
+        body,
+        id,
+        created_at,
+        user,
+    }: {
+        body: string
+        id: number
+        created_at: Date | null
+        user: any
+    }) => {
+        const userId = await supabaseClient
+            .from('squeak_slack_profiles')
+            .select('user_id')
+            .match({ user_id: user?.user_id, organization_id: organizationId })
+            .single()
+            .then(async ({ data }) => {
+                if (data) {
+                    return data?.user_id
+                } else {
+                    await supabaseClient.from('squeak_slack_profiles').insert({
+                        first_name: user?.first_name,
+                        last_name: user?.last_name,
+                        avatar: user?.avatar,
+                        organization_id: organizationId,
+                        user_id: user?.user_id,
+                    })
+                    return user?.user_id
+                }
+            })
         return supabaseClient
             .from<Reply>('squeak_replies')
             .insert({
@@ -69,6 +98,8 @@ const Slack = () => {
                 body,
                 message_id: id,
                 organization_id: organizationId,
+                slack_user_id: userId,
+                published: true,
             })
             .limit(1)
             .single()
@@ -81,7 +112,7 @@ const Slack = () => {
         for (const question of selectedQuestions) {
             const index = newMessages.indexOf(question)
             newMessages.splice(index, 1)
-            const { subject, slug, body, replies, reply_count, ts } = question
+            const { subject, slug, body, replies, reply_count, ts, user } = question
             const { data: message } = await supabaseClient
                 .from<Message>('squeak_messages')
                 .insert({
@@ -100,11 +131,12 @@ const Slack = () => {
 
             if (reply_count && reply_count >= 1 && replies) {
                 await Promise.all(
-                    replies.map(({ body, ts }) => {
+                    replies.map(({ body, ts, user }) => {
                         return insertReply({
                             body: body || '',
                             id: message.id,
                             created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                            user,
                         })
                     })
                 )
@@ -113,6 +145,7 @@ const Slack = () => {
                     body: body ?? '',
                     id: message.id,
                     created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                    user,
                 })
             }
         }
@@ -182,10 +215,14 @@ const Slack = () => {
         <>
             {slackSetup ? (
                 <>
-                    <h3 className="pb-0 font-bold text-lg">Import recent Slack threads and display them on specific pages of your site.</h3>
-                    <p className="pt-0 mt-0 pb-4">This allows you to answer a question from your Slack community <em>once</em> and let others see your answer where users are most likely to ask it.</p>
+                    <h3 className="pb-0 font-bold text-lg">
+                        Import recent Slack threads and display them on specific pages of your site.
+                    </h3>
+                    <p className="pt-0 mt-0 pb-4">
+                        This allows you to answer a question from your Slack community <em>once</em> and let others see
+                        your answer where users are most likely to ask it.
+                    </p>
                     <Surface className="max-w-prose">
-                        
                         <SlackManifestSnippet />
                         <SlackForm
                             onSubmit={handleSlackSubmit}

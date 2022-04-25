@@ -1,3 +1,4 @@
+import type { UsersInfoResponse } from '@slack/web-api'
 import type { ConversationsHistoryResponse } from '@slack/web-api/dist/response/ConversationsHistoryResponse'
 import type { ConversationsRepliesResponse } from '@slack/web-api/dist/response/ConversationsRepliesResponse'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
@@ -28,7 +29,21 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
     }
 
     const client = new WebClient(token)
-    const { messages }: ConversationsHistoryResponse = await client.conversations.history({ channel })
+    const { messages }: ConversationsHistoryResponse = await client.conversations.history({ channel, limit: 1 })
+
+    const getUser = async (user: string | undefined) => {
+        return (
+            user &&
+            client.users.info({ user }).then(({ user }: UsersInfoResponse) => {
+                return {
+                    first_name: user?.profile?.first_name,
+                    last_name: user?.profile?.last_name,
+                    avatar: user?.profile?.image_72,
+                    user_id: user?.id,
+                }
+            })
+        )
+    }
 
     if (!messages) {
         res.status(200).json([])
@@ -51,15 +66,21 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
             reply_count && reply_count >= 1
                 ? await client.conversations
                       .replies({ ts, channel })
-                      .then(({ messages: replies = [] }: ConversationsRepliesResponse) =>
-                          replies?.map((reply) => {
-                              return {
-                                  ts: reply.ts,
-                                  body: formatSlackMessage(reply?.blocks?.[0]?.elements || []),
-                              }
-                          })
-                      )
+                      .then(({ messages: replies = [] }: ConversationsRepliesResponse) => replies)
                 : null
+
+        const formattedReplies = []
+
+        if (replies) {
+            for (const reply of replies) {
+                const user = await getUser(reply?.user)
+                formattedReplies.push({
+                    ts: reply.ts,
+                    body: formatSlackMessage(reply?.blocks?.[0]?.elements || []),
+                    user,
+                })
+            }
+        }
 
         formattedMessages.push({
             ts,
@@ -73,7 +94,8 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
                       whiteList: {},
                       stripIgnoreTag: true,
                   }),
-            replies,
+            replies: formattedReplies,
+            user: await getUser(message?.user),
         })
     }
 
