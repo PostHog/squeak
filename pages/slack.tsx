@@ -183,7 +183,7 @@ const Slack = () => {
             {slackSetup ? (
                 <>
                     <h3 className="pb-0 font-bold text-lg">Import recent Slack threads and display them on specific pages of your site.</h3>
-                    <p className="pt-0 mt-0 pb-4">This allows you to answer a question from your Slack community <em>once</em> and let others see your answer where users are most likely to ask it.</p>
+                    <p className="pt-0 mt-0">This allows you to answer a question from your Slack community <em>once</em> and let others see your answer where users are most likely to ask it.</p>
                     <Surface className="max-w-prose">
                         
                         <SlackManifestSnippet />
@@ -288,8 +288,8 @@ const Slack = () => {
                                                                     ></path>
                                                                 </svg>
                                                                 </div>
-                                                                <strong className="squeak-author-name">Anonymous</strong
-                                                                ><span className="squeak-post-timestamp">{ts ? template.render(new Date(parseInt(ts) * 1000)) : 'N/A'}</span>
+                                                                <strong className="squeak-author-name">Anonymous</strong>
+                                                                <span className="squeak-post-timestamp">{ts ? template.render(new Date(parseInt(ts) * 1000)) : 'N/A'}</span>
                                                             </div>
                                                             <div className="squeak-post-content pb-2">
                                                                 <input
@@ -336,11 +336,6 @@ const Slack = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                
-
-                                                
-                                                
                                             </div>
                                         )
                                     })
