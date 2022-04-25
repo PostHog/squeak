@@ -4,11 +4,16 @@
 
 html,
 body {
-    @apply bg-light;
-    padding: 0;
-    margin: 0;
-    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
-        Droid Sans, Helvetica Neue, sans-serif;
+    @apply bg-light p-0 m-0 relative;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+body:before {
+    @apply fixed top-0 left-0 w-full h-[500px] content-[''] bg-gradient-to-b from-[#F0E6CB] to-[#EEEFE9];
+}
+
+#__next {
+    @apply relative;
 }
 
 a {
