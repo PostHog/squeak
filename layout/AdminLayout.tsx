@@ -48,7 +48,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                     {/* Sidebar component, swap this element with another sidebar if you like */}
                     <div className="pt-8 pb-4 overflow-y-auto">
                             <Logo />
-                        <nav className="px-7 space-y-1">
+                        <nav className="px-7 space-y-[1px]">
                             {navigation.map((item) => (
                                 <Link key={item.name} href={item.href} passHref>
                                     <a
