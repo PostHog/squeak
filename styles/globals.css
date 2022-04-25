@@ -98,7 +98,7 @@ label {
     box-sizing: border-box;
 }
 .squeak button {
-    background: orange;
+    background: #fff;
     border: solid 1.5px rgba(29, 74, 255, .85);
     border-radius: 0.25rem;
     color: rgba(29, 74, 255, .85);
@@ -433,6 +433,11 @@ label {
 }
 .squeak .squeak-post-markdown p {
     margin-top: 0;
+
+    &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
 }
 .squeak .squeak-post-markdown ol, .squeak .squeak-post-markdown ul {
     padding-bottom: 1em;
@@ -525,7 +530,7 @@ label {
     margin-bottom: 1rem;
 }
 .squeak .squeak-inputs-wrapper {
-    background: orange;
+    background: #fff;
     border: 1px solid rgba(0, 0, 0, .3);
     border-radius: 0.25rem;
     overflow: hidden;
@@ -541,15 +546,16 @@ label {
     margin: 0;
 }
 .squeak input {
-    background: orange;
-    border: none;
+    background: #fff;
+    border: 1px solid #BFBFBC;
+    border-radius: .25rem;
     color: rgba(0, 0, 0, 1);
     font-size: 1em;
     padding: 0.75rem 1rem;
     width: 100%;
 }
 .squeak textarea {
-    background: orange;
+    background: #fff;
     border: none;
     color: rgba(0, 0, 0, 1);
     font-size: 0.875em;
