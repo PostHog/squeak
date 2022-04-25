@@ -77,3 +77,9 @@ label {
         @apply text-accent-light;
     }
 }
+
+.post-content {
+    pre {
+        @apply overflow-x-auto -mx-7 px-7 py-4 bg-gray-100 text-sm;
+    }
+}
