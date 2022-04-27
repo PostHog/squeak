@@ -72,25 +72,17 @@ const Slack = () => {
         created_at: Date | null
         user: any
     }) => {
-        const userId = await supabaseClient
-            .from('squeak_slack_profiles')
-            .select('user_id')
-            .match({ user_id: user?.user_id, organization_id: organizationId })
-            .single()
-            .then(async ({ data }) => {
-                if (data) {
-                    return data?.user_id
-                } else {
-                    await supabaseClient.from('squeak_slack_profiles').insert({
-                        first_name: user?.first_name,
-                        last_name: user?.last_name,
-                        avatar: user?.avatar,
-                        organization_id: organizationId,
-                        user_id: user?.user_id,
-                    })
-                    return user?.user_id
-                }
-            })
+        const { profileId } = await fetch('/api/user/create', {
+            method: 'POST',
+            body: JSON.stringify({
+                first_name: user?.first_name,
+                last_name: user?.last_name,
+                avatar: user?.avatar,
+                organization_id: organizationId,
+                slack_user_id: user?.user_id,
+            }),
+        }).then((res) => res.json())
+
         return supabaseClient
             .from<Reply>('squeak_replies')
             .insert({
@@ -98,7 +90,7 @@ const Slack = () => {
                 body,
                 message_id: id,
                 organization_id: organizationId,
-                slack_user_id: userId,
+                profile_id: profileId,
                 published: true,
             })
             .limit(1)

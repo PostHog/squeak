@@ -67,23 +67,26 @@ const getQuestions = async (context: Context, params: Params) => {
                             `
                          id, body, created_at, published,
                          profile:squeak_profiles!replies_profile_id_fkey (
-                             id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
-                        )${
-                            show_slack_user_profiles
-                                ? `,
-                        slack_profile:slack_user_id(first_name, avatar)`
-                                : ''
-                        }
+                             id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role, slack_user_id)
+                        )
                         `
                         )
                         .eq('message_id', question.id)
                         .eq('organization_id', organizationId)
                         .order('created_at', { ascending: true })
 
-                    return repliesQuery.then((data) => ({
-                        question,
-                        replies: data?.data || [],
-                    }))
+                    return repliesQuery.then((data) => {
+                        let replies = data?.data || []
+                        if (!show_slack_user_profiles) {
+                            replies = replies.map((reply) => {
+                                return reply?.profile?.metadata[0]?.slack_user_id ? { ...reply, profile: null } : reply
+                            })
+                        }
+                        return {
+                            question,
+                            replies,
+                        }
+                    })
                 })
             ),
             count: count ?? 0,

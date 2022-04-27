@@ -29,7 +29,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
     }
 
     const client = new WebClient(token)
-    const { messages }: ConversationsHistoryResponse = await client.conversations.history({ channel, limit: 1 })
+    const { messages }: ConversationsHistoryResponse = await client.conversations.history({ channel })
 
     const getUser = async (user: string | undefined) => {
         return (
