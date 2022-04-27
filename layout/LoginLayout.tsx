@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Logo from '../components/Logo'
+import AnimatedLogo from '../components/AnimatedLogo'
 import { ReactNode } from 'react'
 import usePostHog from '../hooks/usePostHog'
 
@@ -22,7 +22,7 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children
 
             <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
                 <div className="flex justify-center sm:mx-auto sm:w-full sm:max-w-md">
-                    <Logo className="w-[500px]" />
+                    <AnimatedLogo className="w-[600px]" />
                 </div>
 
                 {title && <h2 className="text-center text-4xl font-extrabold text-primary-light">{title}</h2>}
