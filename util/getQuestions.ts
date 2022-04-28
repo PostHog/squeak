@@ -66,7 +66,7 @@ const getQuestions = async (context: Context, params: Params) => {
                         .select(
                             `
                          id, body, created_at, published,
-                         squeak_profiles!replies_profile_id_fkey (
+                         profile:squeak_profiles!replies_profile_id_fkey (
                              id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role, slack_user_id)
                         )
                         `
