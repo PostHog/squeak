@@ -16,7 +16,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     let profileId
 
-    const { data, error } = await supabaseServerClient({ req, res })
+    const { data } = await supabaseServerClient({ req, res })
         .from<ProfileReadonly>('squeak_profiles_readonly')
         .select('profile_id')
         .eq('slack_user_id', slack_user_id)
@@ -25,15 +25,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (data?.profile_id) {
         profileId = data.profile_id
     } else {
-        const { data: profile, error: profileError } = await createUserProfile(first_name, last_name, avatar)
+        const { data: profile } = await createUserProfile(first_name, last_name, avatar)
 
-        const { data: profileReadOnly, error: profileReadOnlyError } = await createUserProfileReadonly(
-            null,
-            organization_id,
-            profile?.id || '',
-            'user',
-            slack_user_id
-        )
+        await createUserProfileReadonly(null, organization_id, profile?.id || '', 'user', slack_user_id)
 
         profileId = profile?.id
     }

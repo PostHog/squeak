@@ -25,7 +25,7 @@ const createUserProfileReadonly = async (
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .insert({
             role,
-            user_id: userId,
+            user_id: userId || undefined,
             organization_id: organizationId,
             profile_id: profileId,
             slack_user_id,

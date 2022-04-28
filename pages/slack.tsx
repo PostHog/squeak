@@ -70,7 +70,12 @@ const Slack = () => {
         body: string
         id: number
         created_at: Date | null
-        user: any
+        user?: {
+            first_name: string
+            last_name: string
+            avatar: string
+            user_id: string
+        }
     }) => {
         const { profileId } = await fetch('/api/user/create', {
             method: 'POST',

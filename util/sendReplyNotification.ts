@@ -82,7 +82,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
     }
 
     const { data: user, error: userError } = await supabaseServiceUserClient.auth.api.getUserById(
-        userReadonlyProfile.user_id
+        userReadonlyProfile.user_id || ''
     )
 
     if (!user || userError) {

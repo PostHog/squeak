@@ -17,7 +17,22 @@ export interface Message {
     subject: string
     slug: string
     body?: string
-    replies: Array<{ ts?: string; body?: string }>
+    user?: {
+        first_name: string
+        last_name: string
+        avatar: string
+        user_id: string
+    }
+    replies: Array<{
+        ts?: string
+        body?: string
+        user?: {
+            first_name: string
+            last_name: string
+            avatar: string
+            user_id: string
+        }
+    }>
 }
 
 const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message> | { error: string }>) => {
