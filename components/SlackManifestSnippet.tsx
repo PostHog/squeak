@@ -28,6 +28,7 @@ oauth_config:
       - chat:write.customize
       - chat:write.public
       - chat:write
+      - users:read
 settings:
   interactivity:
     is_enabled: true
@@ -46,23 +47,28 @@ settings:
 
     return (
         <>
-          <ol className='list-decimal pl-2 ml-4'>
-            <li>
-              <p className='font-semibold'>
-                  <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
-                      Create a Slack App
-                  </a>
-                  {' '}using the following app manifest:
-              </p>
+            <ol className="list-decimal pl-2 ml-4">
+                <li>
+                    <p className="font-semibold">
+                        <a target="_blank" rel="noreferrer" href="https://api.slack.com/apps?new_app=1">
+                            Create a Slack App
+                        </a>{' '}
+                        using the following app manifest:
+                    </p>
 
-              <SyntaxHighlighter className="max-h-40 overflow-scroll text-sm rounded">{manifest}</SyntaxHighlighter>
+                    <SyntaxHighlighter className="max-h-40 overflow-scroll text-sm rounded">
+                        {manifest}
+                    </SyntaxHighlighter>
 
-              <button onClick={copyToClipboard} className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2">
-                  <span>Copy to clipboard</span>
-                  {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
-              </button>
-            </li>
-          </ol>
+                    <button
+                        onClick={copyToClipboard}
+                        className="mt-2 mb-6 text-accent-light font-semibold flex space-x-2"
+                    >
+                        <span>Copy to clipboard</span>
+                        {manifestCopied && <span className="text-green-600 font-normal">Copied</span>}
+                    </button>
+                </li>
+            </ol>
         </>
     )
 }
