@@ -106,7 +106,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                                 })}
                                                             </ul>
                                                         </div>
-                                                        <div>
+                                                        <div className="post-content">
                                                             <ReactMarkdown>{firstReply?.body || ''}</ReactMarkdown>
                                                         </div>
                                                         <div className="flex items-end justify-between">

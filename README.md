@@ -1,8 +1,8 @@
-![image](https://user-images.githubusercontent.com/154479/158293709-86fb1184-0983-41d1-8498-a0608d9c2b61.png)
+![image](https://user-images.githubusercontent.com/154479/165692924-b1724945-6408-4f5f-b2f1-60aa62d87668.png)
 
 # Squeak! [BETA]
 
-_Squeak!_ lets you answer user questions, right in your docs. Even better: it lets your community support itself.
+_Squeak!_ is a bespoke toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
 
 ## Top features
 

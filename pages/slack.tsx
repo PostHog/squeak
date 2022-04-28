@@ -238,137 +238,146 @@ const Slack = () => {
                 </>
             ) : (
                 <div className="flex flex-col">
-                    <p className="pt-0 text-sm">Note: This page can take 30 seconds to load.</p>
+                    <p className="pt-0 pb-4">
+                        Select from the most recent 50 threads in a specified Slack channel to import and display on
+                        your site. Just set a title and the relative URL(s) where the question should appear.
+                    </p>
+                    <div className="relative max-w-[600px]">
+                        <div className="flex items-center pb-4">
+                            <input
+                                type="checkbox"
+                                id="toggle-all"
+                                className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 mr-2"
+                                ref={checkbox}
+                                checked={checked}
+                                onChange={toggleAll}
+                            />
 
-                    <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                {selectedQuestions.length > 0 && (
-                                    <div className="absolute top-0 left-12 flex h-12 items-center space-x-3 bg-gray-50 sm:left-16">
-                                        <button
-                                            disabled={loading}
-                                            onClick={importSelected}
-                                            type="button"
-                                            className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
-                                        >
-                                            Import selected
-                                        </button>
-                                    </div>
-                                )}
-                                <table className="min-w-full table-fixed divide-y divide-gray-300">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" className="relative w-12 px-6 sm:w-16 sm:px-8">
-                                                <input
-                                                    type="checkbox"
-                                                    className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
-                                                    ref={checkbox}
-                                                    checked={checked}
-                                                    onChange={toggleAll}
-                                                />
-                                            </th>
+                            <label htmlFor="toggle-all" className="text-sm cursor-pointer mr-4">
+                                Toggle all
+                            </label>
 
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                            >
-                                                Date
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                            >
-                                                Replies
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                            >
-                                                Body
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                            >
-                                                Subject
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                            >
-                                                Slug
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        {loadingQuestions ? (
-                                            <SlackTableSkeleton />
-                                        ) : (
-                                            questions.map((message, index) => {
-                                                const { ts, body, reply_count, slug, subject } = message
-                                                return (
-                                                    <tr
-                                                        key={ts}
-                                                        className={
-                                                            selectedQuestions.includes(message)
-                                                                ? 'bg-gray-50'
-                                                                : undefined
-                                                        }
-                                                    >
-                                                        <td className="relative w-12 px-6 sm:w-16 sm:px-8">
-                                                            {selectedQuestions.includes(message) && (
-                                                                <div className="absolute inset-y-0 left-0 w-0.5 bg-orange-600" />
-                                                            )}
-                                                            <input
-                                                                type="checkbox"
-                                                                className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 sm:left-6"
-                                                                value={ts}
-                                                                checked={selectedQuestions.includes(message)}
-                                                                onChange={(e) =>
-                                                                    setSelectedQuestions(
-                                                                        e.target.checked
-                                                                            ? [...selectedQuestions, message]
-                                                                            : selectedQuestions.filter(
-                                                                                  (q) => q !== message
-                                                                              )
-                                                                    )
-                                                                }
-                                                            />
-                                                        </td>
+                            {selectedQuestions.length > 0 && (
+                                <div className="">
+                                    <button
+                                        disabled={loading}
+                                        onClick={importSelected}
+                                        type="button"
+                                        className="inline-flex items-center rounded bg-red px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
+                                    >
+                                        Import selected
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {loadingQuestions ? (
+                            <SlackTableSkeleton />
+                        ) : (
+                            questions.map((message, index) => {
+                                const { ts, body, reply_count, slug, subject } = message
+                                return (
+                                    <div
+                                        key={ts}
+                                        className={
+                                            selectedQuestions.includes(message)
+                                                ? 'relative rounded-lg pl-12 pr-8 py-4 -ml-4 mb-2 bg-gray-50'
+                                                : 'relative rounded-lg pl-12 pr-8 py-4 -ml-4 mb-2'
+                                        }
+                                    >
+                                        {selectedQuestions.includes(message) && (
+                                            <div className="absolute inset-y-0 left-0 w-1 bg-orange-600" />
+                                        )}
+
+                                        <input
+                                            type="checkbox"
+                                            className="absolute left-4 top-6 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                            value={ts}
+                                            checked={selectedQuestions.includes(message)}
+                                            onChange={(e) =>
+                                                setSelectedQuestions(
+                                                    e.target.checked
+                                                        ? [...selectedQuestions, message]
+                                                        : selectedQuestions.filter((q) => q !== message)
+                                                )
+                                            }
+                                        />
+
+                                        <div className="squeak">
+                                            <div className="squeak-question-container">
+                                                <div className="squeak-post">
+                                                    <div className="squeak-post-author">
+                                                        <div className="squeak-avatar-container">
+                                                            <svg
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 40 40"
+                                                            >
+                                                                <path d="M0 0h40v40H0z"></path>
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    clipRule="evenodd"
+                                                                    d="M21.19 6.57c-5.384-.696-9.938 3.89-9.93 10.343.013.1.026.229.042.378.045.443.11 1.067.262 1.67.883 3.445 2.781 6.077 6.305 7.132 3.117.938 5.86.04 8.14-2.242 3.008-3.016 3.805-8.039 1.891-12.047-1.36-2.844-3.484-4.82-6.71-5.234ZM2.5 40c-.64-1.852 1.119-6.454 2.947-7.61 2.48-1.563 5.076-2.942 7.671-4.32.48-.255.96-.51 1.438-.766.313-.164.899.008 1.29.188 2.827 1.242 5.624 1.25 8.468.03.492-.21 1.242-.241 1.695-.015 2.688 1.367 5.352 2.774 7.961 4.281 2.352 1.36 4.35 6.056 3.53 8.212h-35Z"
+                                                                    fill="#fff"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        <strong className="squeak-author-name">Anonymous</strong>
+                                                        <span className="squeak-post-timestamp">
                                                             {ts
                                                                 ? template.render(new Date(parseInt(ts) * 1000))
                                                                 : 'N/A'}
-                                                        </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                            {reply_count}
-                                                        </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                            <div className="overflow-hidden text-ellipsis max-w-[450px]">
+                                                        </span>
+                                                    </div>
+                                                    <div className="squeak-post-content pb-2">
+                                                        <input
+                                                            onChange={(e) => updateSubject(e, index)}
+                                                            value={subject}
+                                                            placeholder="Add a subject..."
+                                                            className="!rounded-bl-none !rounded-br-none"
+                                                        />
+                                                        <div className="squeak-post-markdown mb-2">
+                                                            <div className="overflow-hidden text-ellipsis bg-gray-light bg-opacity-20 cursor-not-allowed px-3 py-4 max-w-full border border-solid border-[#BFBFBC] border-t-0 rounded-bl rounded-br">
                                                                 <ReactMarkdown>{body || ''}</ReactMarkdown>
                                                             </div>
-                                                        </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                            <input
-                                                                onChange={(e) => updateSubject(e, index)}
-                                                                value={subject}
-                                                            />
-                                                        </td>
-                                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 ">
-                                                            <input
-                                                                onChange={(e) => updateSlug(e, index)}
-                                                                value={slug}
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                                        </div>
+
+                                                        <input
+                                                            onChange={(e) => updateSlug(e, index)}
+                                                            value={slug}
+                                                            placeholder="URL"
+                                                        />
+                                                        <p className="text-sm text-gray-500">
+                                                            Ex: /relative/path-to/page
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="squeak-reply-form-container">
+                                                    <div className="squeak-reply-buttons">
+                                                        <div className="squeak-avatar-container">
+                                                            <svg
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 40 40"
+                                                            >
+                                                                <path d="M0 0h40v40H0z"></path>
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    clipRule="evenodd"
+                                                                    d="M21.19 6.57c-5.384-.696-9.938 3.89-9.93 10.343.013.1.026.229.042.378.045.443.11 1.067.262 1.67.883 3.445 2.781 6.077 6.305 7.132 3.117.938 5.86.04 8.14-2.242 3.008-3.016 3.805-8.039 1.891-12.047-1.36-2.844-3.484-4.82-6.71-5.234ZM2.5 40c-.64-1.852 1.119-6.454 2.947-7.61 2.48-1.563 5.076-2.942 7.671-4.32.48-.255.96-.51 1.438-.766.313-.164.899.008 1.29.188 2.827 1.242 5.624 1.25 8.468.03.492-.21 1.242-.241 1.695-.015 2.688 1.367 5.352 2.774 7.961 4.281 2.352 1.36 4.35 6.056 3.53 8.212h-35Z"
+                                                                    fill="#fff"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        {reply_count} replies
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        )}
                     </div>
                 </div>
             )}
@@ -378,7 +387,10 @@ const Slack = () => {
 
 Slack.getLayout = function getLayout(page: ReactElement) {
     return (
-        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title={'Import Slack threads'}>
+        <AdminLayout
+            contentStyle={{ maxWidth: 1200, margin: '0 auto', paddingLeft: '1rem' }}
+            title={'Import Slack threads'}
+        >
             {page}
         </AdminLayout>
     )

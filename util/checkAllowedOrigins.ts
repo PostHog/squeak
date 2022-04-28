@@ -12,6 +12,7 @@ interface Response {
 }
 
 const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
+    const host = req.headers.host
     const origin = req.headers.origin
 
     // If we are in development, we allow the request
@@ -21,6 +22,11 @@ const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
 
     // If we can't determine an origin, we allow the request.
     if (!origin) {
+        return {}
+    }
+
+    // Allow the host (the admin app) to make requests without origin checks.
+    if (host && origin.includes(host)) {
         return {}
     }
 
