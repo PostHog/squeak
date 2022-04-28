@@ -1,5 +1,5 @@
-import type { definitions } from '../@types/supabase'
 import { createClient } from '@supabase/supabase-js'
+import type { definitions } from '../@types/supabase'
 
 type UserProfileReadonly = definitions['squeak_profiles_readonly']
 
@@ -9,10 +9,11 @@ interface Result {
 }
 
 const createUserProfileReadonly = async (
-    userId: string,
+    userId: string | null,
     organizationId: string,
     profileId: string,
-    role = 'user'
+    role = 'user',
+    slack_user_id?: string
 ): Promise<Result> => {
     const supabaseServiceRoleClient = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -24,9 +25,10 @@ const createUserProfileReadonly = async (
         .from<UserProfileReadonly>('squeak_profiles_readonly')
         .insert({
             role,
-            user_id: userId,
+            user_id: userId || undefined,
             organization_id: organizationId,
             profile_id: profileId,
+            slack_user_id,
         })
         .limit(1)
         .single()

@@ -122,6 +122,7 @@ export interface paths {
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
+          show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -185,6 +186,7 @@ export interface paths {
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
+          show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
         };
         header: {
           /** Preference */
@@ -212,6 +214,7 @@ export interface paths {
           question_auto_publish?: parameters["rowFilter.squeak_config.question_auto_publish"];
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
+          show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
         };
         body: {
           /** squeak_config */
@@ -544,6 +547,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_profiles_readonly.organization_id"];
           profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
           created_at?: parameters["rowFilter.squeak_profiles_readonly.created_at"];
+          slack_user_id?: parameters["rowFilter.squeak_profiles_readonly.slack_user_id"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -600,6 +604,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_profiles_readonly.organization_id"];
           profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
           created_at?: parameters["rowFilter.squeak_profiles_readonly.created_at"];
+          slack_user_id?: parameters["rowFilter.squeak_profiles_readonly.slack_user_id"];
         };
         header: {
           /** Preference */
@@ -620,6 +625,7 @@ export interface paths {
           organization_id?: parameters["rowFilter.squeak_profiles_readonly.organization_id"];
           profile_id?: parameters["rowFilter.squeak_profiles_readonly.profile_id"];
           created_at?: parameters["rowFilter.squeak_profiles_readonly.created_at"];
+          slack_user_id?: parameters["rowFilter.squeak_profiles_readonly.slack_user_id"];
         };
         body: {
           /** squeak_profiles_readonly */
@@ -1122,12 +1128,20 @@ export interface definitions {
      * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
      */
     organization_id: string;
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default true
+     */
     question_auto_publish: boolean;
     /** Format: ARRAY */
     allowed_origins?: unknown[];
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default true
+     */
     reply_auto_publish: boolean;
+    /** Format: boolean */
+    show_slack_user_profiles: boolean;
   };
   squeak_messages: {
     /**
@@ -1213,7 +1227,7 @@ export interface definitions {
      */
     role: string;
     /** Format: uuid */
-    user_id: string;
+    user_id?: string;
     /**
      * Format: bigint
      * @description Note:
@@ -1237,6 +1251,8 @@ export interface definitions {
      * @default now()
      */
     created_at: string;
+    /** Format: text */
+    slack_user_id?: string;
   };
   squeak_profiles_view: {
     /**
@@ -1294,7 +1310,10 @@ export interface definitions {
      * This is a Foreign Key to `squeak_profiles.id`.<fk table='squeak_profiles' column='id'/>
      */
     profile_id?: string;
-    /** Format: boolean */
+    /**
+     * Format: boolean
+     * @default true
+     */
     published: boolean;
   };
   squeak_replies_feedback: {
@@ -1454,6 +1473,8 @@ export interface parameters {
   "rowFilter.squeak_config.allowed_origins": string;
   /** Format: boolean */
   "rowFilter.squeak_config.reply_auto_publish": string;
+  /** Format: boolean */
+  "rowFilter.squeak_config.show_slack_user_profiles": string;
   /** @description squeak_messages */
   "body.squeak_messages": definitions["squeak_messages"];
   /** Format: bigint */
@@ -1510,6 +1531,8 @@ export interface parameters {
   "rowFilter.squeak_profiles_readonly.profile_id": string;
   /** Format: timestamp with time zone */
   "rowFilter.squeak_profiles_readonly.created_at": string;
+  /** Format: text */
+  "rowFilter.squeak_profiles_readonly.slack_user_id": string;
   /** @description squeak_profiles_view */
   "body.squeak_profiles_view": definitions["squeak_profiles_view"];
   /** Format: uuid */

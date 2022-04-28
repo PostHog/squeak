@@ -61,7 +61,33 @@ const Slack = () => {
 
     const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
-    const insertReply = async ({ body, id, created_at }: { body: string; id: number; created_at: Date | null }) => {
+    const insertReply = async ({
+        body,
+        id,
+        created_at,
+        user,
+    }: {
+        body: string
+        id: number
+        created_at: Date | null
+        user?: {
+            first_name: string
+            last_name: string
+            avatar: string
+            user_id: string
+        }
+    }) => {
+        const { profileId } = await fetch('/api/user/create', {
+            method: 'POST',
+            body: JSON.stringify({
+                first_name: user?.first_name,
+                last_name: user?.last_name,
+                avatar: user?.avatar,
+                organization_id: organizationId,
+                slack_user_id: user?.user_id,
+            }),
+        }).then((res) => res.json())
+
         return supabaseClient
             .from<Reply>('squeak_replies')
             .insert({
@@ -69,6 +95,8 @@ const Slack = () => {
                 body,
                 message_id: id,
                 organization_id: organizationId,
+                profile_id: profileId,
+                published: true,
             })
             .limit(1)
             .single()
@@ -81,7 +109,7 @@ const Slack = () => {
         for (const question of selectedQuestions) {
             const index = newMessages.indexOf(question)
             newMessages.splice(index, 1)
-            const { subject, slug, body, replies, reply_count, ts } = question
+            const { subject, slug, body, replies, reply_count, ts, user } = question
             const { data: message } = await supabaseClient
                 .from<Message>('squeak_messages')
                 .insert({
@@ -100,11 +128,12 @@ const Slack = () => {
 
             if (reply_count && reply_count >= 1 && replies) {
                 await Promise.all(
-                    replies.map(({ body, ts }) => {
+                    replies.map(({ body, ts, user }) => {
                         return insertReply({
                             body: body || '',
                             id: message.id,
                             created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                            user,
                         })
                     })
                 )
@@ -113,6 +142,7 @@ const Slack = () => {
                     body: body ?? '',
                     id: message.id,
                     created_at: ts ? new Date(parseInt(ts) * 1000) : null,
+                    user,
                 })
             }
         }
@@ -185,7 +215,7 @@ const Slack = () => {
                     <h3 className="pb-0 font-bold text-lg">
                         Import recent Slack threads and display them on specific pages of your site.
                     </h3>
-                    <p className="pt-0 mt-0">
+                    <p className="pt-0 mt-0 pb-4">
                         This allows you to answer a question from your Slack community <em>once</em> and let others see
                         your answer where users are most likely to ask it.
                     </p>
