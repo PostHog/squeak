@@ -1,6 +1,6 @@
-![image](https://user-images.githubusercontent.com/154479/165692924-b1724945-6408-4f5f-b2f1-60aa62d87668.png)
+![image](https://user-images.githubusercontent.com/154479/165955293-4e576fef-cd9a-4fc8-853f-22f195f8a7a2.png)
 
-# Squeak! by PostHog
+# Build a community around your product with _Squeak!_ by PostHog.
 
 _Squeak!_ is a bespoke toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
 
