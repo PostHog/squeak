@@ -4,7 +4,7 @@
 
 _Squeak!_ is a bespoke toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
 
-Learn more at [**squeak.posthog.com**](https://squeak.posthog.com)
+Learn more at [**squeak.posthog.com**](https://squeak.posthog.com) and star us to follow along.
 
 ## Toolkit
 
