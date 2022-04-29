@@ -1,15 +1,30 @@
 ![image](https://user-images.githubusercontent.com/154479/165692924-b1724945-6408-4f5f-b2f1-60aa62d87668.png)
 
-# Squeak! [BETA]
+# Squeak! by PostHog
 
 _Squeak!_ is a bespoke toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
 
-## Top features
+Learn more at [**squeak.posthog.com**](https://squeak.posthog.com)
 
-- Embeds in any page of your docs or website
-- Only questions asked on a specific page will appear
-- Import Slack threads (from your community) and embed them on specific pages of your site (so they don't end up in the Slack abyss!)
-- Your community benefits from shared knowledge, leading to fewer support requests and repeated questions
+## Toolkit
+
+Squeak! tools are built for React-based static sites, but many products work with existing docs, knowledge bases, or websites.
+
+
+| **Product**               | **Description**                                                                              | **Progress** |
+|---------------------------|----------------------------------------------------------------------------------------------|--------------|
+| Q&A.js                    | Add threaded discussions to any page of your docs or website                                 | Beta         |
+| Discussion Warehouse      | A repository to manage shared knowledge threads from Slack, Q&A.js, and other sources        | Beta         |
+| Import Slack Threads      | Liberate product-related discussions from Slack and make them discoverable by search engines | Alpha        |
+| Auth 2.0                  | OAuth, social logins                                                                         | Summer 2022  |
+| Dynamic Open Graph Images | A custom social media graphic for every webpage across your docs or website                  | Summer 2022  |
+| Community Profiles        | Bios, badges, activity feed, leaderboards, lists/directories                                 | Summer 2022  |
+| Knowledge Repository      | Lightweight, optimized content platform for docs, articles, guides, blogs                    | Summer 2022  |
+| Knowledge Search          | Searchable interface for Discussions, Knowledge                                              | Fall 2022    |
+| Page Builder              | MDX + Storybook mashup w/ collections, lists, menus                                          | Fall 2022    |
+| Dynamic Pages             | Personalized content for each visitor by IP, UTM codes, or CRM                               | Winter 2022  |
+| Marketplace               | Allow community to make money from services for the platform                                 | Spring 2023  |
+
 
 ## Docs
 
