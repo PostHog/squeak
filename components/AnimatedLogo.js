@@ -1,6 +1,9 @@
-import React from "react";
-import Animation from "../images/animated-logo.svg";
+import React from 'react'
 
-const AnimatedLogo = () => <Animation />;
+const AnimatedLogo = () => (
+    <object type="image/svg+xml" data="/animated-logo.svg">
+        Squeak! logo
+    </object>
+)
 
-export default AnimatedLogo;
+export default AnimatedLogo
