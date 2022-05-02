@@ -3976,10 +3976,10 @@ split2@^4.1.0:
   resolved "https://registry.npmjs.org/split2/-/split2-4.1.0.tgz"
   integrity sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==
 
-squeak-react@^1.10.1:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-1.10.1.tgz#92d0d9f127e4133ae3944da593b7033a8a0ca7df"
-  integrity sha512-leb6EXeX1gjzr4De+yYBlOKxuzr/sLEufrNZ+1sEr7uJCYAywno8aULAnT64XHhR+rjSHhE88oqN24a/V9Lgew==
+squeak-react@latest:
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-1.12.4.tgz#5474fc2e23d2e54e80b6b245981c7a7775de132e"
+  integrity sha512-TZZ+6scYD6sFPaX0YMy8xxoBSEaW0DWy26PBLzUAl0P9GEZ+2I1FZxe2XEYLq/hFrgloLcluvodiV30EJESACg==
   dependencies:
     "@supabase/supabase-js" "^1.31.2"
     formik "^2.2.9"
