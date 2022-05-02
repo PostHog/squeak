@@ -1,7 +1,7 @@
 import React from 'react'
 
-const AnimatedLogo = () => (
-    <object type="image/svg+xml" data="/animated-logo.svg">
+const AnimatedLogo = ({ className = '' }) => (
+    <object className={className} type="image/svg+xml" data="/animated-logo.svg">
         Squeak! logo
     </object>
 )
