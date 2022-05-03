@@ -2,9 +2,11 @@
 
 # Build a community around your product with _Squeak!_ by PostHog.
 
-_Squeak!_ is a bespoke toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
+_Squeak!_ is a toolkit for fostering a community in-house. It helps make discussions, resources, and solutions more accessible to the right people.
 
 Learn more at [**squeak.posthog.com**](https://squeak.posthog.com) and star us to follow along.
+
+Want to try it without installing? There's a [**cloud version of Squeak!**](https://squeak.cloud/signup) too.
 
 ## Toolkit
 
