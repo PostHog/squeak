@@ -3,11 +3,11 @@ import { useUser } from '@supabase/supabase-auth-helpers/react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import EditQuestion from '../../components/question/EditQuestion'
+import SlugTable from '../../components/question/SlugTable'
 import AdminLayout from '../../layout/AdminLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import getQuestion from '../../util/getQuestion'
 import withAdminAccess from '../../util/withAdminAccess'
-import SlugTable from '../../components/question/SlugTable'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
 const Question = ({ question: initialQuestion, organizationId }) => {
@@ -72,7 +72,7 @@ Question.getLayout = function getLayout(page) {
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: (url) => `/login?redirect=${url}`,
     async getServerSideProps(context) {
         const { id } = context.query
 

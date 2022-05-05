@@ -217,7 +217,7 @@ Settings.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: () => '/login',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const organizationId = getActiveOrganization(context)
 

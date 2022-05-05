@@ -1,12 +1,12 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
 import InviteUser from '../components/InviteUser'
-import useActiveOrganization from '../hooks/useActiveOrganization'
-import { useToasts } from 'react-toast-notifications'
 import ProfileTable from '../components/ProfileTable'
+import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
 import withAdminAccess from '../util/withAdminAccess'
 
@@ -71,7 +71,7 @@ Users.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: () => '/login',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         return {
             props: {},
