@@ -397,7 +397,7 @@ Slack.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: () => '/login',
     async getServerSideProps() {
         return {
             props: {},

@@ -166,17 +166,14 @@ const Questions: NextPageWithLayout<Props> = ({ results, start, domain }) => {
 
 Questions.getLayout = function getLayout(page) {
     return (
-        <AdminLayout
-            hideTitle
-            title={'Questions'}
-        >
+        <AdminLayout hideTitle title={'Questions'}>
             {page}
         </AdminLayout>
     )
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: () => '/login',
     async getServerSideProps(context) {
         const organizationId = await getActiveOrganization(context)
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0

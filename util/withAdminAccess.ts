@@ -1,9 +1,13 @@
-import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-
 import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
 import { createClient } from '@supabase/supabase-js'
-import type { GetServerSideProps, NextApiHandler } from 'next'
+import type {
+    GetServerSideProps,
+    GetServerSidePropsContext,
+    NextApiHandler,
+    NextApiRequest,
+    NextApiResponse,
+} from 'next'
+import { definitions } from '../@types/supabase'
 import getActiveOrganization from './getActiveOrganization'
 
 type Config = definitions['squeak_config']
@@ -11,7 +15,7 @@ type UserReadonlyProfile = definitions['squeak_profiles_readonly']
 
 type Args =
     | {
-          redirectTo?: string
+          redirectTo?: (url: string) => string
           getServerSideProps?: GetServerSideProps
       }
     | NextApiHandler
@@ -87,7 +91,7 @@ const withAdminAccess = (arg: Args) => {
                 if (!user) {
                     return {
                         redirect: {
-                            destination: arg.redirectTo,
+                            destination: arg.redirectTo && arg.redirectTo(context.resolvedUrl),
                             permanent: false,
                         },
                     }
@@ -104,7 +108,7 @@ const withAdminAccess = (arg: Args) => {
                 if (!userReadonlyProfile) {
                     return {
                         redirect: {
-                            destination: arg.redirectTo,
+                            destination: arg.redirectTo && arg.redirectTo(context.resolvedUrl),
                             permanent: false,
                         },
                     }
@@ -131,7 +135,7 @@ const withAdminAccess = (arg: Args) => {
             } catch (error) {
                 return {
                     redirect: {
-                        destination: arg.redirectTo,
+                        destination: arg.redirectTo && arg.redirectTo(context.resolvedUrl),
                         permanent: false,
                     },
                 }

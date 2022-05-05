@@ -22,7 +22,7 @@ Reset.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps = withAdminAccess({
-    redirectTo: '/login',
+    redirectTo: () => '/login',
 })
 
 export default Reset

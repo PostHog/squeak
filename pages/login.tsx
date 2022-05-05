@@ -1,11 +1,11 @@
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import Router from 'next/router'
-import Link from 'next/link'
-import { ReactElement, useEffect, useState } from 'react'
-import LoginLayout from '../layout/LoginLayout'
-import type { NextPageWithLayout } from '../@types/types'
 import { GetStaticPropsResult } from 'next'
+import Link from 'next/link'
+import Router from 'next/router'
+import { ReactElement, useEffect, useState } from 'react'
+import type { NextPageWithLayout } from '../@types/types'
 import useActiveOrganization from '../hooks/useActiveOrganization'
+import LoginLayout from '../layout/LoginLayout'
 
 interface Props {
     isMultiTenancy: boolean
@@ -24,7 +24,7 @@ const Login: NextPageWithLayout<Props> = () => {
                 // Timeout required to allow for the cookie to be set before redirecting
                 // TODO(JS): There must be a better way to do this?
                 setTimeout(() => {
-                    Router.push('/')
+                    Router.push(Router.query?.redirect ? Router.query?.redirect + '' : '/')
                 }, 1000)
             }
         })
