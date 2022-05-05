@@ -75,6 +75,13 @@ const sendQuestionAlert = async (
                                                 },
                                             }),
                                         },
+                                        {
+                                            type: 'section',
+                                            text: {
+                                                type: 'mrkdwn',
+                                                text: `<https://squeak.cloud/question/${messageId}|View question>`,
+                                            },
+                                        },
                                     ],
                                 }),
                             })
