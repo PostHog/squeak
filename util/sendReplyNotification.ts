@@ -44,7 +44,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
 
     const { data: message, error: messageError } = await supabaseServiceUserClient
         .from<Message>('squeak_messages')
-        .select(`subject, profile_id`)
+        .select(`subject, profile_id, slug`)
         .eq('id', messageId)
         .single()
 
@@ -133,7 +133,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         from: `${company_name} <noreply@${url.hostname}>`,
         to: email,
         subject: `Someone answered your question on ${company_domain}!`,
-        text: `Hey,\n\nSomeone answered your question on ${company_domain}!\n\nQuestion:\n${message.subject}\n${question.body}\n\nReply:\n${body}\n\nThanks,\n\n${company_name}`,
+        html: `Hey,<br>Someone answered your question on <a href="${url.origin}${message.slug}">${url.origin}${message.slug}</a>!<br><br>Question:<br>${message.subject}<br>${question.body}<br><br>Reply:<br>${body}<br>Thanks,<br>${company_name}`,
     }
 
     await mg.messages.create(mailgun_domain, mailgunData)
