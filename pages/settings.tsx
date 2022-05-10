@@ -25,6 +25,8 @@ type Config = definitions['squeak_config']
 interface Props {
     mailgunApiKey: string
     mailgunDomain: string
+    mailgunName: string
+    mailgunEmail: string
     companyName: string
     companyDomain: string
     slackApiKey: string
@@ -37,6 +39,8 @@ interface Props {
 const Settings: NextPageWithLayout<Props> = ({
     mailgunApiKey,
     mailgunDomain,
+    mailgunName,
+    mailgunEmail,
     companyName,
     companyDomain,
     slackApiKey,
@@ -157,6 +161,8 @@ const Settings: NextPageWithLayout<Props> = ({
                 <h3 className="font-bold">Email notifications</h3>
                 <p>Configure emails for users when someone answers their question.</p>
                 <NotificationForm
+                    mailgunName={mailgunName}
+                    mailgunEmail={mailgunEmail}
                     mailgunDomain={mailgunDomain}
                     mailgunApiKey={mailgunApiKey}
                     actionButtons={(isValid, loading) => (
@@ -224,7 +230,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles`
+                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -235,6 +241,8 @@ export const getServerSideProps = withAdminAccess({
             props: {
                 mailgunApiKey: config?.mailgun_api_key || '',
                 mailgunDomain: config?.mailgun_domain || '',
+                mailgunName: config?.mailgun_from_name || '',
+                mailgunEmail: config?.mailgun_from_email || '',
                 companyName: config?.company_name || '',
                 companyDomain: config?.company_domain || '',
                 slackApiKey: config?.slack_api_key || '',
