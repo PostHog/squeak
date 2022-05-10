@@ -15,9 +15,11 @@ type Config = definitions['squeak_config']
 interface Props {
     mailgunApiKey: string
     mailgunDomain: string
+    mailgunName: string
+    mailgunEmail: string
 }
 
-const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain }) => {
+const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain, mailgunName, mailgunEmail }) => {
     const handleSkip = () => {
         Router.push('/setup/alerts')
     }
@@ -33,6 +35,8 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                 </p>
 
                 <NotificationForm
+                    mailgunName={mailgunName}
+                    mailgunEmail={mailgunEmail}
                     mailgunApiKey={mailgunApiKey}
                     mailgunDomain={mailgunDomain}
                     redirect="/setup/alerts"
@@ -73,7 +77,9 @@ export const getServerSideProps = withPreflightCheck({
 
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
-            .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
+            .select(
+                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain`
+            )
             .eq('organization_id', organizationId)
             .single()
 
@@ -83,6 +89,8 @@ export const getServerSideProps = withPreflightCheck({
             props: {
                 mailgunApiKey: config?.mailgun_api_key || '',
                 mailgunDomain: config?.mailgun_domain || '',
+                mailgunName: config?.mailgun_from_name || '',
+                mailgunEmail: config?.mailgun_from_email || '',
             },
         }
     },

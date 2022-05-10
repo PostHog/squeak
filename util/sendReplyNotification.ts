@@ -20,7 +20,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
 
     const { data: config, error: configError } = await supabaseServiceUserClient
         .from<Config>('squeak_config')
-        .select(`mailgun_api_key, mailgun_domain, company_name, company_domain`)
+        .select(`mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain`)
         .eq('organization_id', organizationId)
         .limit(1)
         .single()
@@ -35,7 +35,8 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         return
     }
 
-    const { company_name, company_domain, mailgun_api_key, mailgun_domain } = config
+    const { company_name, company_domain, mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email } =
+        config
 
     if (!company_name || !company_domain || !mailgun_api_key || !mailgun_domain) {
         console.warn(`[📧 Mailgun] Mailgun credentials missing in config`)
@@ -130,7 +131,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
     const url = new URL(company_domain)
 
     const mailgunData = {
-        from: `${company_name} <noreply@${url.hostname}>`,
+        from: `${mailgun_from_name || company_name} <${mailgun_from_email || `noreply@${url.hostname}`}>`,
         to: email,
         subject: `Someone answered your question on ${company_domain}!`,
         html: `Hey,<br>Someone answered your question on <a href="${url.origin}${message.slug}">${url.origin}${message.slug}</a>!<br><br>Question:<br>${message.subject}<br>${question.body}<br><br>Reply:<br>${body}<br>Thanks,<br>${company_name}`,

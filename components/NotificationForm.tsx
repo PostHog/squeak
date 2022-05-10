@@ -12,6 +12,8 @@ type Config = definitions['squeak_config']
 interface Props {
     mailgunApiKey: string
     mailgunDomain: string
+    mailgunName: string
+    mailgunEmail: string
     redirect?: string
     actionButtons: (isValid: boolean, loading: boolean) => JSX.Element
 }
@@ -19,11 +21,15 @@ interface Props {
 interface InitialValues {
     mailgunApiKey: string
     mailgunDomain: string
+    mailgunName: string
+    mailgunEmail: string
 }
 
 const NotificationForm: React.VoidFunctionComponent<Props> = ({
     mailgunApiKey,
     mailgunDomain,
+    mailgunName,
+    mailgunEmail,
     redirect,
     actionButtons,
 }) => {
@@ -40,6 +46,8 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
             .update({
                 mailgun_api_key: values.mailgunApiKey,
                 mailgun_domain: values.mailgunDomain,
+                mailgun_from_email: values.mailgunEmail,
+                mailgun_from_name: values.mailgunName,
             })
             .match({ organization_id: organizationId })
 
@@ -57,6 +65,8 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     const initialValues: InitialValues = {
         mailgunApiKey: mailgunApiKey,
         mailgunDomain: mailgunDomain,
+        mailgunName: mailgunName,
+        mailgunEmail: mailgunEmail,
     }
 
     return (
@@ -77,6 +87,18 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                             name="mailgunDomain"
                             placeholder="Mailgun domain"
                             helperText="Choose the sending domain from Sending → Domains"
+                        />
+                        <Input
+                            label="Mailgun from name"
+                            id="mailgunName"
+                            name="mailgunName"
+                            placeholder="Mailgun from name"
+                        />
+                        <Input
+                            label="Mailgun from email"
+                            id="mailgunEmail"
+                            name="mailgunEmail"
+                            placeholder="Mailgun from email"
                         />
                         <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
                     </Form>

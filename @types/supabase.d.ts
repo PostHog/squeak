@@ -123,6 +123,8 @@ export interface paths {
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
           show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
+          mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
+          mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -187,6 +189,8 @@ export interface paths {
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
           show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
+          mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
+          mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
         };
         header: {
           /** Preference */
@@ -215,6 +219,8 @@ export interface paths {
           allowed_origins?: parameters["rowFilter.squeak_config.allowed_origins"];
           reply_auto_publish?: parameters["rowFilter.squeak_config.reply_auto_publish"];
           show_slack_user_profiles?: parameters["rowFilter.squeak_config.show_slack_user_profiles"];
+          mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
+          mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
         };
         body: {
           /** squeak_config */
@@ -1142,6 +1148,10 @@ export interface definitions {
     reply_auto_publish: boolean;
     /** Format: boolean */
     show_slack_user_profiles: boolean;
+    /** Format: text */
+    mailgun_from_name?: string;
+    /** Format: text */
+    mailgun_from_email?: string;
   };
   squeak_messages: {
     /**
@@ -1475,6 +1485,10 @@ export interface parameters {
   "rowFilter.squeak_config.reply_auto_publish": string;
   /** Format: boolean */
   "rowFilter.squeak_config.show_slack_user_profiles": string;
+  /** Format: text */
+  "rowFilter.squeak_config.mailgun_from_name": string;
+  /** Format: text */
+  "rowFilter.squeak_config.mailgun_from_email": string;
   /** @description squeak_messages */
   "body.squeak_messages": definitions["squeak_messages"];
   /** Format: bigint */

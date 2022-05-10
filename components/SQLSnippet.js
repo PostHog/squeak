@@ -6,6 +6,8 @@ export const sql = `CREATE TABLE public.squeak_config (
     slack_signing_secret text,
     mailgun_api_key text,
     mailgun_domain text,
+    mailgun_from_name text,
+    mailgun_from_email text,
     company_name text,
     company_domain text,
     organization_id uuid NOT NULL,
