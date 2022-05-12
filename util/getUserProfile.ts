@@ -1,8 +1,8 @@
 import { User } from '@supabase/gotrue-js'
-import type { GetServerSidePropsContext, NextApiResponse } from 'next'
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
+import type { GetServerSidePropsContext, NextApiResponse } from 'next'
 import { NextApiRequest } from 'next'
+import { definitions } from '../@types/supabase'
 import createUserProfile from './createUserProfile'
 import createUserProfileReadonly from './createUserProfileReadonly'
 
@@ -46,7 +46,8 @@ const lookupUserProfile = async (context: Context, user: User, organizationId: s
         // Get an existing profile from another org
         const { data: existingProfile, error: existingProfileError } = await supabaseServerClient(context)
             .from('squeak_profiles_readonly')
-            .select('id, profile:squeak_profiles(first_name, last_name)')
+            .select('id, profile:squeak_profiles(first_name, last_name, avatar)')
+            .eq('user_id', user.id)
             .limit(1)
             .single()
 
@@ -57,7 +58,8 @@ const lookupUserProfile = async (context: Context, user: User, organizationId: s
         // Create profile
         const { data: createdProfile, error: createdProfileError } = await createUserProfile(
             existingProfile.profile.first_name,
-            existingProfile.profile.last_name
+            existingProfile.profile.last_name,
+            existingProfile.profile.avatar
         )
 
         if (!createdProfile || createdProfileError) {
