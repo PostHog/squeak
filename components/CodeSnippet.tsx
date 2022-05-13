@@ -20,7 +20,7 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, ...rest
             apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
             url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
         },
-        apiHost: "//${typeof window !== 'undefined' && window.location.host}",
+        apiHost: "https://${typeof window !== 'undefined' && window.location.host}",
         organizationId: "${organizationId}"${
         allQuestions
             ? `,
