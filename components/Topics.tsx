@@ -97,7 +97,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
     }
 
     useEffect(() => {
-        getSelectedTopics().then((topics) => setSelectedTopics(topics))
+        getSelectedTopics().then((topics) => setSelectedTopics(topics || []))
         getAllTopics().then((allTopics) => setAllTopics(allTopics))
     }, [])
 
@@ -141,7 +141,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                             <Chip
                                 id={id}
                                 label={label}
-                                selected={selectedTopics.includes(label)}
+                                selected={selectedTopics?.includes(label)}
                                 key={index}
                                 handleSelect={handleSelect}
                                 handleDelete={handleDelete}
