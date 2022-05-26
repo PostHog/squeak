@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import EditQuestion from '../../components/question/EditQuestion'
 import SlugTable from '../../components/question/SlugTable'
+import Topics from '../../components/Topics'
 import AdminLayout from '../../layout/AdminLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import getQuestion from '../../util/getQuestion'
@@ -51,6 +52,8 @@ const Question = ({ question: initialQuestion, organizationId }) => {
                 <h3 className="font-bold mb-4 text-xl">Shown on:</h3>
                 <SlugTable questionId={id} />
 
+                <h3 className="font-bold mt-8 mb-2 text-xl">Topics</h3>
+                <Topics organizationId={organizationId} questionId={id} />
                 <h3 className="font-bold mt-8 mb-4 text-xl">Question settings</h3>
                 <EditQuestion
                     values={{ subject, slug, id, published, resolved }}
@@ -91,8 +94,13 @@ export const getServerSideProps = withAdminAccess({
             .eq('organization_id', organizationId)
             .single()
 
+        const { data: topics } = await supabaseServerClient(context)
+            .from('squeak_topics')
+            .select('label')
+            .eq('organization_id', organizationId)
+
         return {
-            props: { question, domain: company_domain || '', organizationId },
+            props: { question, domain: company_domain || '', organizationId, topics },
         }
     },
 })

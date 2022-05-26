@@ -251,6 +251,7 @@ export interface paths {
           profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
           resolved?: parameters["rowFilter.squeak_messages.resolved"];
           resolved_reply_id?: parameters["rowFilter.squeak_messages.resolved_reply_id"];
+          topics?: parameters["rowFilter.squeak_messages.topics"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -311,6 +312,7 @@ export interface paths {
           profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
           resolved?: parameters["rowFilter.squeak_messages.resolved"];
           resolved_reply_id?: parameters["rowFilter.squeak_messages.resolved_reply_id"];
+          topics?: parameters["rowFilter.squeak_messages.topics"];
         };
         header: {
           /** Preference */
@@ -335,6 +337,7 @@ export interface paths {
           profile_id?: parameters["rowFilter.squeak_messages.profile_id"];
           resolved?: parameters["rowFilter.squeak_messages.resolved"];
           resolved_reply_id?: parameters["rowFilter.squeak_messages.resolved_reply_id"];
+          topics?: parameters["rowFilter.squeak_messages.topics"];
         };
         body: {
           /** squeak_messages */
@@ -934,6 +937,102 @@ export interface paths {
       };
     };
   };
+  "/squeak_topics": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_topics.id"];
+          created_at?: parameters["rowFilter.squeak_topics.created_at"];
+          organization_id?: parameters["rowFilter.squeak_topics.organization_id"];
+          label?: parameters["rowFilter.squeak_topics.label"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["squeak_topics"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** squeak_topics */
+          squeak_topics?: definitions["squeak_topics"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_topics.id"];
+          created_at?: parameters["rowFilter.squeak_topics.created_at"];
+          organization_id?: parameters["rowFilter.squeak_topics.organization_id"];
+          label?: parameters["rowFilter.squeak_topics.label"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.squeak_topics.id"];
+          created_at?: parameters["rowFilter.squeak_topics.created_at"];
+          organization_id?: parameters["rowFilter.squeak_topics.organization_id"];
+          label?: parameters["rowFilter.squeak_topics.label"];
+        };
+        body: {
+          /** squeak_topics */
+          squeak_topics?: definitions["squeak_topics"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/squeak_webhook_config": {
     get: {
       parameters: {
@@ -1193,6 +1292,8 @@ export interface definitions {
      * This is a Foreign Key to `squeak_replies.id`.<fk table='squeak_replies' column='id'/>
      */
     resolved_reply_id?: number;
+    /** Format: ARRAY */
+    topics?: unknown[];
   };
   squeak_organizations: {
     /** Format: text */
@@ -1389,6 +1490,27 @@ export interface definitions {
     /** Format: bigint */
     spam_count?: number;
   };
+  squeak_topics: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    created_at: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `squeak_organizations.id`.<fk table='squeak_organizations' column='id'/>
+     */
+    organization_id: string;
+    /** Format: text */
+    label?: string;
+  };
   squeak_webhook_config: {
     /**
      * Format: bigint
@@ -1511,6 +1633,8 @@ export interface parameters {
   "rowFilter.squeak_messages.resolved": string;
   /** Format: bigint */
   "rowFilter.squeak_messages.resolved_reply_id": string;
+  /** Format: ARRAY */
+  "rowFilter.squeak_messages.topics": string;
   /** @description squeak_organizations */
   "body.squeak_organizations": definitions["squeak_organizations"];
   /** Format: text */
@@ -1611,6 +1735,16 @@ export interface parameters {
   "rowFilter.squeak_replies_view.downvote_count": string;
   /** Format: bigint */
   "rowFilter.squeak_replies_view.spam_count": string;
+  /** @description squeak_topics */
+  "body.squeak_topics": definitions["squeak_topics"];
+  /** Format: bigint */
+  "rowFilter.squeak_topics.id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.squeak_topics.created_at": string;
+  /** Format: uuid */
+  "rowFilter.squeak_topics.organization_id": string;
+  /** Format: text */
+  "rowFilter.squeak_topics.label": string;
   /** @description squeak_webhook_config */
   "body.squeak_webhook_config": definitions["squeak_webhook_config"];
   /** Format: bigint */
