@@ -11,7 +11,7 @@ import getQuestion from '../../util/getQuestion'
 import withAdminAccess from '../../util/withAdminAccess'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, organizationId, topics }) => {
+const Question = ({ question: initialQuestion, organizationId }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
@@ -94,7 +94,7 @@ export const getServerSideProps = withAdminAccess({
             .eq('organization_id', organizationId)
             .single()
 
-        const { data: topics, error } = await supabaseServerClient(context)
+        const { data: topics } = await supabaseServerClient(context)
             .from('squeak_topics')
             .select('label')
             .eq('organization_id', organizationId)

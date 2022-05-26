@@ -6,17 +6,17 @@ import Input from './Input'
 import Modal from './Modal'
 
 export interface TopicsProps {
-    questionId: String
-    organizationId: String
+    questionId: string
+    organizationId: string
 }
 
 interface ChipProps {
-    handleSelect: (selected: Boolean, label: String) => void
-    handleDelete: (id: Number, label: String) => void
+    handleSelect: (selected: boolean, label: string) => void
+    handleDelete: (id: number, label: string) => void
     selected?: boolean
-    label: String
-    className?: String
-    id: Number
+    label: string
+    className?: string
+    id: number
 }
 
 const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label, id, className = '' }) => {
@@ -45,11 +45,11 @@ const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label
 }
 
 export default function Topics({ questionId, organizationId }: TopicsProps) {
-    const [selectedTopics, setSelectedTopics] = useState<String[]>([])
-    const [allTopics, setAllTopics] = useState<{ label: String; id: Number }[] | [] | null>([])
+    const [selectedTopics, setSelectedTopics] = useState<string[]>([])
+    const [allTopics, setAllTopics] = useState<{ label: string; id: number }[] | [] | null>([])
     const [modalOpen, setModalOpen] = useState(false)
     const [creatingTopic, setCreatingTopic] = useState(false)
-    const handleSelect = async (selected: Boolean, label: String) => {
+    const handleSelect = async (selected: boolean, label: string) => {
         const newSelectedTopics = [...selectedTopics]
         if (!selected) {
             const labelIndex = selectedTopics.indexOf(label)
@@ -68,7 +68,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
 
     const getAllTopics = async () => {
         const { data } = await supabaseClient
-            .from<{ label: String; id: Number }>('squeak_topics')
+            .from<{ label: string; id: number }>('squeak_topics')
             .select('label, id')
             .match({ organization_id: organizationId })
         return data
@@ -81,7 +81,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         return topics
     }
 
-    const handleNewTopic = async ({ topic }: { topic: String }) => {
+    const handleNewTopic = async ({ topic }: { topic: string }) => {
         setCreatingTopic(true)
         await supabaseClient.from('squeak_topics').insert({ label: topic, organization_id: organizationId })
         getAllTopics().then((allTopics) => {
@@ -91,7 +91,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         })
     }
 
-    const handleDelete = async (id: Number, label: String) => {
+    const handleDelete = async (id: number) => {
         await supabaseClient.from('squeak_topics').delete().match({ id, organization_id: organizationId })
         getAllTopics().then((allTopics) => setAllTopics(allTopics))
     }
@@ -119,7 +119,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                     }}
                     onSubmit={handleNewTopic}
                 >
-                    {({ isValid }) => {
+                    {() => {
                         return (
                             <Form>
                                 <Input label="New topic" id="topic" name="topic" placeholder="New topic" />
