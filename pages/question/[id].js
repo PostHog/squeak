@@ -27,7 +27,7 @@ const Question = ({ question: initialQuestion, organizationId }) => {
     }
 
     const handleSubmit = async () => {
-        const question = await getQuestion(id)
+        const question = await getQuestion(id, organizationId)
         setQuestion(question)
     }
 
@@ -84,7 +84,7 @@ export const getServerSideProps = withAdminAccess({
         }
 
         const organizationId = getActiveOrganization(context)
-        const question = await getQuestion(id)
+        const question = await getQuestion(id, organizationId)
 
         const {
             data: { company_domain },
