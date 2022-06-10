@@ -2,12 +2,13 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import Logo from '../components/Logo'
 import posthog from 'posthog-js'
+import Logo from '../components/Logo'
 import usePostHog from '../hooks/usePostHog'
 
 const navigation = [
     { name: 'Questions', href: '/questions' },
+    { name: 'FAQs', href: '/faqs' },
     { name: 'Profiles', href: '/profiles' },
     { name: 'Import Slack threads', href: '/slack' },
     { name: 'Settings', href: '/settings' },
@@ -47,7 +48,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                 <div className="sticky top-0 w-full grow-0 shrink-0 basis-[300px] md:mr-8">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
                     <div className="pt-8 pb-4 overflow-y-auto">
-                            <Logo />
+                        <Logo />
                         <nav className="px-7 space-y-[1px]">
                             {navigation.map((item) => (
                                 <Link key={item.name} href={item.href} passHref>
@@ -75,9 +76,7 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                     </div>
                 </div>
                 <main style={contentStyle} className="flex flex-col flex-1 pr-4 col-span-2 py-12">
-                    {!hideTitle && (
-                        <h1 className="pb-2">{title}</h1>
-                    )}
+                    {!hideTitle && <h1 className="pb-2">{title}</h1>}
                     {children}
                 </main>
             </div>

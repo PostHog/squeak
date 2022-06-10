@@ -11,25 +11,28 @@ type Question = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 
 interface Props {
-    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved'>
+    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved' | 'faq'>
     replyId: number
-    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved'>) => void
+    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved' | 'faq'>) => void
 }
 
 const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
-    const { subject, id, published, resolved } = values
+    const { subject, id, published, resolved, faq } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
 
-    const handleSave = async (values: { subject?: string; published: boolean; resolved: boolean }) => {
+    const handleSave = async (values: { subject?: string; published: boolean; resolved: boolean; faq: boolean }) => {
         setLoading(true)
-        const { subject, published, resolved } = values
-        await supabaseClient.from<Question>('squeak_messages').update({ subject, published, resolved }).match({ id })
+        const { subject, published, resolved, faq } = values
+        await supabaseClient
+            .from<Question>('squeak_messages')
+            .update({ subject, published, resolved, faq })
+            .match({ id })
 
         await supabaseClient.from<Reply>('squeak_replies').update({ published }).match({ id: replyId })
-        onSubmit({ subject, published, resolved })
+        onSubmit({ subject, published, resolved, faq })
         setLoading(false)
     }
 
@@ -70,6 +73,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                     subject,
                     published,
                     resolved,
+                    faq,
                 }}
                 onSubmit={handleSave}
             >
@@ -94,6 +98,12 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                 id="resolved"
                                 name="resolved"
                                 helperText="Check to mark as solved"
+                            />
+                            <Checkbox
+                                label="Frequently asked"
+                                id="faq"
+                                name="faq"
+                                helperText="Check to mark as an FAQ"
                             />
                             <div className="flex space-x-4">
                                 <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">

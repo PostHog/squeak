@@ -1,5 +1,4 @@
 import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import Link from 'next/link'
 import type { definitions } from '../@types/supabase'
 import type { NextPageWithLayout } from '../@types/types'
 import { QuestionsLayout } from '../components/QuestionsLayout'
@@ -30,13 +29,11 @@ interface Props {
 const Questions: NextPageWithLayout<Props> = ({ results, start, domain }) => {
     return (
         <QuestionsLayout
-            title="Questions"
+            title="FAQs"
             noQuestionsMessage={
                 <>
-                    <h3>No questions yet! </h3>
-                    <p>
-                        Check back later or <Link href="/slack">import from Slack</Link>.
-                    </p>
+                    <h3>No FAQs yet! </h3>
+                    <p>Mark any question as frequently asked for it to appear here.</p>
                 </>
             }
             domain={domain}
@@ -67,7 +64,7 @@ export const getServerSideProps = withAdminAccess({
             .eq('organization_id', organizationId)
             .single()
 
-        const { data, error } = await getQuestions(context, { start, organizationId })
+        const { data, error } = await getQuestions(context, { start, organizationId, faq: true })
 
         if (error) {
             return { props: { error: error.message } }

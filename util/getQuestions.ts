@@ -19,10 +19,11 @@ interface Params {
     start?: number
     perPage?: number
     topic?: string
+    faq?: boolean
 }
 
 const getQuestions = async (context: Context, params: Params) => {
-    const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
+    const { organizationId, start = 0, perPage = 20, published, slug, topic, faq } = params
     const end = start + (perPage - 1)
 
     const messagesQuery = supabaseServerClient(context)
@@ -36,6 +37,7 @@ const getQuestions = async (context: Context, params: Params) => {
     if (published) messagesQuery.eq('published', published)
     if (slug) messagesQuery.contains('slug', [slug])
     if (topic) messagesQuery.contains('topics', [topic])
+    if (faq) messagesQuery.eq('faq', faq)
     messagesQuery.range(start, end)
 
     const { data: messages = [], count = 0, error } = await messagesQuery

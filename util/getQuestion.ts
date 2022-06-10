@@ -12,7 +12,7 @@ interface Response {
 const getQuestion = async (id: string | number, organizationId: string): Promise<Response> => {
     const { data: question } = await supabaseClient
         .from<Question>('squeak_messages')
-        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id')
+        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id, faq')
         .eq('id', id)
         .eq('organization_id', organizationId)
         .limit(1)
