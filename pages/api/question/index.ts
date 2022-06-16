@@ -4,6 +4,7 @@ import NextCors from 'nextjs-cors'
 import xss from 'xss'
 import { definitions } from '../../../@types/supabase'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
+import getQuestion from '../../../util/getQuestion'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
 
@@ -22,6 +23,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (allowedOriginError) {
         res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
         return
+    }
+
+    if (req.method === 'GET') {
+        const { organizationId, permalink } = req.query
+        const question = await getQuestion(null, organizationId as string, permalink as string)
+        return res.status(200).json(question)
     }
 
     const { slug, subject, organizationId, token } = JSON.parse(req.body)
