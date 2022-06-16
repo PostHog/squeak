@@ -15,7 +15,7 @@ const Question = ({ question: initialQuestion, organizationId }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
-        question: { slug, subject, id, published, resolved },
+        question: { slug, subject, id, published, resolved, permalink },
     } = question
 
     const updateQuestion = async ({ subject, slug, published, resolved }) => {
@@ -56,7 +56,7 @@ const Question = ({ question: initialQuestion, organizationId }) => {
                 <Topics organizationId={organizationId} questionId={id} />
                 <h3 className="font-bold mt-8 mb-4 text-xl">Question settings</h3>
                 <EditQuestion
-                    values={{ subject, slug, id, published, resolved }}
+                    values={{ subject, slug, id, published, resolved, permalink }}
                     replyId={replies[0].id}
                     onSubmit={updateQuestion}
                 />
