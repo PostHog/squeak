@@ -8,6 +8,7 @@ import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import CompanyDetails from '../components/CompanyDetails'
 import NotificationForm from '../components/NotificationForm'
+import PermalinkSettings from '../components/PermalinkSettings'
 import ResetPassword from '../components/ResetPassword'
 import AllowedOriginTable from '../components/settings/AllowedOriginTable'
 import SlackForm from '../components/SlackForm'
@@ -34,6 +35,7 @@ interface Props {
     questionAutoPublish: boolean
     replyAutoPublish: boolean
     initialShowSlackUserInfo: boolean
+    permalinkBase: string
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -48,6 +50,7 @@ const Settings: NextPageWithLayout<Props> = ({
     questionAutoPublish: initialQuestionAutoPublish,
     replyAutoPublish: initialReplyAutoPublish,
     initialShowSlackUserInfo,
+    permalinkBase,
 }) => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
@@ -131,6 +134,18 @@ const Settings: NextPageWithLayout<Props> = ({
                     setChecked={handleReplyAutoPublish}
                     label="Publish new replies automatically"
                     helper="Disable to moderate replies before they appear on your site"
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Permalinks</h3>
+                <PermalinkSettings
+                    companyDomain={companyDomain}
+                    permalinkBase={permalinkBase}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
                 />
             </Surface>
             <Surface className="mb-4">
@@ -230,7 +245,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles`
+                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles, permalink_base`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -250,6 +265,7 @@ export const getServerSideProps = withAdminAccess({
                 questionAutoPublish: config?.question_auto_publish || false,
                 replyAutoPublish: config?.reply_auto_publish || false,
                 initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
+                permalinkBase: config?.permalink_base || '',
             },
         }
     },

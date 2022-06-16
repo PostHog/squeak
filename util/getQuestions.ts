@@ -27,7 +27,7 @@ const getQuestions = async (context: Context, params: Params) => {
 
     const messagesQuery = supabaseServerClient(context)
         .from<Message>('squeak_messages')
-        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id', {
+        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id, permalink', {
             count: 'exact',
         })
         .eq('organization_id', organizationId)
