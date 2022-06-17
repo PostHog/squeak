@@ -1,4 +1,3 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
@@ -29,7 +28,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
         const { organizationId, permalink } = req.query as { organizationId: string; permalink: string }
         if (organizationId && permalink) {
-            const { data: config, error: configError } = await supabaseClient
+            const supabaseServiceRoleClient = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL,
+                process.env.SUPABASE_SERVICE_ROLE_KEY
+            )
+            const { data: config, error: configError } = await supabaseServiceRoleClient
                 .from<Config>('squeak_config')
                 .select('permalink_base')
                 .eq('organization_id', organizationId)
