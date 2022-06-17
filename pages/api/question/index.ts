@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import slugify from 'slugify'
 import xss from 'xss'
 import { definitions } from '../../../@types/supabase'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
@@ -109,6 +110,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
+    let permalink = slugify(subject, {
+        lower: true,
+    })
+
+    const { data: permalinkExists } = await supabaseServiceRoleClient
+        .from('squeak_messages')
+        .select('permalink')
+        .match({ permalink, organization_id: organizationId })
+        .single()
+
     const { data: message, error: messageError } = await supabaseServiceRoleClient
         .from<Message>('squeak_messages')
         .insert({
@@ -117,6 +128,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             subject,
             published: config.question_auto_publish,
             organization_id: organizationId,
+            permalink,
         })
         .limit(1)
         .single()
@@ -131,6 +143,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         return
+    }
+
+    if (permalinkExists) {
+        await supabaseServiceRoleClient
+            .from('squeak_messages')
+            .update({ permalink: `${permalink}-${message.id}` })
+            .match({ id: message.id })
     }
 
     const { data: reply, error: replyError } = await supabaseServiceRoleClient

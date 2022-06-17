@@ -39,6 +39,7 @@
         "react-popper": "^2.2.5",
         "react-syntax-highlighter": "^15.4.5",
         "react-toast-notifications": "^2.5.1",
+        "slugify": "^1.6.5",
         "squeak-react": "latest",
         "tinytime": "^0.2.6",
         "xss": "^1.0.11"
