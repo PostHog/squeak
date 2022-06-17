@@ -1,3 +1,4 @@
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
@@ -26,9 +27,29 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     if (req.method === 'GET') {
-        const { organizationId, permalink } = req.query
-        const question = await getQuestion(null, organizationId as string, permalink as string)
-        return res.status(200).json(question)
+        const { organizationId, permalink } = req.query as { organizationId: string; permalink: string }
+        if (organizationId && permalink) {
+            const { data: config, error: configError } = await supabaseClient
+                .from<Config>('squeak_config')
+                .select('permalink_base')
+                .eq('organization_id', organizationId)
+                .limit(1)
+                .single()
+            if (permalink.startsWith(`/${config.permalink_base}/`)) {
+                const question = await getQuestion(
+                    null,
+                    organizationId,
+                    permalink.replace(`/${config.permalink_base}/`, '')
+                )
+                return res.status(200).json(question)
+            } else {
+                res.status(500)
+                return res.json({ error: 'Question not found' })
+            }
+        } else {
+            res.status(500)
+            return res.json({ error: 'Missing required info' })
+        }
     }
 
     const { slug, subject, organizationId, token } = JSON.parse(req.body)
