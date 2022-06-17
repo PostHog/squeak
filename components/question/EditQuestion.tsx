@@ -11,14 +11,13 @@ type Question = definitions['squeak_messages']
 type Reply = definitions['squeak_replies']
 
 interface Props {
-    domain: string
     permalinkBase: string
-    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved'>
+    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved' | 'permalink'>
     replyId: number
-    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved'>) => void
+    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved' | 'permalink'>) => void
 }
 
-const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit, domain, permalinkBase }) => {
+const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit, permalinkBase }) => {
     const { subject, id, published, resolved, permalink } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)

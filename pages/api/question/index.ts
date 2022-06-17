@@ -33,17 +33,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 process.env.NEXT_PUBLIC_SUPABASE_URL,
                 process.env.SUPABASE_SERVICE_ROLE_KEY
             )
-            const { data: config, error: configError } = await supabaseServiceRoleClient
+            const { data: config } = await supabaseServiceRoleClient
                 .from<Config>('squeak_config')
                 .select('permalink_base')
                 .eq('organization_id', organizationId)
                 .limit(1)
                 .single()
-            if (permalink.startsWith(`/${config.permalink_base}/`)) {
+            if (permalink.startsWith(`/${config?.permalink_base}/`)) {
                 const question = await getQuestion(
-                    null,
+                    undefined,
                     organizationId,
-                    permalink.replace(`/${config.permalink_base}/`, '')
+                    permalink.replace(`/${config?.permalink_base}/`, '')
                 )
                 return res.status(200).json(question)
             } else {
@@ -110,7 +110,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    let permalink = slugify(subject, {
+    const permalink = slugify(subject, {
         lower: true,
     })
 

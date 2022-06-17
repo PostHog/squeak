@@ -10,7 +10,7 @@ interface Response {
 }
 
 const getQuestion = async (
-    id: string | number | null,
+    id: string | number | undefined,
     organizationId: string,
     permalink?: string
 ): Promise<Response> => {
