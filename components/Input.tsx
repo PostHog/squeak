@@ -24,7 +24,7 @@ const Input = <T,>({ label, helperText, id, name, placeholder, errorMessage, bas
             </label>
             <div className="flex">
                 {base && (
-                    <span className="block px-4 py-2 bg-light border-gray-light border text-primary-light rounded-md rounded-r-none">
+                    <span className="block px-4 py-2 bg-transparent border-gray-light border text-primary-light rounded-md rounded-r-none">
                         {base}
                     </span>
                 )}

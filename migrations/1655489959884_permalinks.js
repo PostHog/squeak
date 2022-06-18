@@ -19,4 +19,13 @@ exports.up = (pgm) => {
             },
         }
     )
+    pgm.addColumns(
+        { schema: 'public', name: 'squeak_config' },
+        {
+            permalinks_enabled: {
+                type: 'boolean',
+                default: false,
+            },
+        }
+    )
 }

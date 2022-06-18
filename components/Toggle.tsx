@@ -11,7 +11,7 @@ export default function Toggle({
     checked: boolean
     setChecked: Dispatch<SetStateAction<boolean>>
     label: string
-    helper: string
+    helper?: string
     className: string
 }) {
     return (

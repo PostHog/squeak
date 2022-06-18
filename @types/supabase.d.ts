@@ -33,6 +33,7 @@ export interface paths {
           mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
           mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
           permalink_base?: parameters["rowFilter.squeak_config.permalink_base"];
+          permalinks_enabled?: parameters["rowFilter.squeak_config.permalinks_enabled"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -100,6 +101,7 @@ export interface paths {
           mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
           mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
           permalink_base?: parameters["rowFilter.squeak_config.permalink_base"];
+          permalinks_enabled?: parameters["rowFilter.squeak_config.permalinks_enabled"];
         };
         header: {
           /** Preference */
@@ -131,6 +133,7 @@ export interface paths {
           mailgun_from_name?: parameters["rowFilter.squeak_config.mailgun_from_name"];
           mailgun_from_email?: parameters["rowFilter.squeak_config.mailgun_from_email"];
           permalink_base?: parameters["rowFilter.squeak_config.permalink_base"];
+          permalinks_enabled?: parameters["rowFilter.squeak_config.permalinks_enabled"];
         };
         body: {
           /** squeak_config */
@@ -1256,6 +1259,11 @@ export interface definitions {
     mailgun_from_email?: string;
     /** Format: text */
     permalink_base?: string;
+    /**
+     * Format: boolean
+     * @default false
+     */
+    permalinks_enabled?: boolean;
   };
   squeak_topics: {
     /**
@@ -1635,6 +1643,8 @@ export interface parameters {
   "rowFilter.squeak_config.mailgun_from_email": string;
   /** Format: text */
   "rowFilter.squeak_config.permalink_base": string;
+  /** Format: boolean */
+  "rowFilter.squeak_config.permalinks_enabled": string;
   /** @description squeak_topics */
   "body.squeak_topics": definitions["squeak_topics"];
   /** Format: bigint */

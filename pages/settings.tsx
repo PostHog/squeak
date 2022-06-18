@@ -36,6 +36,7 @@ interface Props {
     replyAutoPublish: boolean
     initialShowSlackUserInfo: boolean
     permalinkBase: string
+    permalinksEnabled: boolean
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -51,6 +52,7 @@ const Settings: NextPageWithLayout<Props> = ({
     replyAutoPublish: initialReplyAutoPublish,
     initialShowSlackUserInfo,
     permalinkBase,
+    permalinksEnabled,
 }) => {
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
@@ -141,6 +143,7 @@ const Settings: NextPageWithLayout<Props> = ({
                 <PermalinkSettings
                     companyDomain={companyDomain}
                     permalinkBase={permalinkBase}
+                    permalinksEnabled={permalinksEnabled}
                     actionButtons={(isValid, loading) => (
                         <Button loading={loading} disabled={!isValid} type="submit">
                             Save
@@ -245,7 +248,7 @@ export const getServerSideProps = withAdminAccess({
         const { data: config } = await supabaseServerClient(context)
             .from<Config>('squeak_config')
             .select(
-                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles, permalink_base`
+                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles, permalink_base, permalinks_enabled`
             )
             .eq('organization_id', organizationId)
             .single()
@@ -266,6 +269,7 @@ export const getServerSideProps = withAdminAccess({
                 replyAutoPublish: config?.reply_auto_publish || false,
                 initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
                 permalinkBase: config?.permalink_base || '',
+                permalinksEnabled: config?.permalinks_enabled || false,
             },
         }
     },
