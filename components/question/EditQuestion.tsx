@@ -2,7 +2,9 @@ import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
 import { definitions } from '../../@types/supabase'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
 import Button from '../Button'
 import Checkbox from '../Checkbox'
 import Input from '../Input'
@@ -23,6 +25,9 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
+    const { getActiveOrganization } = useActiveOrganization()
+    const organizationId = getActiveOrganization()
+    const { addToast } = useToasts()
 
     const handleSave = async (values: {
         subject?: string
@@ -32,6 +37,17 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
     }) => {
         setLoading(true)
         const { subject, published, resolved, permalink } = values
+        const { data: permalinkExists } = await supabaseClient
+            .from('squeak_messages')
+            .select('permalink')
+            .match({ permalink, organization_id: organizationId })
+
+        if (permalinkExists?.length) {
+            setLoading(false)
+            return addToast('Duplicate permalink', {
+                appearance: 'error',
+            })
+        }
         await supabaseClient
             .from<Question>('squeak_messages')
             .update({ subject, published, resolved, permalink })
