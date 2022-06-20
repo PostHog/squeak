@@ -11,11 +11,11 @@ import getQuestion from '../../util/getQuestion'
 import withAdminAccess from '../../util/withAdminAccess'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, organizationId }) => {
+const Question = ({ question: initialQuestion, organizationId, domain, permalinkBase }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
-        question: { slug, subject, id, published, resolved },
+        question: { slug, subject, id, published, resolved, permalink },
     } = question
 
     const updateQuestion = async ({ subject, slug, published, resolved }) => {
@@ -56,7 +56,9 @@ const Question = ({ question: initialQuestion, organizationId }) => {
                 <Topics organizationId={organizationId} questionId={id} />
                 <h3 className="font-bold mt-8 mb-4 text-xl">Question settings</h3>
                 <EditQuestion
-                    values={{ subject, slug, id, published, resolved }}
+                    permalinkBase={permalinkBase}
+                    domain={domain}
+                    values={{ subject, slug, id, published, resolved, permalink }}
                     replyId={replies[0].id}
                     onSubmit={updateQuestion}
                 />
@@ -87,10 +89,10 @@ export const getServerSideProps = withAdminAccess({
         const question = await getQuestion(id, organizationId)
 
         const {
-            data: { company_domain },
+            data: { company_domain, permalink_base },
         } = await supabaseServerClient(context)
             .from('squeak_config')
-            .select('company_domain')
+            .select('company_domain, permalink_base')
             .eq('organization_id', organizationId)
             .single()
 
@@ -100,7 +102,13 @@ export const getServerSideProps = withAdminAccess({
             .eq('organization_id', organizationId)
 
         return {
-            props: { question, domain: company_domain || '', organizationId, topics },
+            props: {
+                question,
+                domain: company_domain || '',
+                organizationId,
+                topics,
+                permalinkBase: permalink_base || '',
+            },
         }
     },
 })

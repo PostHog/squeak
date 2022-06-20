@@ -9,11 +9,15 @@ interface Response {
     replies: Array<Reply>
 }
 
-const getQuestion = async (id: string | number, organizationId: string): Promise<Response> => {
+const getQuestion = async (
+    id: string | number | undefined,
+    organizationId: string,
+    permalink?: string
+): Promise<Response> => {
     const { data: question } = await supabaseClient
         .from<Question>('squeak_messages')
-        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id')
-        .eq('id', id)
+        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id, permalink')
+        .eq(permalink ? 'permalink' : 'id', permalink || id)
         .eq('organization_id', organizationId)
         .limit(1)
         .single()

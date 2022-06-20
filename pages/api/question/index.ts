@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import slugify from 'slugify'
 import xss from 'xss'
 import { definitions } from '../../../@types/supabase'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
+import getQuestion from '../../../util/getQuestion'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
 
@@ -22,6 +24,36 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (allowedOriginError) {
         res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
         return
+    }
+
+    if (req.method === 'GET') {
+        const { organizationId, permalink } = req.query as { organizationId: string; permalink: string }
+        if (organizationId && permalink) {
+            const supabaseServiceRoleClient = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL,
+                process.env.SUPABASE_SERVICE_ROLE_KEY
+            )
+            const { data: config } = await supabaseServiceRoleClient
+                .from<Config>('squeak_config')
+                .select('permalink_base')
+                .eq('organization_id', organizationId)
+                .limit(1)
+                .single()
+            if (permalink.startsWith(`/${config?.permalink_base}/`)) {
+                const question = await getQuestion(
+                    undefined,
+                    organizationId,
+                    permalink.replace(`/${config?.permalink_base}/`, '')
+                )
+                return res.status(200).json(question)
+            } else {
+                res.status(500)
+                return res.json({ error: 'Question not found' })
+            }
+        } else {
+            res.status(500)
+            return res.json({ error: 'Missing required info' })
+        }
     }
 
     const { slug, subject, organizationId, token } = JSON.parse(req.body)
@@ -78,6 +110,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
+    const permalink = slugify(subject, {
+        lower: true,
+    })
+
+    const { data: permalinkExists } = await supabaseServiceRoleClient
+        .from('squeak_messages')
+        .select('permalink')
+        .match({ permalink, organization_id: organizationId })
+        .single()
+
     const { data: message, error: messageError } = await supabaseServiceRoleClient
         .from<Message>('squeak_messages')
         .insert({
@@ -86,6 +128,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             subject,
             published: config.question_auto_publish,
             organization_id: organizationId,
+            permalink,
         })
         .limit(1)
         .single()
@@ -100,6 +143,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         return
+    }
+
+    if (permalinkExists) {
+        await supabaseServiceRoleClient
+            .from('squeak_messages')
+            .update({ permalink: `${permalink}-${message.id}` })
+            .match({ id: message.id })
     }
 
     const { data: reply, error: replyError } = await supabaseServiceRoleClient
