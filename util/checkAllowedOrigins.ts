@@ -1,6 +1,6 @@
+import { createClient } from '@supabase/supabase-js'
 import type { NextApiRequest } from 'next'
 import { definitions } from '../@types/supabase'
-import { createClient } from '@supabase/supabase-js'
 
 type Config = definitions['squeak_config']
 
@@ -36,7 +36,7 @@ const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
         process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    const { organizationId } = JSON.parse(req.body)
+    const { organizationId } = req.method === 'POST' ? JSON.parse(req.body) : req.query
 
     if (!organizationId) {
         return { error: { statusCode: 400, message: 'Missing required parameter - organizationId' } }
