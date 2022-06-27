@@ -3,6 +3,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
+import slugify from 'slugify'
 import { definitions } from '../../@types/supabase'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
 import Button from '../Button'
@@ -20,7 +21,7 @@ interface Props {
 }
 
 const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit, permalinkBase }) => {
-    const { subject, id, published, resolved, permalink } = values
+    const { subject, id, published, resolved, ...other } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -28,6 +29,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
     const { addToast } = useToasts()
+    const [permalink, setPermalink] = useState(other.permalink)
 
     const handleSave = async (values: {
         subject?: string
@@ -36,7 +38,14 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
         permalink?: string
     }) => {
         setLoading(true)
-        const { subject, published, resolved, permalink } = values
+        const { subject, published, resolved } = values
+        let permalink = values.permalink
+        if (permalink) {
+            permalink = slugify(permalink, {
+                lower: true,
+            })
+            setPermalink(permalink)
+        }
         const { data: permalinkExists } = await supabaseClient
             .from('squeak_messages')
             .select('permalink')
