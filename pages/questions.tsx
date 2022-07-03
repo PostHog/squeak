@@ -124,8 +124,10 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                 </div>
                                                 <div className="flex items-start max-w-[200px] w-full flex-shrink-0 py-8">
                                                     <div className="flex items-center space-x-3">
-                                                        <Avatar image={firstReply?.profile?.avatar} />
-                                                        <div className="opacity-50 text-xs">
+                                                        {firstReply?.profile?.avatar && (
+                                                            <Avatar image={firstReply?.profile?.avatar} />
+                                                        )}
+                                                        <div className="text-xs opacity-50">
                                                             <p className="font-semibold">{`${
                                                                 slackTimestamp
                                                                     ? 'Slack User'
