@@ -1,30 +1,26 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import type { definitions } from '../@types/supabase'
 import { parseCookies, setCookie } from 'nookies'
+import { getUserOrganizations } from '../lib/api/'
 
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
+const SQUEAK_ORG_ID_COOKIE_KEY = 'squeak_organization_id'
 
 const useActiveOrganization = () => {
     const setActiveOrganization = async (userId: string, organizationId?: number) => {
         if (organizationId) {
-            setCookie(null, 'squeak_organization_id', `${organizationId}`, { path: '/' })
+            setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organizationId}`, { path: '/' })
             return
         }
 
         // Get the users organizations, and set the first one as the active organization (as a cookie)
         // TODO(JS): In the future, we may want to allow the user to select which organization they want to use upon login
-        const { data: organizations } = await supabaseClient
-            .from<UserProfileReadonly>('squeak_profiles_readonly')
-            .select('organization_id')
-            .eq('user_id', userId)
 
-        if (!organizations) {
-            return
-        }
+        const { body: organizations } = await getUserOrganizations()
 
+        if (!organizations || organizations.length === 0) return
+
+        // get the first organization
         const [organization] = organizations
 
-        setCookie(null, 'squeak_organization_id', `${organization.organization_id}`, { path: '/' })
+        setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organization.organization_id}`, { path: '/' })
     }
 
     const getActiveOrganization = (): string => {
