@@ -1,15 +1,14 @@
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
-import { definitions } from '../@types/supabase'
-import type { WebhookValues } from '../@types/types'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useToasts } from 'react-toast-notifications'
+
+import type { WebhookValues } from '../@types/types'
 import Button from './Button'
 import Input from './Input'
+import { createWebhook, deleteWebhook, updateWebhook } from '../lib/api'
+import { ApiResponseError } from '../lib/api/client'
 
-type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
 
 interface Props {
@@ -19,30 +18,32 @@ interface Props {
 
 const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
     const [saveLoading, setSaveLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
 
     const handleSave = async ({ url }: FormValues) => {
         setSaveLoading(true)
         if (initialValues) {
-            const { error } = await supabaseClient
-                .from<WebhookConfig>('squeak_webhook_config')
-                .update({ url })
-                .match({ id: initialValues.id, organization_id: organizationId })
-
-            addToast(error ? error.message : 'Slack webhook updated', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await updateWebhook(initialValues.id, { url })
+                addToast('Slack webhook updated', { appearance: 'success' })
+            } catch (err) {
+                if (err instanceof ApiResponseError) {
+                    addToast(err.message, { appearance: 'error' })
+                }
+            }
         } else {
-            const { error } = await supabaseClient
-                .from<WebhookConfig>('squeak_webhook_config')
-                .insert({ url, type: 'slack', organization_id: organizationId })
-
-            addToast(error ? error.message : 'Slack webhook created', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await createWebhook({
+                    type: 'slack',
+                    url,
+                })
+                addToast('Slack webhook created', { appearance: 'success' })
+            } catch (err) {
+                if (err instanceof ApiResponseError) {
+                    addToast(err.message, { appearance: 'error' })
+                }
+            }
         }
         setSaveLoading(false)
         onSubmit()
@@ -55,16 +56,13 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
             return
         }
 
-        await supabaseClient
-            .from<WebhookConfig>('squeak_webhook_config')
-            .delete()
-            .match({ id: initialValues.id, organization_id: organizationId })
+        await deleteWebhook(initialValues.id)
         setDeleteLoading(false)
         onSubmit()
     }
     return (
         <>
-            <h3 className="mb-4 text-xl flex items-center space-x-2">
+            <h3 className="flex items-center mb-4 space-x-2 text-xl">
                 <span>Slack notification</span>
                 <span>
                     <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noreferrer">
@@ -97,7 +95,7 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                                 type="url"
                                 placeholder="Slack incoming webhook URL"
                             />
-                            <div className="flex space-x-2 mt-3">
+                            <div className="flex mt-3 space-x-2">
                                 <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}
                                 </Button>
@@ -105,7 +103,7 @@ const SlackWebhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialVal
                                     <Button
                                         loading={deleteLoading}
                                         onClick={handleDelete}
-                                        className="bg-transparent text-red font-bold border-2 border-red"
+                                        className="font-bold bg-transparent border-2 text-red border-red"
                                     >
                                         Delete
                                     </Button>

@@ -1,21 +1,17 @@
 import { Menu } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/outline'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import React, { useCallback, useEffect, useState } from 'react'
+
 import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
-import { definitions } from '../@types/supabase'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
-
-type WebhookConfig = definitions['squeak_webhook_config']
+import { fetchWebhooks } from '../lib/api'
+import { FetchWebhooksPayload } from '../pages/api/webhooks'
 
 interface Props {}
 
 const WebhookTable: React.VoidFunctionComponent<Props> = () => {
     const { isLoading: isUserLoading } = useUser()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
 
     const [initialValues, setInitialvalues] = useState<WebhookValues | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
@@ -26,19 +22,14 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
         setModalType(initialValues.type)
         setModalOpen(true)
     }
-    const [webhooks, setWebhooks] = useState<Array<WebhookConfig>>([])
+    const [webhooks, setWebhooks] = useState<FetchWebhooksPayload[]>([])
 
     const getWebhooks = useCallback(async () => {
         if (!isUserLoading) {
-            await supabaseClient
-                .from<WebhookConfig>('squeak_webhook_config')
-                .select('url, type, id')
-                .eq('organization_id', organizationId)
-                .then(({ data }) => {
-                    setWebhooks(data ?? [])
-                })
+            const { body: data } = await fetchWebhooks()
+            setWebhooks(data ?? [])
         }
-    }, [isUserLoading, organizationId])
+    }, [isUserLoading])
 
     const handleWebhookSubmit = () => {
         getWebhooks()
@@ -65,13 +56,13 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                 open={modalOpen}
             />
             <Menu>
-                <Menu.Button className="px-4 py-2 rounded-md border border-gray-light-400 flex items-center space-x-4">
+                <Menu.Button className="flex items-center px-4 py-2 space-x-4 border rounded-md border-gray-light-400">
                     <span>Add alert</span>
                     <span>
                         <ChevronDownIcon className="w-4 text-gray-400" />
                     </span>
                 </Menu.Button>
-                <Menu.Items className="absolute bg-white shadow-md rounded-md z-10">
+                <Menu.Items className="absolute z-10 bg-white rounded-md shadow-md">
                     <Menu.Item>
                         <div className="grid">
                             <button
@@ -79,7 +70,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                                     setModalType('slack')
                                     setModalOpen(true)
                                 }}
-                                className="font-bold hover:bg-gray-50 transition-colors p-4 text-left"
+                                className="p-4 font-bold text-left transition-colors hover:bg-gray-50"
                             >
                                 Slack notification
                             </button>
@@ -88,7 +79,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                                     setModalType('webhook')
                                     setModalOpen(true)
                                 }}
-                                className="font-bold hover:bg-gray-50 transition-colors p-4 text-left"
+                                className="p-4 font-bold text-left transition-colors hover:bg-gray-50"
                             >
                                 Outgoing webhook
                             </button>
@@ -98,11 +89,11 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
             </Menu>
 
             {webhooks.length > 0 && (
-                <div className="mt-8 flex flex-col">
-                    <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="flex flex-col mt-8">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table className="min-w-full table-fixed divide-y divide-gray-300">
+                                <table className="min-w-full divide-y divide-gray-300 table-fixed">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th
@@ -123,20 +114,20 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
+                                    <tbody className="bg-white divide-y divide-gray-200">
                                         {webhooks.map(({ type, url, id }) => {
                                             return (
                                                 <tr key={id}>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {type}
                                                     </td>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {url}
                                                     </td>
 
-                                                    <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                    <td className="py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
                                                         <button
-                                                            className="text-accent-light font-bold"
+                                                            className="font-bold text-accent-light"
                                                             onClick={() => handleEdit({ url, type, id })}
                                                         >
                                                             Edit

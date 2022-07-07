@@ -48,6 +48,10 @@ export function orgIdNotFound(res: NextApiResponse): void {
     res.status(400).json({ error: 'Organization ID not found' })
 }
 
+export function objectNotFound(res: NextApiResponse): void {
+    res.status(404).json({ error: 'Object not found' })
+}
+
 export async function isAdmin(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
     const session = await getServerSession(req, res)
     const organizationId = getActiveOrganization({ req })
@@ -77,11 +81,13 @@ export async function requireSession(req: NextApiRequest, res: NextApiResponse):
 }
 
 /**
- * Responds with
+ * Responds with 403 if user is not an admin. Responds with 401 if user is not authenticated.
  * @param  {NextApiRequest} req
  * @param  {NextApiResponse} res
  */
 export async function requireOrgAdmin(req: NextApiRequest, res: NextApiResponse) {
+    if (!(await requireSession(req, res))) return
+
     const admin = await isAdmin(req, res)
     if (!admin) {
         notAuthorized(res)

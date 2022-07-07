@@ -1,4 +1,4 @@
-class ApiResponseError extends Error {
+export class ApiResponseError extends Error {
     message: string
     response: Response
 
@@ -16,7 +16,7 @@ export interface ApiResponse<T = Record<string, unknown>> {
 }
 
 // Replicates what is accepted by URLSearchParams constructor
-type QueryParams = string | Record<string, string> | URLSearchParams | string[][]
+export type QueryParams = string | Record<string, string> | URLSearchParams | string[][]
 
 interface RequestParams {
     body?: object // request body
@@ -38,6 +38,21 @@ export async function doPatch<ResponseType = Record<string, unknown>>(
     body?: object
 ): Promise<ApiResponse<ResponseType>> {
     const response = await performRequest(path, 'PATCH', { body })
+    return generateApiResponse<ResponseType>(response)
+}
+
+export async function doDelete<ResponseType = Record<string, unknown>>(
+    path: string
+): Promise<ApiResponse<ResponseType>> {
+    const response = await performRequest(path, 'DELETE')
+    return generateApiResponse<ResponseType>(response)
+}
+
+export async function doPost<ResponseType = Record<string, unknown>>(
+    path: string,
+    body?: object
+): Promise<ApiResponse<ResponseType>> {
+    const response = await performRequest(path, 'POST', { body })
     return generateApiResponse<ResponseType>(response)
 }
 
