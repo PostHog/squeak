@@ -1,13 +1,10 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import Router from 'next/router'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
-import type { definitions } from '../@types/supabase'
-import useActiveOrganization from '../hooks/useActiveOrganization'
+import { updateSqueakConfig } from '../lib/api'
+import { ApiResponseError } from '../lib/api/client'
 import Input from './Input'
-
-type Config = definitions['squeak_config']
 
 interface Props {
     mailgunApiKey: string
@@ -34,32 +31,30 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
     actionButtons,
 }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
     const [loading, setLoading] = useState(false)
 
     const handleSaveNotifications = async (values: InitialValues) => {
         setLoading(true)
-        const organizationId = getActiveOrganization()
 
-        const { error } = await supabaseClient
-            .from<Config>('squeak_config')
-            .update({
+        try {
+            await updateSqueakConfig({
                 mailgun_api_key: values.mailgunApiKey,
                 mailgun_domain: values.mailgunDomain,
                 mailgun_from_email: values.mailgunEmail,
                 mailgun_from_name: values.mailgunName,
             })
-            .match({ organization_id: organizationId })
 
-        if (!error && redirect) {
-            Router.push(redirect)
+            if (redirect) {
+                Router.push(redirect)
+            }
+            addToast('Notification settings saved', { appearance: 'success' })
+        } catch (error) {
+            if (error instanceof ApiResponseError) {
+                addToast(error.message, { appearance: 'error' })
+            }
+        } finally {
+            setLoading(false)
         }
-
-        addToast(error ? error.message : 'Notification settings saved', {
-            appearance: error ? 'error' : 'success',
-        })
-
-        setLoading(false)
     }
 
     const initialValues: InitialValues = {
@@ -100,7 +95,7 @@ const NotificationForm: React.VoidFunctionComponent<Props> = ({
                             name="mailgunEmail"
                             placeholder="Mailgun from email"
                         />
-                        <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
+                        <div className="flex items-center mt-4 space-x-6">{actionButtons(isValid, loading)}</div>
                     </Form>
                 )
             }}

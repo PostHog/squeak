@@ -1,14 +1,12 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik, FormikComputedProps, FormikHelpers } from 'formik'
 import debounce from 'lodash.debounce'
 import Router from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
-import type { definitions } from '../@types/supabase'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import Link from 'next/link'
+
 import Input from './Input'
 import Select from './Select'
-type Config = definitions['squeak_config']
+import { updateSqueakConfig } from '../lib/api'
 
 type SlackFormContentProps = Pick<FormikComputedProps<InitialValues>, 'initialValues'> &
     Pick<FormikHelpers<InitialValues>, 'setFieldValue'>
@@ -53,14 +51,14 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
 
     return (
         <Form className="mt-0">
-            <h3 className='font-semibold text-base'>Configure</h3>
+            <h3 className="text-base font-semibold">Configure</h3>
             <Input
                 label="Slack Bot User OAuth Token"
                 onChange={handleAPIKeyChange}
                 id="slackApiKey"
                 name="slackApiKey"
                 placeholder="xoxb-your-token"
-                helperText='Find this on the OAuth & Permissions page'
+                helperText="Find this on the OAuth & Permissions page"
             />
             {channels.length > 0 && (
                 <>
@@ -69,7 +67,7 @@ const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ 
                         label="Slack question channel"
                         id="slackQuestionChannel"
                         name="slackQuestionChannel"
-                        helperText='Channel where new questions alerts should be sent'
+                        helperText="Channel where new questions alerts should be sent"
                     />
                 </>
             )}
@@ -97,26 +95,19 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
     actionButtons,
     onSubmit,
 }) => {
-    const { getActiveOrganization } = useActiveOrganization()
     const [loading, setLoading] = useState(false)
 
     const handleSave = async (values: InitialValues) => {
         setLoading(true)
-        const organizationId = getActiveOrganization()
 
-        const { error } = await supabaseClient
-            .from<Config>('squeak_config')
-            .update({
-                slack_api_key: values.slackApiKey,
-                slack_question_channel: values.slackQuestionChannel,
-            })
-            .match({ organization_id: organizationId })
+        await updateSqueakConfig({
+            slack_api_key: values.slackApiKey,
+            slack_question_channel: values.slackQuestionChannel,
+        })
         setLoading(false)
         onSubmit && onSubmit(values)
 
-        if (!error && redirect) {
-            Router.push(redirect)
-        }
+        if (redirect) Router.push(redirect)
 
         // TODO(JS): Trigger toast?
         // TODO(JS): Handle errors here?
@@ -147,21 +138,31 @@ const SlackForm: React.VoidFunctionComponent<Props> = ({
             {({ initialValues, isValid, setFieldValue }) => {
                 return (
                     <Form className="mt-0">
-                        <ol className='list-decimal pl-2 ml-4'>
-                            <li className='h-0 m-0 overflow-hidden leading-[0]'></li>
+                        <ol className="pl-2 ml-4 list-decimal">
+                            <li className="h-0 m-0 overflow-hidden leading-[0]"></li>
                             <li>
                                 <SlackFormContent initialValues={initialValues} setFieldValue={setFieldValue} />
                             </li>
                             <li>
-                                <div className='text-[16px] font-semibold opacity-75 my-2'>Install app to workspace</div>
+                                <div className="text-[16px] font-semibold opacity-75 my-2">
+                                    Install app to workspace
+                                </div>
                             </li>
                             <li>
-                                <div className='text-[16px] font-semibold opacity-75 my-2'>Add app to channel</div>
-                                <p>Visit the Slack channel (entered in step 2) and type <code className='bg-gray-200 text-sm p-1'>/apps</code>, choose <strong className='font-semibold'>Add apps to this channel</strong>, and install the Squeak app you created in step 1.</p>
+                                <div className="text-[16px] font-semibold opacity-75 my-2">Add app to channel</div>
+                                <p>
+                                    Visit the Slack channel (entered in step 2) and type{' '}
+                                    <code className="p-1 text-sm bg-gray-200">/apps</code>, choose{' '}
+                                    <strong className="font-semibold">Add apps to this channel</strong>, and install the
+                                    Squeak app you created in step 1.
+                                </p>
                             </li>
                         </ol>
-                        <div className="flex space-x-6 items-center mt-4">{actionButtons(isValid, loading)}</div>
-                        <div className='text-[16px] font-semibold opacity-75 mt-4'>After the above setup is complete, visit the <Link href='/slack'>Import Slack threads</Link> page to see the latest 50 threads you can import.</div>
+                        <div className="flex items-center mt-4 space-x-6">{actionButtons(isValid, loading)}</div>
+                        <div className="text-[16px] font-semibold opacity-75 mt-4">
+                            After the above setup is complete, visit the <Link href="/slack">Import Slack threads</Link>{' '}
+                            page to see the latest 50 threads you can import.
+                        </div>
                     </Form>
                 )
             }}

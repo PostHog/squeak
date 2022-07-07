@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import AllowedOriginModal from './AllowedOriginModal'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../@types/supabase'
 import { useUser } from '@supabase/supabase-auth-helpers/react'
-
-type Config = definitions['squeak_config']
+import { getConfig } from '../../lib/api'
 
 interface Props {}
 
@@ -20,19 +17,12 @@ const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
 
     const getAllowedOrigins = useCallback(async () => {
         if (!isUserLoading) {
-            await supabaseClient
-                .from<Config>('squeak_config')
-                .select('allowed_origins')
-                .eq('organization_id', organizationId)
-                .limit(1)
-                .single()
-                .then(({ data }) => {
-                    setAllowedOrigins((data?.allowed_origins as Array<string>) || [])
-                    setInitialValues({
-                        allowedOrigins: (data?.allowed_origins as Array<string>) || [],
-                        allowedOrigin: '',
-                    })
-                })
+            const { body: data } = await getConfig()
+            setAllowedOrigins(data?.allowed_origins || [])
+            setInitialValues({
+                allowedOrigins: data?.allowed_origins || [],
+                allowedOrigin: '',
+            })
         }
     }, [isUserLoading, organizationId])
 
@@ -65,16 +55,16 @@ const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
                 initialValues={initialValues}
             />
 
-            <button className="px-4 py-2 rounded-md border border-gray-light-400" onClick={() => setModalOpen(true)}>
+            <button className="px-4 py-2 border rounded-md border-gray-light-400" onClick={() => setModalOpen(true)}>
                 <span>Add allowed origin</span>
             </button>
 
             {allowedOrigins.length > 0 && (
-                <div className="mt-8 flex flex-col">
-                    <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="flex flex-col mt-8">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table className="min-w-full table-fixed divide-y divide-gray-300">
+                                <table className="min-w-full divide-y divide-gray-300 table-fixed">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th
@@ -89,17 +79,17 @@ const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
+                                    <tbody className="bg-white divide-y divide-gray-200">
                                         {allowedOrigins.map((allowedOrigin) => {
                                             return (
                                                 <tr key={allowedOrigin}>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {allowedOrigin}
                                                     </td>
 
-                                                    <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                    <td className="py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
                                                         <button
-                                                            className="text-accent-light font-bold"
+                                                            className="font-bold text-accent-light"
                                                             onClick={() => handleEdit(allowedOrigin)}
                                                         >
                                                             Edit
