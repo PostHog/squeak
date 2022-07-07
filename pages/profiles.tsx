@@ -1,38 +1,31 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
-import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
+
 import InviteUser from '../components/InviteUser'
 import ProfileTable from '../components/ProfileTable'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
+import { getProfiles, ApiResponseError } from '../lib/api'
 import withAdminAccess from '../util/withAdminAccess'
-
-type UserProfileView = definitions['squeak_profiles_view']
+import { GetProfilesResponse } from './api/profiles'
 
 interface Props {}
 
 const Users: NextPageWithLayout<Props> = () => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const [profiles, setProfiles] = useState<Array<UserProfileView>>([])
-
-    const organizationId = getActiveOrganization()
+    const [profiles, setProfiles] = useState<GetProfilesResponse>([])
 
     const fetchProfiles = useCallback(async () => {
-        const { data, error } = await supabaseClient
-            .from<UserProfileView>('squeak_profiles_view')
-            .select(`profile_id, user_id, first_name, last_name, avatar, role`)
-            .eq('organization_id', organizationId)
-
-        if (error) {
-            addToast(error.message, { appearance: 'error', autoDismiss: true })
+        try {
+            const { body: data } = await getProfiles()
+            setProfiles(data)
+        } catch (err) {
+            if (err instanceof ApiResponseError) {
+                addToast(err.message, { appearance: 'error' })
+            }
         }
-
-        setProfiles(data ?? [])
-    }, [addToast, organizationId])
+    }, [addToast])
 
     useEffect(() => {
         fetchProfiles()
@@ -40,8 +33,8 @@ const Users: NextPageWithLayout<Props> = () => {
 
     return (
         <>
-            <div className="flex space-between items-center">
-                <p className="pb-4 flex-1">This lists all users in your database.</p>
+            <div className="flex items-center space-between">
+                <p className="flex-1 pb-4">This lists all users in your database.</p>
                 <InviteUser
                     className="mb-6"
                     onInvite={() => {

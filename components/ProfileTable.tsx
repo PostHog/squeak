@@ -1,35 +1,34 @@
 import React, { useState } from 'react'
-import { definitions } from '../@types/supabase'
-import Avatar from './Avatar'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useToasts } from 'react-toast-notifications'
 
-type Profile = definitions['squeak_profiles_view']
-type ProfileReadonly = definitions['squeak_profiles_readonly']
+import Avatar from './Avatar'
+import { useUser } from '@supabase/supabase-auth-helpers/react'
+import { updateProfile } from '../lib/api'
+import { ApiResponseError } from '../lib/api/client'
+import { GetProfilesProfile, GetProfilesResponse } from '../pages/api/profiles'
 
 interface TableProps {
-    profiles: Array<Profile>
+    profiles: GetProfilesResponse
 }
 
 const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => {
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div className="shadow overflow-hidden border-b border-gray-light-200 sm:rounded-lg">
+                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <div className="overflow-hidden border-b shadow border-gray-light-200 sm:rounded-lg">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                     >
                                         Name
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                     >
                                         Role
                                     </th>
@@ -37,7 +36,7 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => 
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {profiles.map((profile) => (
-                                    <ProfileRow key={profile.profile_id} profile={profile} />
+                                    <ProfileRow key={String(profile.id)} profile={profile} />
                                 ))}
                             </tbody>
                         </table>
@@ -49,7 +48,7 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => 
 }
 
 interface RowProps {
-    profile: Profile
+    profile: GetProfilesProfile
 }
 
 const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
@@ -58,26 +57,27 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
     const [role, setRole] = useState(profile.role)
 
     const handleRoleChange = async (role: string) => {
-        const { error } = await supabaseClient
-            .from<ProfileReadonly>('squeak_profiles_readonly')
-            .update({ role })
-            .match({ profile_id: profile.profile_id })
-
-        if (error) {
-            addToast(error.message, { appearance: 'error', autoDismiss: true })
+        if (!profile.id) {
             return
         }
-
-        setRole(role)
+        try {
+            await updateProfile(profile.id, { role })
+            setRole(role)
+        } catch (err) {
+            if (err instanceof ApiResponseError) {
+                addToast(err.message, { appearance: 'error' })
+                return
+            }
+        }
     }
 
-    const { first_name, last_name, avatar } = profile
+    const { first_name, last_name, avatar } = profile?.profile
 
     return (
         <tr>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
+                    <div className="flex-shrink-0 w-10 h-10">
                         <Avatar image={avatar} />
                     </div>
                     <div className="ml-4">
@@ -88,7 +88,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
                     </div>
                 </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                 {user?.id !== profile.user_id ? (
                     <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
                         <option value="admin">Admin</option>
