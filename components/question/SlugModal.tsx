@@ -1,13 +1,12 @@
-import Modal from '../Modal'
 import { Field, Form, Formik } from 'formik'
-import Button from '../Button'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useToasts } from 'react-toast-notifications'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
-import { definitions } from '../../@types/supabase'
 import { useCallback } from 'react'
 
-type Question = definitions['squeak_messages']
+import Modal from '../Modal'
+import Button from '../Button'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
+import { updateQuestion } from '../../lib/api'
+import { ApiResponseError } from '../../lib/api/client'
 
 interface Props {
     questionId: number
@@ -22,6 +21,10 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
 
+    const updateToast = (message: string, appearance: 'success' | 'error') => {
+        addToast(message, { appearance })
+    }
+
     const handleSave = useCallback(
         async ({ slug }: { slug: string }) => {
             if (initialValues?.slugs.find((valueSlug) => valueSlug === slug)) {
@@ -33,14 +36,14 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
 
             const slugs = [...(filteredValues || []), slug]
 
-            const { error } = await supabaseClient
-                .from<Question>('squeak_messages')
-                .update({ slug: slugs })
-                .match({ organization_id: organizationId, id: questionId })
-
-            addToast(error ? error.message : 'Slug added', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await updateQuestion(questionId, { slug: slugs })
+                updateToast('Slug updated', 'success')
+            } catch (error) {
+                if (error instanceof ApiResponseError) {
+                    updateToast(error.message, 'error')
+                }
+            }
 
             onSubmit()
         },
@@ -61,14 +64,14 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
 
             const slugs = initialValues.slugs.filter((slug) => slug !== initialValues.slug)
 
-            const { error } = await supabaseClient
-                .from<Question>('squeak_messages')
-                .update({ slug: slugs })
-                .match({ organization_id: organizationId, id: questionId })
-
-            addToast(error ? error.message : 'Slug deleted', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await updateQuestion(questionId, { slug: slugs })
+                updateToast('Slug deleted', 'success')
+            } catch (error) {
+                if (error instanceof ApiResponseError) {
+                    updateToast(error.message, 'error')
+                }
+            }
 
             onSubmit()
         },
@@ -97,7 +100,7 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
                             <label htmlFor="slug">Slug</label>
                             <Field id="slug" name="slug" placeholder="/foo/bar" type="text" />
                             <p className="text-sm opacity-70">Ex: /foo/bar</p>
-                            <div className="flex space-x-2 mt-3">
+                            <div className="flex mt-3 space-x-2">
                                 <Button disabled={!isValid} type="submit">
                                     {initialValues?.slug !== '' ? 'Save' : 'Add'}
                                 </Button>
