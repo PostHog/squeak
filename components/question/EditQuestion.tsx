@@ -1,19 +1,22 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { definitions } from '../../@types/supabase'
+import { deleteQuestion, updateQuestion } from '../../lib/api/'
 import Button from '../Button'
 import Checkbox from '../Checkbox'
 import Input from '../Input'
-
-type Question = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
+import { Question } from '@prisma/client'
 
 interface Props {
     values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved'>
     replyId: number
     onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved'>) => void
+}
+
+interface IValues {
+    subject: string | null
+    published: boolean
+    resolved: boolean
 }
 
 const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
@@ -23,12 +26,10 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
 
-    const handleSave = async (values: { subject?: string; published: boolean; resolved: boolean }) => {
+    const handleSave = async (values: IValues) => {
         setLoading(true)
         const { subject, published, resolved } = values
-        await supabaseClient.from<Question>('squeak_messages').update({ subject, published, resolved }).match({ id })
-
-        await supabaseClient.from<Reply>('squeak_replies').update({ published }).match({ id: replyId })
+        await updateQuestion(id, { subject, published, resolved, replyId })
         onSubmit({ subject, published, resolved })
         setLoading(false)
     }
@@ -40,12 +41,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
             return setConfirmDelete(true)
         } else {
             setDeleting(true)
-            await supabaseClient
-                .from<Question>('squeak_messages')
-                .update({ resolved_reply_id: undefined })
-                .match({ id })
-            await supabaseClient.from<Reply>('squeak_replies').delete().match({ message_id: id })
-            await supabaseClient.from<Question>('squeak_messages').delete().match({ id })
+            await deleteQuestion(id)
             router.push('/questions')
         }
     }
@@ -59,7 +55,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
             <Formik
                 enableReinitialize
                 validateOnMount
-                validate={(values: { subject?: string; published: boolean; resolved: boolean }) => {
+                validate={(values: IValues) => {
                     const errors: { subject?: string } = {}
                     if (!values.subject) {
                         errors.subject = 'Required'
@@ -96,13 +92,13 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                 helperText="Check to mark as solved"
                             />
                             <div className="flex space-x-4">
-                                <Button loading={loading} disabled={!isValid} className="mt-4 border-red border-2">
+                                <Button loading={loading} disabled={!isValid} className="mt-4 border-2 border-red">
                                     Save
                                 </Button>
                                 <Button
                                     loading={deleting}
                                     onClick={handleDelete}
-                                    className="mt-4 bg-transparent text-red border-red border-2"
+                                    className="mt-4 bg-transparent border-2 text-red border-red"
                                 >
                                     {confirmDelete ? 'Permanently delete from site?' : 'Delete'}
                                 </Button>

@@ -1,22 +1,13 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
-
-type Question = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
+import { Question, Reply } from '@prisma/client'
+import { getQuestion as fetchQuestion } from '../lib/api'
 
 interface Response {
     question: Question | null
     replies: Array<Reply>
 }
 
-const getQuestion = async (id: string | number, organizationId: string): Promise<Response> => {
-    const { data: question } = await supabaseClient
-        .from<Question>('squeak_messages')
-        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id')
-        .eq('id', id)
-        .eq('organization_id', organizationId)
-        .limit(1)
-        .single()
+const getQuestion = async (id: string | number): Promise<Response> => {
+    const { body: question } = await fetchQuestion(id)
 
     if (!question) {
         return {
@@ -25,22 +16,8 @@ const getQuestion = async (id: string | number, organizationId: string): Promise
         }
     }
 
-    return supabaseClient
-        .from<Reply>('squeak_replies')
-        .select(
-            `
-            id, body, created_at, published,
-            profile:squeak_profiles!replies_profile_id_fkey (
-                id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role)
-           )
-                `
-        )
-        .eq('message_id', question.id)
-        .order('created_at')
-        .then((data) => ({
-            question: question,
-            replies: data.data || [],
-        }))
+    const { replies } = question
+    return { question, replies }
 }
 
 export default getQuestion

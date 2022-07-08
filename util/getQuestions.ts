@@ -1,10 +1,6 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { createClient } from '@supabase/supabase-js'
+import { Prisma, Question, Reply } from '@prisma/client'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
-import { definitions } from '../@types/supabase'
-
-type Message = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
+import prisma from '../lib/db'
 
 type Context =
     | GetServerSidePropsContext
@@ -21,77 +17,86 @@ interface Params {
     topic?: string
 }
 
-const getQuestions = async (context: Context, params: Params) => {
+interface GetQuestionsPayload {
+    data: {
+        questions: {
+            question: Question
+            replies: Reply[]
+        }[]
+        count: number
+    }
+}
+
+/**
+ * This needs to:
+ *   1. Get questions
+ *   2. Eager-load replies for all the returned questions
+ *   3. Filter out profiles of repliers if we're not showing slack profiles
+ * @param context
+ * @param params
+ * @returns
+ */
+const getQuestions = async (context: Context, params: Params): Promise<GetQuestionsPayload> => {
     const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
-    const end = start + (perPage - 1)
+    // const end = start + (perPage - 1)
 
-    const messagesQuery = supabaseServerClient(context)
-        .from<Message>('squeak_messages')
-        .select('subject, id, slug, created_at, published, slack_timestamp, resolved, resolved_reply_id', {
-            count: 'exact',
-        })
-        .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false })
-
-    if (published) messagesQuery.eq('published', published)
-    if (slug) messagesQuery.contains('slug', [slug])
-    if (topic) messagesQuery.contains('topics', [topic])
-    messagesQuery.range(start, end)
-
-    const { data: messages = [], count = 0, error } = await messagesQuery
-
-    if (error) {
-        return {
-            error,
-        }
+    const queryConditions: Prisma.QuestionWhereInput = {
+        organization_id: organizationId,
     }
 
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
+    if (published) queryConditions.published = published
+    if (slug) queryConditions.slug = { has: slug }
+    if (topic) queryConditions.topics = { has: topic }
 
-    const {
-        data: { show_slack_user_profiles },
-    } = await supabaseServiceRoleClient
-        .from('squeak_config')
-        .select('show_slack_user_profiles')
-        .eq('organization_id', organizationId)
-        .single()
+    const messages = await prisma.question.findMany({
+        where: queryConditions,
+        include: {
+            replies: {
+                include: {
+                    profile: {
+                        include: {
+                            profiles_readonly: {
+                                where: { organization_id: organizationId },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            created_at: 'desc',
+        },
+        skip: start, // offset
+        take: perPage, // limit
+    })
+
+    const count: number = await prisma.question.count({
+        where: queryConditions,
+    })
+
+    const config = await prisma.squeakConfig.findFirst({
+        where: { organization_id: organizationId },
+        select: { show_slack_user_profiles: true },
+    })
+
+    const show_slack_user_profiles = config?.show_slack_user_profiles
 
     return {
         data: {
-            questions: await Promise.all(
-                (messages || []).map((question) => {
-                    const repliesQuery = supabaseServerClient(context)
-                        .from<Reply>('squeak_replies')
-                        .select(
-                            `
-                         id, body, created_at, published,
-                         profile:squeak_profiles!replies_profile_id_fkey (
-                             id, first_name, last_name, avatar, metadata:squeak_profiles_readonly(role, slack_user_id)
-                        )
-                        `
-                        )
-                        .eq('message_id', question.id)
-                        .eq('organization_id', organizationId)
-                        .order('created_at', { ascending: true })
+            questions: (messages || []).map((message) => {
+                let replies = message.replies || []
 
-                    return repliesQuery.then((data) => {
-                        let replies = data?.data || []
-                        if (!show_slack_user_profiles) {
-                            replies = replies.map((reply) => {
-                                // @ts-ignore
-                                return reply?.profile?.metadata[0]?.slack_user_id ? { ...reply, profile: null } : reply
-                            })
-                        }
-                        return {
-                            question,
-                            replies,
-                        }
+                // if we're not showing slack user profiles, filter them out in reply profiles
+                if (!show_slack_user_profiles) {
+                    replies = message.replies.map((reply) => {
+                        return reply.profile?.profiles_readonly?.[0]?.slack_user_id
+                            ? { ...reply, profile: null }
+                            : reply
                     })
-                })
-            ),
+                }
+
+                return { question: message, replies }
+            }),
             count: count ?? 0,
         },
     }

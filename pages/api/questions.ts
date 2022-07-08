@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import getQuestions from '../../util/getQuestions'
 import NextCors from 'nextjs-cors'
+
+import getQuestions from '../../util/getQuestions'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
+import { methodNotAllowed } from '../../lib/api/apiUtils'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await NextCors(req, res, {
@@ -16,14 +18,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    const params = JSON.parse(req.body)
-    const { data, error } = await getQuestions({ req, res }, params)
-
-    if (error) {
-        console.error(`[Questions] ${error.message}`)
-        res.status(500).json({ error: error.message })
-        return
+    switch (req.method) {
+        case 'POST': // the fact that this is a POST is legacy in the client sdk
+        case 'GET': // add GET support to eventually deprecate the 'POST' method to fetch questions
+            return fetchQuestions(req, res)
+        default:
+            return methodNotAllowed(res)
     }
+}
+
+// POST /api/questions
+// Fetch a list of questions
+async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
+    const params = JSON.parse(req.body)
+    const { data } = await getQuestions({ req, res }, params)
 
     res.status(200).json(data)
 }
