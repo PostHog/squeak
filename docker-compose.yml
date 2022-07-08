@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:14.1
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGPASSWORD=password
+      - PGDATABASE=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./tmp/:/tmp/
