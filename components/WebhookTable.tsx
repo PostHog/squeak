@@ -117,7 +117,7 @@ const WebhookTable: React.VoidFunctionComponent<Props> = () => {
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {webhooks.map(({ type, url, id }) => {
                                             return (
-                                                <tr key={id}>
+                                                <tr key={String(id)}>
                                                     <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {type}
                                                     </td>

@@ -1,4 +1,4 @@
-import { Prisma, WebhookConfig } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { methodNotAllowed, requireOrgAdmin } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'

@@ -9,6 +9,7 @@ import AdminLayout from '../../layout/AdminLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import getQuestion from '../../util/getQuestion'
 import withAdminAccess from '../../util/withAdminAccess'
+import { getQuestion as fetchQuestion } from '../../lib/api/client'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
 const Question = ({ question: initialQuestion, organizationId }) => {
@@ -27,7 +28,7 @@ const Question = ({ question: initialQuestion, organizationId }) => {
     }
 
     const handleSubmit = async () => {
-        const question = await getQuestion(id, organizationId)
+        const question = await fetchQuestion(id, organizationId)
         setQuestion(question)
     }
 
@@ -35,8 +36,8 @@ const Question = ({ question: initialQuestion, organizationId }) => {
     supabaseClient.auth.user = () => user
 
     return (
-        <div className="grid lg:grid-cols-3 grid-cols-1 gap-8">
-            <div className="flex space-x-9 items-start col-span-2">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="flex items-start col-span-2 space-x-9">
                 <div className="flex-grow max-w-[700px]">
                     <SingleQuestion
                         apiHost={`//${typeof window !== 'undefined' && window.location.host}`}
@@ -48,13 +49,13 @@ const Question = ({ question: initialQuestion, organizationId }) => {
                     />
                 </div>
             </div>
-            <div className="mt-12 lg:mt-0 max-w-sm">
-                <h3 className="font-bold mb-4 text-xl">Shown on:</h3>
+            <div className="max-w-sm mt-12 lg:mt-0">
+                <h3 className="mb-4 text-xl font-bold">Shown on:</h3>
                 <SlugTable questionId={id} />
 
-                <h3 className="font-bold mt-8 mb-2 text-xl">Topics</h3>
+                <h3 className="mt-8 mb-2 text-xl font-bold">Topics</h3>
                 <Topics organizationId={organizationId} questionId={id} />
-                <h3 className="font-bold mt-8 mb-4 text-xl">Question settings</h3>
+                <h3 className="mt-8 mb-4 text-xl font-bold">Question settings</h3>
                 <EditQuestion
                     values={{ subject, slug, id, published, resolved }}
                     replyId={replies[0].id}
@@ -84,7 +85,7 @@ export const getServerSideProps = withAdminAccess({
         }
 
         const organizationId = getActiveOrganization(context)
-        const question = await getQuestion(id, organizationId)
+        const question = await getQuestion(id)
 
         const {
             data: { company_domain },

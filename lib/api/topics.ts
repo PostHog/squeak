@@ -8,7 +8,7 @@ export function getTopics() {
 }
 
 export function createTopic(label: string) {
-    return doPost<Topic>('/api/topics', { body: { label } })
+    return doPost<Topic>('/api/topics/create', { body: { label } })
 }
 
 export function deleteTopic(id: ID) {
