@@ -4,6 +4,7 @@ import NextCors from 'nextjs-cors'
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin } from '../../lib/api/apiUtils'
 
 import prisma from '../../lib/db'
+import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 import getActiveOrganization from '../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -21,7 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (req.method) {
         case 'GET':
-            return handleGet(req, res)
+        case 'POST':
+            return handleGetConfig(req, res)
         case 'PATCH':
             return handlePatch(req, res)
         default:
@@ -29,12 +31,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = await getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+// POST /api/config
+// Public API to retrieve config for the org
+async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
+    const params = JSON.parse(req.body)
+    const organizationId = params.organizationId
+
+    if (!organizationId) {
+        return res.status(400).json({ error: 'Missing required fields' })
+    }
 
     const config = await prisma.squeakConfig.findFirst({
         where: { organization_id: organizationId },
+        select: { permalink_base: true, permalinks_enabled: true },
     })
 
     res.status(200).json(config)
