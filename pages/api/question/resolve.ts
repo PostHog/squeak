@@ -1,12 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import { definitions } from '../../../@types/supabase'
+
 import getUserProfile from '../../../util/getUserProfile'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
+import prisma from '../../../lib/db'
 
-type Message = definitions['squeak_messages']
-
+// POST /api/question/resolve
+// Public API to resolve a question
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -38,45 +38,41 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500)
 
         if (userProfileError) {
-            console.error(`[🧵 Question] ${userProfileError.message}`)
-            res.json({ error: userProfileError.message })
+            console.error(`[🧵 Question] ${userProfileError}`)
+            res.json({ error: userProfileError })
         }
 
         return
     }
 
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    const { data: message, error: messageError } = await supabaseServiceRoleClient
-        .from<Message>('squeak_messages')
-        .update({
-            resolved,
-            resolved_reply_id: replyId || null,
-        })
-        .match({ id: messageId, organization_id: organizationId })
-        .limit(1)
-        .single()
-
-    if (!message || messageError) {
-        console.error(`[🧵 Question] Error resolving message`)
-        res.status(500)
-
-        if (messageError) {
-            console.error(`[🧵 Question] ${messageError.message}`)
-            res.json({ error: messageError.message })
-        }
-
-        return
-    }
-
-    res.status(200).json({
-        messageId: message.id,
-        resolved: message.resolved,
-        resolved_reply_id: message.resolved_reply_id,
+    // Find the message, ensure it exists
+    let message = await prisma.question.findFirst({
+        where: { id: messageId, organization_id: organizationId },
     })
+
+    if (!message) {
+        res.status(404).json({ error: 'Message not found' })
+        return
+    }
+
+    try {
+        message = await prisma.question.update({
+            where: { id: message.id },
+            data: {
+                resolved,
+                resolved_reply_id: replyId || null,
+            },
+        })
+
+        res.status(200).json({
+            messageId: message.id,
+            resolved: message.resolved,
+            resolved_reply_id: message.resolved_reply_id,
+        })
+    } catch (err) {
+        console.error(`[🧵 Question] Error updating message`)
+        return res.status(500).json({ error: err })
+    }
 }
 
 export default handler
