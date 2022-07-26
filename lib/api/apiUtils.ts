@@ -1,8 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth'
+import superjson from 'superjson'
+
 import getActiveOrganization from '../../util/getActiveOrganization'
 import { authOptions } from '../../pages/api/auth/[...nextauth]'
 import { getReadonlyProfileForUser } from '../../db'
+import { getSessionUser } from '../auth'
+import { User } from '@prisma/client'
 
 /**
  * Checks either request query params or the json request body for the presence of a list of parameters. If those don't exist, this method returns false and sends a 400 response.
@@ -20,7 +24,7 @@ export function checkRequiredParams(params: string[], req: NextApiRequest, res: 
             }
         })
     } else {
-        const body = JSON.parse(req.body)
+        const body = req.body
         params.forEach((param) => {
             if (!body[param] || body[param] === '') {
                 res.status(400).json({ error: `Required param '${param}' is not present.` })
@@ -52,32 +56,33 @@ export function objectNotFound(res: NextApiResponse): void {
     res.status(404).json({ error: 'Object not found' })
 }
 
+// Determines whether the current user is an admin of the "current" organization, which is determined by the organization ID stored in the cookie
 export async function isAdmin(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
-    const session = await getServerSession(req, res)
+    const user = await getSessionUser(req)
     const organizationId = getActiveOrganization({ req })
 
-    if (!session) {
+    if (!user) {
         notAuthenticated(res)
         return false
     }
 
-    if (!session || !organizationId) {
+    if (!user || !organizationId) {
         return false
     }
 
-    const readonlyProfile = await getReadonlyProfileForUser(session.user.id, organizationId)
+    const readonlyProfile = await getReadonlyProfileForUser(user.id, organizationId)
     if (!readonlyProfile) return false
 
     return readonlyProfile.role === 'admin'
 }
 
-export async function requireSession(req: NextApiRequest, res: NextApiResponse): Promise<Session | undefined> {
-    const session = await getServerSession(req, res)
-    if (!session) {
+export async function requireSession(req: NextApiRequest, res: NextApiResponse): Promise<User | undefined> {
+    const user = await getSessionUser(req)
+    if (!user) {
         notAuthenticated(res)
         return
     }
-    return session
+    return user
 }
 
 /**
@@ -97,21 +102,13 @@ export async function requireOrgAdmin(req: NextApiRequest, res: NextApiResponse)
     return true
 }
 
-// Checks whether a readonly profile exists for the user and organization.
-// We pull the user from the session and the org id from cookies, and then lookup a readonly profile for the user and org.
-export async function hasOrgAccess(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
-    const session = await getServerSession(req, res)
-    const organizationId = getActiveOrganization({ req })
-
-    if (!session || !organizationId) {
-        return false
-    }
-
-    const readonlyProfile = await getReadonlyProfileForUser(session.user.id, organizationId)
-    if (!readonlyProfile) return false
-    return true
-}
-
 export async function getServerSession(req: NextApiRequest, res: NextApiResponse): Promise<Session | null> {
     return await unstable_getServerSession(req, res, authOptions)
+}
+
+export function safeJson(res: NextApiResponse, data: any, statusCode?: number) {
+    const { json } = superjson.serialize(data)
+    res.status(statusCode || 200)
+        .setHeader('Content-Type', 'application/json')
+        .send(json)
 }

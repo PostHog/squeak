@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { deleteQuestion, UpdateQuestionParams } from '../../../db/question'
 
 import { updateQuestion } from '../../../db/question'
-import { methodNotAllowed, requireOrgAdmin } from '../../../lib/api/apiUtils'
+import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 
 // PATCH /api/question/[id]/edit
@@ -79,7 +79,7 @@ async function doGetQuestion(req: NextApiRequest, res: NextApiResponse) {
         })
     }
 
-    res.status(200).json(question)
+    safeJson(res, question)
 }
 
 // DELETE /api/question/[id]

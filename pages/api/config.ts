@@ -1,41 +1,29 @@
-import { Prisma, SqueakConfig } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
-import { methodNotAllowed, orgIdNotFound, requireOrgAdmin } from '../../lib/api/apiUtils'
+import { orgIdNotFound, requireOrgAdmin } from '../../lib/api/apiUtils'
 
 import prisma from '../../lib/db'
-import checkAllowedOrigins from '../../util/checkAllowedOrigins'
+import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
+import nextConnect from '../../lib/next-connect'
 import getActiveOrganization from '../../util/getActiveOrganization'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
-
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
-
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
-
-    switch (req.method) {
-        case 'GET':
-        case 'POST':
-            return handleGetConfig(req, res)
-        case 'PATCH':
-            return handlePatch(req, res)
-        default:
-            return methodNotAllowed(res)
-    }
-}
+const handler = nextConnect
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(handleGetConfig)
+    .get(handleGetConfig)
+    .patch(handlePatch)
 
 // POST /api/config
 // Public API to retrieve config for the org
 async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
-    const params = JSON.parse(req.body)
-    const organizationId = params.organizationId
+    let organizationId: string
+    if (req.method === 'POST') {
+        const params = req.body
+        organizationId = params.organizationId
+    } else {
+        organizationId = req.query.organizationId as string
+    }
 
     if (!organizationId) {
         return res.status(400).json({ error: 'Missing required fields' })
@@ -88,3 +76,5 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).json(config)
 }
+
+export default handler

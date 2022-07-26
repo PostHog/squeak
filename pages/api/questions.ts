@@ -1,39 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 
-import getQuestions from '../../util/getQuestions'
-import checkAllowedOrigins from '../../util/checkAllowedOrigins'
-import { methodNotAllowed } from '../../lib/api/apiUtils'
+import getQuestions, { GetQuestionsParams } from '../../util/getQuestions'
+import { safeJson } from '../../lib/api/apiUtils'
+import nextConnect from '../../lib/next-connect'
+import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
-
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
-
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
-
-    switch (req.method) {
-        case 'POST': // the fact that this is a POST is legacy in the client sdk
-        case 'GET': // add GET support to eventually deprecate the 'POST' method to fetch questions
-            return fetchQuestions(req, res)
-        default:
-            return methodNotAllowed(res)
-    }
-}
+const handler = nextConnect
+handler.use(corsMiddleware).use(allowedOrigin).post(fetchQuestions).get(fetchQuestions)
 
 // POST /api/questions
 // Public API endpoint to fetch a list of questions
 async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
-    const params = JSON.parse(req.body)
+    const params = req.body as GetQuestionsParams
+
     const { data } = await getQuestions({ req, res }, params)
 
-    res.status(200).json(data)
+    safeJson(res, data)
 }
 
 export default handler

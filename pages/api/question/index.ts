@@ -1,33 +1,20 @@
+import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 import xss from 'xss'
 
-import { methodNotAllowed } from '../../../lib/api/apiUtils'
+import nc from '../../../lib/next-connect'
 import prisma from '../../../lib/db'
-import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
+import { allowedOrigin, corsMiddleware, validateBody } from '../../../lib/middleware'
+import { getSessionUser } from '../../../lib/auth'
+import { notAuthenticated, safeJson } from '../../../lib/api/apiUtils'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
-
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
-
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
-
-    switch (req.method) {
-        case 'POST':
-            return doPost(req, res)
-        default:
-            return methodNotAllowed(res)
-    }
+export interface CreateQuestionRequestPayload {
+    body: string
+    slug: string
+    subject: string
+    organizationId: string
 }
 
 export interface CreateQuestionResponse {
@@ -39,33 +26,39 @@ export interface CreateQuestionResponse {
     published: boolean
 }
 
-export interface CreateQuestionRequestPayload {
-    body: string
-    slug: string
-    subject: string
-    token: string
-    organizationId: string
+const schema: JSONSchemaType<CreateQuestionRequestPayload> = {
+    type: 'object',
+    properties: {
+        body: { type: 'string' },
+        slug: { type: 'string', nullable: true },
+        organizationId: { type: 'string' },
+        subject: { type: 'string' },
+    },
+    required: ['body', 'organizationId', 'subject'],
 }
+
+const handler = nc
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(validateBody(schema, { coerceTypes: true }), doPost)
 
 // POST /api/question
 // Endpoint used by sdk to allow end users to create questions
 async function doPost(req: NextApiRequest, res: NextApiResponse) {
-    const { slug, subject, token, body: rawBody, organizationId }: CreateQuestionRequestPayload = JSON.parse(req.body)
-
-    if (!slug || !subject || !rawBody || !organizationId || !token) {
-        res.status(400).json({ error: 'Missing required fields' })
-        return
-    }
+    const { slug, subject, body: rawBody, organizationId }: CreateQuestionRequestPayload = req.body
 
     const body = xss(rawBody, {
         whiteList: {},
         stripIgnoreTag: true,
     })
 
+    const user = await getSessionUser(req)
+    if (!user) return notAuthenticated(res)
+
     const { data: userProfile, error: userProfileError } = await getUserProfile({
         context: { req, res },
         organizationId,
-        token,
+        user,
     })
 
     if (!userProfile || userProfileError) {
@@ -138,8 +131,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
         published: message.published,
     }
 
-    res.status(200).json(response)
-
+    safeJson(res, response, 201)
     sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
 }
 
