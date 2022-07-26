@@ -1,36 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
+import nc from 'next-connect'
 
 import getUserProfile from '../../../util/getUserProfile'
-import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 import prisma from '../../../lib/db'
+import { corsMiddleware, allowedOrigin, validateBody } from '../../../lib/middleware'
+import { notAuthenticated, safeJson } from '../../../lib/api/apiUtils'
+import { getSessionUser } from '../../../lib/auth'
+
+const schema = {
+    type: 'object',
+    properties: {
+        messageId: { type: 'number' },
+        replyId: { type: 'number', nullable: true },
+        organizationId: { type: 'string' },
+        resolved: { type: 'boolean' },
+    },
+    required: ['messageId', 'organizationId', 'resolved'],
+}
+
+const handler = nc<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(validateBody(schema, { coerceTypes: true }), doResolve)
 
 // POST /api/question/resolve
 // Public API to resolve a question
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
+async function doResolve(req: NextApiRequest, res: NextApiResponse) {
+    const { messageId, replyId, organizationId, resolved } = req.body
 
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
-
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
-
-    const { token, messageId, replyId, organizationId, resolved } = JSON.parse(req.body)
-
-    if (!messageId || !token || !organizationId) {
-        res.status(400).json({ error: 'Missing required fields' })
-        return
-    }
+    const user = await getSessionUser(req)
+    if (!user) return notAuthenticated(res)
 
     const { data: userProfile, error: userProfileError } = await getUserProfile({
         context: { req, res },
         organizationId,
-        token,
+        user,
     })
 
     if (!userProfile || userProfileError) {
@@ -64,7 +68,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             },
         })
 
-        res.status(200).json({
+        safeJson(res, {
             messageId: message.id,
             resolved: message.resolved,
             resolved_reply_id: message.resolved_reply_id,

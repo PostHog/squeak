@@ -28,7 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 // POST /api/questions
-// Fetch a list of questions
+// Public API endpoint to fetch a list of questions
 async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
     const params = JSON.parse(req.body)
     const { data } = await getQuestions({ req, res }, params)
