@@ -1,10 +1,7 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { definitions } from '../../../@types/supabase'
+import prisma from '../../../lib/db'
 import createUserProfile from '../../../util/createUserProfile'
 import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
-
-type ProfileReadonly = definitions['squeak_profiles_readonly']
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { first_name, last_name, avatar, slack_user_id, organization_id } = JSON.parse(req.body)
@@ -16,16 +13,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     let profileId
 
-    const { data } = await supabaseServerClient({ req, res })
-        .from<ProfileReadonly>('squeak_profiles_readonly')
-        .select('profile_id')
-        .eq('slack_user_id', slack_user_id)
-        .single()
+    const data = await prisma.profileReadonly.findFirst({
+        where: { slack_user_id },
+        select: { profile_id: true },
+    })
 
     if (data?.profile_id) {
         profileId = data.profile_id
     } else {
-        const { data: profile } = await createUserProfile(first_name, last_name, avatar)
+        const { data: profile } = await createUserProfile({ first_name, last_name, avatar })
 
         await createUserProfileReadonly(null, organization_id, profile?.id || '', 'user', slack_user_id)
 
