@@ -18,7 +18,7 @@ const Users: NextPageWithLayout<Props> = () => {
 
     const fetchProfiles = useCallback(async () => {
         try {
-            const { body: data } = await getProfiles()
+            const { data } = await getProfiles()
             setProfiles(data)
         } catch (err) {
             if (err instanceof ApiResponseError) {

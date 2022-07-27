@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 
 import Avatar from './Avatar'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { updateProfile } from '../lib/api'
 import { ApiResponseError } from '../lib/api/client'
 import { GetProfilesProfile, GetProfilesResponse } from '../pages/api/profiles'
+import { useUser } from '../contexts/user'
 
 interface TableProps {
     profiles: GetProfilesResponse
