@@ -1,46 +1,35 @@
 import { NextPageWithLayout } from '../@types/types'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../@types/supabase'
 import { useToasts } from 'react-toast-notifications'
 import Router from 'next/router'
+import { Profile as UserProfile, User } from '@prisma/client'
+import { getSessionUser } from '../lib/auth'
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
+import prisma from '../lib/db'
+import { doPatch } from '../lib/api'
 
-type Profile = definitions['squeak_profiles']
-type ProfileReadonly = definitions['squeak_profiles_readonly']
+interface Props {
+    user: User
+    profile: UserProfile
+}
 
-interface Props {}
-
-const Profile: NextPageWithLayout<Props> = () => {
+const Profile: NextPageWithLayout<Props> = ({ user, profile }) => {
     const { addToast } = useToasts()
-    const { user, isLoading } = useUser()
+    const isLoading = false
 
-    const [firstName, setFirstName] = useState<string>('')
-    const [lastName, setLastName] = useState<string>('')
+    const [firstName, setFirstName] = useState<string>(profile.first_name || '')
+    const [lastName, setLastName] = useState<string>(profile.last_name || '')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string>('')
 
-    const loadProfile = useCallback(async () => {
-        if (!user) {
-            return
-        }
-
-        const { data } = await supabaseClient
-            .from('squeak_profiles_readonly')
-            .select('id, profile:squeak_profiles(first_name, last_name)')
-            .eq('user_id', user?.id || '')
-            .limit(1)
-            .single()
-
-        setFirstName(data?.profile?.first_name || '')
-        setLastName(data?.profile?.last_name || '')
-    }, [user])
-
     const handleSave = async () => {
-        if (!user) {
-            return
-        }
+        await doPatch('/api/profile', {
+            first_name: firstName,
+            last_name: lastName,
+            password,
+        })
 
         const { error } = await supabaseClient.auth.update({ password })
 
@@ -49,34 +38,9 @@ const Profile: NextPageWithLayout<Props> = () => {
             return
         }
 
-        const { data: profile, error: profileFetchError } = await supabaseClient
-            .from<ProfileReadonly>('squeak_profiles_readonly')
-            .select('profile_id')
-            .eq('user_id', user.id)
-            .limit(1)
-            .single()
-
-        if (!profile || profileFetchError) {
-            setError('Error updating user profile')
-        }
-
-        const { error: profileUpdateError } = await supabaseClient
-            .from<Profile>('squeak_profiles')
-            .update({ first_name: firstName, last_name: lastName })
-            .match({ id: profile?.profile_id })
-
-        if (profileUpdateError) {
-            setError(profileUpdateError.message)
-            return
-        }
-
         addToast('Your profile has been updated', { appearance: 'success' })
         Router.push('/login')
     }
-
-    useEffect(() => {
-        loadProfile()
-    }, [loadProfile])
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -88,7 +52,7 @@ const Profile: NextPageWithLayout<Props> = () => {
 
     return (
         <div className="space-y-6">
-            {error && <p className="text-center text-sm font-medium text-red-500">{error}</p>}
+            {error && <p className="text-sm font-medium text-center text-red-500">{error}</p>}
             <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                     First name
@@ -102,7 +66,7 @@ const Profile: NextPageWithLayout<Props> = () => {
                         onChange={(e) => setFirstName(e.target.value)}
                         autoComplete="given-name"
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-light rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
             </div>
@@ -119,7 +83,7 @@ const Profile: NextPageWithLayout<Props> = () => {
                         onChange={(e) => setLastName(e.target.value)}
                         autoComplete="family-name"
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-light rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
             </div>
@@ -136,13 +100,13 @@ const Profile: NextPageWithLayout<Props> = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         autoComplete="family-name"
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-light rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
             </div>
             <button
                 onClick={handleSave}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
                 Save
             </button>
@@ -152,6 +116,28 @@ const Profile: NextPageWithLayout<Props> = () => {
 
 Profile.getLayout = function getLayout(page: ReactElement<Props>) {
     return <LoginLayout title="Edit profile">{page}</LoginLayout>
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
+    const user = await getSessionUser(context.req)
+    const profilero = await prisma.profileReadonly.findFirst({
+        where: { user_id: user.id },
+    })
+    const profile = await prisma.profile.findUnique({
+        where: { id: profilero?.profile_id },
+    })
+
+    if (!user || !profile) {
+        return {
+            redirect: { destination: '/login', permanent: false },
+        }
+    }
+    return {
+        props: {
+            user,
+            profile,
+        },
+    }
 }
 
 export default Profile
