@@ -12,7 +12,8 @@ export class ApiResponseError extends Error {
 // General api response interface
 export interface ApiResponse<T = Record<string, unknown>> {
     response: Response // raw response object
-    body: T // the decoded json body
+    body?: T // the decoded json body
+    data?: T
 }
 
 // Replicates what is accepted by URLSearchParams constructor
@@ -87,6 +88,9 @@ export async function performRequest(path: string, method: RequestMethod, option
 export async function generateApiResponse<ResponseType = Record<string, unknown>>(
     response: Response
 ): Promise<ApiResponse<ResponseType>> {
+    if (response.status === 401) {
+        return { response }
+    }
     const body = await response.json()
 
     if (!response.ok) {
@@ -95,5 +99,5 @@ export async function generateApiResponse<ResponseType = Record<string, unknown>
         throw new ApiResponseError(error, response)
     }
 
-    return { body, response }
+    return { body, response, data: body }
 }
