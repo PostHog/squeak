@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { orgIdNotFound, requireOrgAdmin } from '../../lib/api/apiUtils'
+import { orgIdNotFound, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
 
 import prisma from '../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
@@ -60,7 +60,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
     if (!(await requireOrgAdmin(req, res))) return
 
-    const body: UpdateConfigPayload = JSON.parse(req.body)
+    const body: UpdateConfigPayload = req.body
 
     // find config object id
     let config = await prisma.squeakConfig.findFirst({
@@ -74,7 +74,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         data: body,
     })
 
-    res.status(200).json(config)
+    safeJson(res, config)
 }
 
 export default handler

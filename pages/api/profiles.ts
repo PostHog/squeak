@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
-import { requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
+import { requireOrgAdmin } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
@@ -59,5 +59,5 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             },
         },
     })
-    safeJson(res, profiles)
+    res.status(200).json(profiles)
 }

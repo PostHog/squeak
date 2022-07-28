@@ -4,15 +4,16 @@ import { orgIdNotFound, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../../lib/middleware'
 import nextConnect from '../../../lib/next-connect'
+import getActiveOrganization from '../../../util/getActiveOrganization'
 
-const handler = nextConnect.use(corsMiddleware).use(allowedOrigin).post(handleGetTopics)
+const handler = nextConnect.use(corsMiddleware).use(allowedOrigin).post(handleGetTopics).get(handleGetTopics)
 
 export type GetTopicsResponse = { id: bigint | number; label: string }[] | []
 
 // POST /api/topics
 // Public API to retrieve a list of topics for the org
 async function handleGetTopics(req: NextApiRequest, res: NextApiResponse) {
-    const { organizationId } = req.body
+    const organizationId = req.body.organizationId || getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 
     const topics: GetTopicsResponse = await prisma.topic.findMany({
