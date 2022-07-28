@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import AllowedOriginModal from './AllowedOriginModal'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { getConfig } from '../../lib/api'
+import { useUser } from '../../contexts/user'
 
 interface Props {}
 
@@ -17,7 +17,7 @@ const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
 
     const getAllowedOrigins = useCallback(async () => {
         if (!isUserLoading) {
-            const { body: data } = await getConfig()
+            const { body: data } = await getConfig(getActiveOrganization())
             setAllowedOrigins(data?.allowed_origins || [])
             setInitialValues({
                 allowedOrigins: data?.allowed_origins || [],

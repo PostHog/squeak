@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 
 import useActiveOrganization from '../../hooks/useActiveOrganization'
 import SlugModal from './SlugModal'
 import Button from '../Button'
 import { getQuestion } from '../../lib/api'
+import { useUser } from '../../contexts/user'
 interface Props {
     questionId: number
 }
 
 const SlugTable: React.VoidFunctionComponent<Props> = ({ questionId }) => {
-    const { isLoading: isUserLoading } = useUser()
+    const { status } = useUser()
     const [slugs, setSlugs] = useState<string[]>([])
     const [initialValues, setInitialValues] = useState<{ slugs: Array<string>; slug: string } | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
+
+    const isUserLoading = status === 'loading'
 
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()

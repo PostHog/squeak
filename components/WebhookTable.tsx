@@ -4,14 +4,14 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import WebhookModal from './WebhookModal'
 import { WebhookValues } from '../@types/types'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import { fetchWebhooks } from '../lib/api'
 import { FetchWebhooksPayload } from '../pages/api/webhooks'
+import { useUser } from '../contexts/user'
 
 interface Props {}
 
 const WebhookTable: React.VoidFunctionComponent<Props> = () => {
-    const { isLoading: isUserLoading } = useUser()
+    const { status: isUserLoading } = useUser()
 
     const [initialValues, setInitialvalues] = useState<WebhookValues | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
