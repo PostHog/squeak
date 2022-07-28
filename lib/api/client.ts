@@ -57,8 +57,13 @@ export async function doPost<ResponseType = Record<string, unknown>>(
 }
 
 export async function performRequest(path: string, method: RequestMethod, options?: RequestParams): Promise<Response> {
-    const fetchArgs = {
+    const fetchArgs: RequestInit = {
         method,
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        credentials: 'include',
         body: options?.body ? JSON.stringify(options.body) : undefined,
     }
 
