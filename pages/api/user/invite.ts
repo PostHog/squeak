@@ -11,7 +11,7 @@ export default withAdminAccess(async (req, res) => {
         process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    const { organizationId, email, role = 'admin', firstName } = JSON.parse(req.body)
+    const { organizationId, email, role = 'admin', firstName } = req.body
 
     const { origin } = absoluteUrl(req)
 

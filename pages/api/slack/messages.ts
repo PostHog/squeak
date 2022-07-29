@@ -36,7 +36,7 @@ export interface Message {
 }
 
 const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message> | { error: string }>) => {
-    const { token, organizationId, channel } = JSON.parse(req.body)
+    const { token, organizationId, channel } = req.body
 
     if (!token || !organizationId || !channel) {
         res.status(400).json({ error: 'Missing required fields' })

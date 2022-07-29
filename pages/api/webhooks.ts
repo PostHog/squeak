@@ -40,7 +40,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
     const organizationId = getActiveOrganization({ req, res })
 
-    const data: CreateWebhookPayload & { organization_id: string } = JSON.parse(req.body)
+    const data: CreateWebhookPayload & { organization_id: string } = req.body
     data.organization_id = organizationId
 
     const webhook = await prisma.webhookConfig.create({ data })

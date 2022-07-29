@@ -33,7 +33,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     const question = await findQuestion(req, res)
     if (!question) return
 
-    const { topics } = JSON.parse(req.body)
+    const { topics } = req.body
 
     await prisma.question.update({
         where: { id: parseInt(req.query.id as string) },

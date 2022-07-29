@@ -4,7 +4,7 @@ import createUserProfile from '../../../util/createUserProfile'
 import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { first_name, last_name, avatar, slack_user_id, organization_id } = JSON.parse(req.body)
+    const { first_name } = req.body
 
     if (!first_name) {
         res.status(400).json({ error: 'Missing required fields' })

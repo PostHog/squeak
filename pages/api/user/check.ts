@@ -11,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         origin: '*',
     })
 
-    const { token, organizationId } = JSON.parse(req.body)
+    const { token, organizationId } = req.body
 
     if (!token || !organizationId) {
         res.status(400).json({ error: 'Missing required fields' })

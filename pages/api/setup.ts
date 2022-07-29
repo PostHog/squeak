@@ -37,7 +37,7 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName, url, distinctId } = JSON.parse(req.body)
+    const { firstName, lastName, organizationName, url, distinctId } = req.body
 
     if (!firstName || !lastName || !organizationName) {
         res.status(400).json({ error: 'Missing required fields' })
