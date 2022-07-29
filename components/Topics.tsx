@@ -68,7 +68,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
     }
 
     const getAllTopics = async () => {
-        const { body } = await getTopics()
+        const { body } = await getTopics(organizationId)
         return body
     }
 

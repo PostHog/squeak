@@ -1,6 +1,7 @@
 import { Topic } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { methodNotAllowed, orgIdNotFound } from '../../../lib/api/apiUtils'
+
+import { methodNotAllowed, orgIdNotFound, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
@@ -23,7 +24,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const organizationId = getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 
-    const body: CreateTopicRequestBody = JSON.parse(req.body)
+    const body: CreateTopicRequestBody = req.body
 
     const topic: Topic = await prisma.topic.create({
         data: {
@@ -32,5 +33,5 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         },
     })
 
-    res.status(200).json(topic)
+    safeJson(res, topic, 201)
 }

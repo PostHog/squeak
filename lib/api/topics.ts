@@ -3,12 +3,12 @@ import { GetTopicsResponse } from '../../pages/api/topics'
 import { ID } from '../types'
 import { doDelete, doGet, doPost } from './client'
 
-export function getTopics() {
-    return doGet<GetTopicsResponse>('/api/topics')
+export function getTopics(organizationId: string) {
+    return doGet<GetTopicsResponse>('/api/topics', { organizationId })
 }
 
 export function createTopic(label: string) {
-    return doPost<Topic>('/api/topics/create', { body: { label } })
+    return doPost<Topic>('/api/topics/create', { label })
 }
 
 export function deleteTopic(id: ID) {
