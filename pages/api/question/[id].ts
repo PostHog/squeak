@@ -102,5 +102,5 @@ export async function doUpdateQuestion(req: NextApiRequest, res: NextApiResponse
     const params: UpdateQuestionParams = req.body
     const question = await updateQuestion(id, params)
 
-    res.status(200).json(question)
+    safeJson(res, question)
 }
