@@ -4,7 +4,7 @@ import { safeJson } from '../../../lib/api/apiUtils'
 
 import prisma from '../../../lib/db'
 import { corsMiddleware, validateBody } from '../../../lib/middleware'
-import nextConnect from '../../../lib/next-connect'
+import nextConnect from 'next-connect'
 
 const schema = {
     type: 'object',
@@ -17,7 +17,7 @@ const schema = {
     },
 }
 
-const handler = nextConnect
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(validateBody(schema, { coerceTypes: true }))
     .post(handlePost)

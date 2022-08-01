@@ -3,10 +3,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { orgIdNotFound, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../../lib/middleware'
-import nextConnect from '../../../lib/next-connect'
+import nextConnect from 'next-connect'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
-const handler = nextConnect.use(corsMiddleware).use(allowedOrigin).post(handleGetTopics).get(handleGetTopics)
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(handleGetTopics)
+    .get(handleGetTopics)
 
 export type GetTopicsResponse = { id: bigint | number; label: string }[] | []
 

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import nc from 'next-connect'
 
-import nc from '../../../lib/next-connect'
 import { safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import { validateBody, allowedOrigin, corsMiddleware, requireOrgAdmin } from '../../../lib/middleware'
@@ -15,7 +15,7 @@ const schema = {
     additionalProperties: true,
 }
 
-const handler = nc
+const handler = nc<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(allowedOrigin)
     .use(validateBody(schema))

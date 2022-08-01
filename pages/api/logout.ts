@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 import { removeTokenCookie } from '../../lib/auth/cookies'
 import { allowedOrigin, corsMiddleware } from '../../lib/middleware'
-import nc from '../../lib/next-connect'
+import nc from 'next-connect'
 
-const handler = nc.use(corsMiddleware).use(allowedOrigin).post(doLogout)
+const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).use(allowedOrigin).post(doLogout)
 
 // POST /api/logout
 async function doLogout(req: NextApiRequest, res: NextApiResponse) {

@@ -2,11 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import getQuestions, { GetQuestionsParams } from '../../util/getQuestions'
 import { safeJson } from '../../lib/api/apiUtils'
-import nextConnect from '../../lib/next-connect'
+import nextConnect from 'next-connect'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 
 const handler = nextConnect
-handler.use(corsMiddleware).use(allowedOrigin).post(fetchQuestions).get(fetchQuestions)
+handler<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(fetchQuestions)
+    .get(fetchQuestions)
 
 // POST /api/questions
 // Public API endpoint to fetch a list of questions

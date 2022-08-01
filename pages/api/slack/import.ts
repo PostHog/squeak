@@ -3,10 +3,10 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { findOrCreateProfileFromSlackUser } from '../../../db/'
 import { safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
-import nextConnect from '../../../lib/next-connect'
+import nextConnect from 'next-connect'
 import { Message as MessageResponse } from './messages'
 
-const handler = nextConnect.post(handlePost)
+const handler = nextConnect<NextApiRequest, NextApiResponse>().post(handlePost)
 
 interface ImportBodyPayload {
     question: Partial<MessageResponse>

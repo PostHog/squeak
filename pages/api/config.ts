@@ -1,13 +1,13 @@
 import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { orgIdNotFound, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
+import nc from 'next-connect'
 
 import prisma from '../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
-import nextConnect from '../../lib/next-connect'
 import getActiveOrganization from '../../util/getActiveOrganization'
 
-const handler = nextConnect
+const handler = nc<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(allowedOrigin)
     .post(handleGetConfig)

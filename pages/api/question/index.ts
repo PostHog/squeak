@@ -1,8 +1,9 @@
 import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
 import xss from 'xss'
+import { Reply } from '@prisma/client'
+import nc from 'next-connect'
 
-import nc from '../../../lib/next-connect'
 import prisma from '../../../lib/db'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
@@ -37,7 +38,7 @@ const schema: JSONSchemaType<CreateQuestionRequestPayload> = {
     required: ['body', 'organizationId', 'subject'],
 }
 
-const handler = nc
+const handler = nc<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(allowedOrigin)
     .post(validateBody(schema, { coerceTypes: true }), doPost)

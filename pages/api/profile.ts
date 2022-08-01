@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import nextConnect from '../../lib/next-connect'
+import nextConnect from 'next-connect'
 import { corsMiddleware, validateBody } from '../../lib/middleware'
 import { getSessionUser } from '../../lib/auth'
 import { notAuthenticated } from '../../lib/api/apiUtils'
@@ -16,7 +16,10 @@ const schema = {
     },
 }
 
-const handler = nextConnect.use(corsMiddleware).use(validateBody(schema)).patch(doPatch)
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(validateBody(schema))
+    .patch(doPatch)
 
 // PATCH /api/profile
 async function doPatch(req: NextApiRequest, res: NextApiResponse) {
