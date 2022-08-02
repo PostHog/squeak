@@ -50,7 +50,7 @@ async function doDeleteQuestion(req: NextApiRequest, res: NextApiResponse) {
 
     await deleteQuestion(id)
 
-    res.status(200)
+    res.status(200).json({ success: true })
 }
 
 // PATCH /api/question/[id]
