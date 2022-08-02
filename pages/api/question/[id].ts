@@ -1,83 +1,43 @@
-import { Question } from '@prisma/client'
+import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { deleteQuestion, UpdateQuestionParams } from '../../../db/question'
+import { deleteQuestion, getQuestion, UpdateQuestionParams } from '../../../db/question'
 
 import { updateQuestion } from '../../../db/question'
-import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
-import prisma from '../../../lib/db'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
+import { validateBody } from '../../../lib/middleware'
+import nextConnect from 'next-connect'
 
-// PATCH /api/question/[id]/edit
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    switch (req.method) {
-        case 'PATCH':
-            return await doUpdateQuestion(req, res)
-        case 'DELETE':
-            return await doDeleteQuestion(req, res)
-        case 'GET':
-            return await doGetQuestion(req, res)
-        default:
-            return methodNotAllowed(res)
-    }
+interface UpdateQuestionRequestPayload {
+    subject: string
+    published: boolean
+    resolved: boolean
+    replyId: number
 }
+
+const updateSchema: JSONSchemaType<UpdateQuestionRequestPayload> = {
+    type: 'object',
+    properties: {
+        subject: { type: 'string' },
+        published: { type: 'boolean' },
+        resolved: { type: 'boolean' },
+        replyId: { type: 'number' },
+    },
+    required: [],
+    additionalProperties: true,
+}
+
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
+    .patch(validateBody(updateSchema, { coerceTypes: true }), doUpdateQuestion)
+    .delete(doDeleteQuestion)
+    .get(doGetQuestion)
 
 // GET /api/question/[id]
 async function doGetQuestion(req: NextApiRequest, res: NextApiResponse) {
     const id = parseInt(req.query.id as string)
 
     // allow the client to specify which fields to select from the db and return
-    const onlyFields = req.query.onlyFields as string
-    const select: { [key: string]: boolean } = {}
-
-    if (onlyFields && onlyFields !== '') {
-        onlyFields.split(',').forEach((field: string) => {
-            select[field] = true
-        })
-    }
-
-    let question: Question | Partial<Question> | null = null
-
-    if (onlyFields && onlyFields.length > 0) {
-        question = await prisma.question.findUnique({
-            where: { id },
-            select,
-        })
-    } else {
-        question = await prisma.question.findUnique({
-            where: { id },
-            select: {
-                subject: true,
-                id: true,
-                slug: true,
-                created_at: true,
-                published: true,
-                slack_timestamp: true,
-                resolved: true,
-                resolved_reply_id: true,
-                replies: {
-                    orderBy: { created_at: 'asc' },
-                    select: {
-                        id: true,
-                        body: true,
-                        created_at: true,
-                        published: true,
-                        profile: {
-                            select: {
-                                id: true,
-                                first_name: true,
-                                last_name: true,
-                                avatar: true,
-                                profiles_readonly: {
-                                    select: {
-                                        role: true,
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        })
-    }
+    const fields = req.query.fields as string
+    const question = await getQuestion(id, { fields })
 
     safeJson(res, question)
 }
@@ -104,3 +64,5 @@ export async function doUpdateQuestion(req: NextApiRequest, res: NextApiResponse
 
     safeJson(res, question)
 }
+
+export default handler

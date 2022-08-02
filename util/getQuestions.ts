@@ -8,7 +8,7 @@ type Context =
           req: NextApiRequest
       }
 
-interface Params {
+export interface GetQuestionsParams {
     organizationId: string
     published?: boolean
     slug?: string
@@ -36,7 +36,7 @@ interface GetQuestionsPayload {
  * @param params
  * @returns
  */
-const getQuestions = async (context: Context, params: Params): Promise<GetQuestionsPayload> => {
+const getQuestions = async (context: Context, params: GetQuestionsParams): Promise<GetQuestionsPayload> => {
     const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
     // const end = start + (perPage - 1)
 

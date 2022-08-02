@@ -1,18 +1,21 @@
-import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
+import superjson from 'superjson'
+
 import EditQuestion from '../../components/question/EditQuestion'
 import SlugTable from '../../components/question/SlugTable'
 import Topics from '../../components/Topics'
 import AdminLayout from '../../layout/AdminLayout'
 import getActiveOrganization from '../../util/getActiveOrganization'
-import getQuestion from '../../util/getQuestion'
+import { getQuestion } from '../../db/'
 import withAdminAccess from '../../util/withAdminAccess'
 import { getQuestion as fetchQuestion } from '../../lib/api/client'
+import prisma from '../../lib/db'
+import { getConfig } from '../../db'
+import { getSessionUser } from '../../lib/auth'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, organizationId }) => {
+const Question = ({ question: initialQuestion, organizationId, user }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
@@ -32,20 +35,18 @@ const Question = ({ question: initialQuestion, organizationId }) => {
         setQuestion(question)
     }
 
-    const { user } = useUser()
-    supabaseClient.auth.user = () => user
+    const apiHost = process.env.NODE_ENV === 'production' ? 'https://squeak.cloud' : 'http://localhost:3001'
 
     return (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="flex items-start col-span-2 space-x-9">
                 <div className="flex-grow max-w-[700px]">
                     <SingleQuestion
-                        apiHost={`//${typeof window !== 'undefined' && window.location.host}`}
+                        apiHost={apiHost}
                         organizationId={organizationId}
-                        supabase={supabaseClient}
                         onResolve={handleResolve}
                         onSubmit={handleSubmit}
-                        question={question}
+                        question={question.question}
                     />
                 </div>
             </div>
@@ -79,29 +80,33 @@ export const getServerSideProps = withAdminAccess({
     redirectTo: (url) => `/login?redirect=${url}`,
     async getServerSideProps(context) {
         const { id } = context.query
+        const user = await getSessionUser(context.req)
 
         if (!id) {
             return { props: { error: 'We require a question ID to lookup the replies, none provided' } }
         }
 
         const organizationId = getActiveOrganization(context)
-        const question = await getQuestion(id)
+        const question = await getQuestion(parseInt(id))
 
-        const {
-            data: { company_domain },
-        } = await supabaseServerClient(context)
-            .from('squeak_config')
-            .select('company_domain')
-            .eq('organization_id', organizationId)
-            .single()
+        // We need to do this to properly serialize BigInt's
+        const { json: safeQuestion } = superjson.serialize(question)
 
-        const { data: topics } = await supabaseServerClient(context)
-            .from('squeak_topics')
-            .select('label')
-            .eq('organization_id', organizationId)
+        const { company_domain } = await getConfig(organizationId, { company_domain: true })
+
+        const topics = await prisma.topic.findMany({
+            where: { organization_id: organizationId },
+            select: { label: true },
+        })
 
         return {
-            props: { question, domain: company_domain || '', organizationId, topics },
+            props: {
+                question: { question: safeQuestion, replies: safeQuestion.replies },
+                domain: company_domain || '',
+                organizationId,
+                topics,
+                user,
+            },
         }
     },
 })
