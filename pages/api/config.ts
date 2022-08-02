@@ -31,7 +31,7 @@ async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
 
     const config = await prisma.squeakConfig.findFirst({
         where: { organization_id: organizationId },
-        select: { permalink_base: true, permalinks_enabled: true },
+        select: { permalink_base: true, permalinks_enabled: true, allowed_origins: true },
     })
 
     res.status(200).json(config)
