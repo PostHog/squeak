@@ -11,7 +11,7 @@ import { useUser } from '../contexts/user'
 interface Props {}
 
 const WebhookTable: React.VoidFunctionComponent<Props> = () => {
-    const { status: isUserLoading } = useUser()
+    const { isLoading: isUserLoading } = useUser()
 
     const [initialValues, setInitialvalues] = useState<WebhookValues | null>(null)
     const [modalOpen, setModalOpen] = useState(false)

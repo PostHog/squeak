@@ -38,7 +38,7 @@ async function doPatch(req: NextApiRequest, res: NextApiResponse) {
     const organizationId = getActiveOrganization({ req, res })
     const id = parseInt(req.query.id as string)
 
-    const data = JSON.parse(req.body)
+    const data = req.body
 
     let webhook = await prisma.webhookConfig.findFirst({
         where: { id, organization_id: organizationId },
@@ -73,5 +73,5 @@ async function doDelete(req: NextApiRequest, res: NextApiResponse) {
         where: { id },
     })
 
-    res.status(200)
+    res.status(200).json({ success: true })
 }

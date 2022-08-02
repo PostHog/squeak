@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { methodNotAllowed, requireOrgAdmin } from '../../lib/api/apiUtils'
+import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
 
@@ -30,7 +30,7 @@ async function doGet(req: NextApiRequest, res: NextApiResponse) {
         where: { organization_id: organizationId },
         select: { id: true, url: true, type: true },
     })
-    res.status(200).json(webhooks)
+    safeJson(res, webhooks)
 }
 
 export type CreateWebhookPayload = Pick<Prisma.WebhookConfigUncheckedCreateInput, 'url' | 'type'>
@@ -45,5 +45,5 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
 
     const webhook = await prisma.webhookConfig.create({ data })
 
-    res.status(201).json(webhook)
+    safeJson(res, webhook, 201)
 }
