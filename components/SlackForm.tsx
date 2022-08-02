@@ -6,20 +6,22 @@ import Link from 'next/link'
 
 import Input from './Input'
 import Select from './Select'
-import { updateSqueakConfig } from '../lib/api'
+import { doPost, updateSqueakConfig } from '../lib/api'
 
 type SlackFormContentProps = Pick<FormikComputedProps<InitialValues>, 'initialValues'> &
     Pick<FormikHelpers<InitialValues>, 'setFieldValue'>
 
+type SlackMessageResponse = Record<string, object>[]
+
 const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ setFieldValue, initialValues }) => {
-    const [channels, setChannels] = useState([])
+    const [channels, setChannels] = useState<SlackMessageResponse>([])
 
     const getChannels = useCallback(
         async (slackApiKey: string) => {
-            if (slackApiKey) {
-                const body = JSON.stringify({ token: slackApiKey })
-                const data = await fetch('/api/slack/channels', { method: 'POST', body }).then((res) => res.json())
-                if (data.error) {
+            if (slackApiKey && slackApiKey !== '') {
+                const { data } = await doPost<SlackMessageResponse>('/api/slack/channels', { token: slackApiKey })
+
+                if (!data) {
                     setChannels([])
                 } else {
                     setChannels(data)
