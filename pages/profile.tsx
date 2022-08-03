@@ -8,7 +8,8 @@ import { Profile as UserProfile, User } from '@prisma/client'
 import { getSessionUser } from '../lib/auth'
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 import prisma from '../lib/db'
-import { doPatch } from '../lib/api'
+import { ApiResponseError, doPatch } from '../lib/api'
+import { useUser } from '../contexts/user'
 
 interface Props {
     user: User
@@ -17,7 +18,7 @@ interface Props {
 
 const Profile: NextPageWithLayout<Props> = ({ user, profile }) => {
     const { addToast } = useToasts()
-    const isLoading = false
+    const { isLoading } = useUser()
 
     const [firstName, setFirstName] = useState<string>(profile.first_name || '')
     const [lastName, setLastName] = useState<string>(profile.last_name || '')
@@ -25,21 +26,23 @@ const Profile: NextPageWithLayout<Props> = ({ user, profile }) => {
     const [error, setError] = useState<string>('')
 
     const handleSave = async () => {
-        await doPatch('/api/profile', {
-            first_name: firstName,
-            last_name: lastName,
-            password,
-        })
+        try {
+            await doPatch('/api/profile', {
+                first_name: firstName,
+                last_name: lastName,
+                password,
+            })
+            addToast('Your profile has been updated', { appearance: 'success' })
+            Router.push('/login')
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message)
+            } else {
+                setError(error as string)
+            }
 
-        const { error } = await supabaseClient.auth.update({ password })
-
-        if (error) {
-            setError(error.message)
             return
         }
-
-        addToast('Your profile has been updated', { appearance: 'success' })
-        Router.push('/login')
     }
 
     if (isLoading) {
