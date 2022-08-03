@@ -1,10 +1,10 @@
 import { Topic } from '@prisma/client'
 import { GetTopicsResponse } from '../../pages/api/topics'
 import { ID } from '../types'
-import { doDelete, doGet, doPost } from './client'
+import { doDelete, doPost } from './client'
 
 export function getTopics(organizationId: string) {
-    return doGet<GetTopicsResponse>('/api/topics', { organizationId })
+    return doPost<GetTopicsResponse>('/api/topics', { organizationId })
 }
 
 export function createTopic(label: string) {
