@@ -1,14 +1,16 @@
-import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
+
 import type { NextPageWithLayout } from '../../@types/types'
 import ProfileForm from '../../components/ProfileForm'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
 import LoginLayout from '../../layout/LoginLayout'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import posthog from 'posthog-js'
+import { getSessionUser } from '../../lib/auth'
+import { setupUser } from '../../lib/api'
 
 interface Props {}
 
@@ -25,33 +27,32 @@ const Profile: NextPageWithLayout<Props> = () => {
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError(null)
-
         setLoading(true)
-        const response = await fetch('/api/signup', {
-            method: 'POST',
-            body: JSON.stringify({
+
+        try {
+            const { body } = await setupUser({
                 firstName,
                 lastName,
                 organizationName,
                 url,
                 distinctId: posthog?.get_distinct_id(),
-            }),
-        })
+            })
+            if (!body) return
 
-        if (!response.ok) {
-            const errorResponse = await response.json()
-            setError(errorResponse.error)
-            return
+            const { userId, organizationId } = body
+
+            await setActiveOrganization(userId, organizationId)
+
+            posthog.identify(userId)
+            posthog.group('organization', `id:${organizationId}`)
+
+            Router.push('/questions')
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message)
+                return
+            }
         }
-
-        const { userId, organizationId } = await response.json()
-
-        await setActiveOrganization(userId, organizationId)
-
-        posthog.identify(userId)
-        posthog.group('organization', `id:${organizationId}`)
-
-        Router.push('/questions')
     }
 
     return (
@@ -77,7 +78,7 @@ Profile.getLayout = function getLayout(page: ReactElement) {
 
 export const getServerSideProps = withMultiTenantCheck({
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        const { user } = await getUser(context)
+        const user = await getSessionUser(context.req)
 
         if (!user) {
             return {

@@ -4,7 +4,7 @@ import { getUserOrganizations } from '../lib/api/'
 const SQUEAK_ORG_ID_COOKIE_KEY = 'squeak_organization_id'
 
 const useActiveOrganization = () => {
-    const setActiveOrganization = async (userId: string, organizationId?: number) => {
+    const setActiveOrganization = async (userId: string, organizationId?: string) => {
         if (organizationId) {
             setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organizationId}`, { path: '/' })
             return

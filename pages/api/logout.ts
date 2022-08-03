@@ -8,7 +8,7 @@ const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).use(al
 
 // POST /api/logout
 async function doLogout(req: NextApiRequest, res: NextApiResponse) {
-    removeTokenCookie(res)
+    await removeTokenCookie(res)
     res.status(200).json({ success: true })
 }
 

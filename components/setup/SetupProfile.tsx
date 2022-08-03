@@ -1,9 +1,11 @@
-import { User } from '@supabase/gotrue-js'
 import Router from 'next/router'
 import { useState } from 'react'
+
 import ProfileForm from '../ProfileForm'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
 import posthog from 'posthog-js'
+import { User } from '@prisma/client'
+import { doPost } from '../../lib/api'
 
 interface Props {
     user: User
