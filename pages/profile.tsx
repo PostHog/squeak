@@ -1,14 +1,13 @@
 import { NextPageWithLayout } from '../@types/types'
 import { ReactElement, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useToasts } from 'react-toast-notifications'
 import Router from 'next/router'
 import { Profile as UserProfile, User } from '@prisma/client'
 import { getSessionUser } from '../lib/auth'
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 import prisma from '../lib/db'
-import { ApiResponseError, doPatch } from '../lib/api'
+import { doPatch } from '../lib/api'
 import { useUser } from '../contexts/user'
 
 interface Props {

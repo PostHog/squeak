@@ -1,17 +1,15 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import React, { ReactElement } from 'react'
+
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import SlackForm from '../../components/SlackForm'
 import SlackManifestSnippet from '../../components/SlackManifestSnippet'
-import { definitions } from '../../@types/supabase'
 import getActiveOrganization from '../../util/getActiveOrganization'
-
-type Config = definitions['squeak_config']
+import prisma from '../../lib/db'
 
 interface Props {
     slackApiKey: string
@@ -39,7 +37,7 @@ const Alerts: NextPageWithLayout<Props> = ({ slackApiKey, slackQuestionChannel }
                             <Button disabled={!isValid} type="submit">
                                 Continue
                             </Button>
-                            <button onClick={handleSkip} className="text-accent-light font-semibold">
+                            <button onClick={handleSkip} className="font-semibold text-accent-light">
                                 Skip
                             </button>
                         </>
@@ -68,11 +66,13 @@ export const getServerSideProps = withPreflightCheck({
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const organizationId = getActiveOrganization(context)
 
-        const { data: config } = await supabaseServerClient(context)
-            .from<Config>('squeak_config')
-            .select(`slack_api_key, slack_question_channel`)
-            .eq('organization_id', organizationId)
-            .single()
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+            select: {
+                slack_api_key: true,
+                slack_question_channel: true,
+            },
+        })
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 

@@ -1,16 +1,14 @@
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { GetStaticPropsResult } from 'next'
 import Router from 'next/router'
 import { ReactElement } from 'react'
-import { definitions } from '../../@types/supabase'
+
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import NotificationForm from '../../components/NotificationForm'
 import SetupLayout from '../../layout/SetupLayout'
+import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import withPreflightCheck from '../../util/withPreflightCheck'
-
-type Config = definitions['squeak_config']
 
 interface Props {
     mailgunApiKey: string
@@ -45,7 +43,7 @@ const Notifications: NextPageWithLayout<Props> = ({ mailgunApiKey, mailgunDomain
                             <Button loading={loading} disabled={!isValid} type="submit">
                                 Continue
                             </Button>
-                            <button onClick={handleSkip} className="text-accent-light font-semibold">
+                            <button onClick={handleSkip} className="font-semibold text-accent-light">
                                 Skip
                             </button>
                         </>
@@ -75,13 +73,17 @@ export const getServerSideProps = withPreflightCheck({
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const organizationId = getActiveOrganization(context)
 
-        const { data: config } = await supabaseServerClient(context)
-            .from<Config>('squeak_config')
-            .select(
-                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain`
-            )
-            .eq('organization_id', organizationId)
-            .single()
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+            select: {
+                mailgun_api_key: true,
+                mailgun_domain: true,
+                mailgun_from_name: true,
+                mailgun_from_email: true,
+                company_name: true,
+                company_domain: true,
+            },
+        })
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 
