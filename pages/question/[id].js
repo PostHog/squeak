@@ -35,7 +35,7 @@ const Question = ({ question: initialQuestion, organizationId, user }) => {
         setQuestion(question)
     }
 
-    const apiHost = process.env.NODE_ENV === 'production' ? 'https://squeak.cloud' : 'http://localhost:3001'
+    const apiHost = `${typeof window !== 'undefined' && window.location.origin}`
 
     return (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -101,7 +101,7 @@ export const getServerSideProps = withAdminAccess({
 
         return {
             props: {
-                question: { question: safeQuestion, replies: safeQuestion.replies },
+                question: { question: safeQuestion, replies: safeQuestion?.replies },
                 domain: company_domain || '',
                 organizationId,
                 topics,
