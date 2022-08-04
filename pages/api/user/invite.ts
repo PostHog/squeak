@@ -7,11 +7,6 @@ import { sendUserInvite } from '../../../lib/email'
 import { findUserByEmail, inviteUser } from '../../../db'
 
 export default withAdminAccess(async (req, res) => {
-    // const supabaseServiceRoleClient = createClient(
-    //     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    //     process.env.SUPABASE_SERVICE_ROLE_KEY
-    // )
-
     const { organizationId, email, role = 'admin', firstName } = req.body
 
     const { origin } = absoluteUrl(req)
@@ -62,7 +57,7 @@ export default withAdminAccess(async (req, res) => {
 
     const redirectUrl = `${origin}/profile`
 
-    const confirmationUrl = `${origin}/api/user/confirm?=${invitedUser.confirmation_token}&redirect=${redirectUrl}`
+    const confirmationUrl = `${origin}/api/user/confirm?token=${invitedUser.confirmation_token}&redirect=${redirectUrl}`
     await sendUserInvite(organizationId, invitedUser, confirmationUrl)
 
     res.status(201).json({ success: true })
