@@ -1,13 +1,14 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
+
 import useActiveOrganization from './useActiveOrganization'
+import { useUser } from '../contexts/user'
 
 const usePostHog = () => {
     const router = useRouter()
     const { getActiveOrganization } = useActiveOrganization()
-    const { user, isLoading: userLoading } = useUser()
+    const { user, status, isLoading: userLoading } = useUser()
     const organizationId = getActiveOrganization()
 
     const capturePageView = () => posthog?.capture('$pageview')
@@ -20,8 +21,8 @@ const usePostHog = () => {
                 persistence: 'localStorage+cookie',
                 capture_pageview: false,
                 loaded: function (ph) {
-                    if (user) {
-                        ph.identify(user.id)
+                    if (user && user.user?.email) {
+                        ph.identify(user.user?.email)
                     }
 
                     if (organizationId) {
