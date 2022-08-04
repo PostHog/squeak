@@ -1,5 +1,3 @@
-import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { createClient } from '@supabase/supabase-js'
 import type {
     GetServerSideProps,
     GetServerSidePropsContext,
@@ -7,11 +5,12 @@ import type {
     NextApiRequest,
     NextApiResponse,
 } from 'next'
-import { definitions } from '../@types/supabase'
-import getActiveOrganization from './getActiveOrganization'
 
-type Config = definitions['squeak_config']
-type UserReadonlyProfile = definitions['squeak_profiles_readonly']
+import getActiveOrganization from './getActiveOrganization'
+import prisma from '../lib/db'
+import { getUserRole } from '../db/profiles'
+import { User } from '@prisma/client'
+import { getSessionUser } from '../lib/auth'
 
 type Args =
     | {
@@ -24,7 +23,8 @@ const withAdminAccess = (arg: Args) => {
     if (typeof arg === 'function') {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             const organizationId = getActiveOrganization({ req, res })
-            const { user } = await getUser({ req, res })
+            const user: User | null = await getSessionUser(req)
+            // console.log('session=', session)
 
             if (!user) {
                 res.status(401).json({
@@ -34,13 +34,7 @@ const withAdminAccess = (arg: Args) => {
                 return
             }
 
-            const { data: userReadonlyProfile } = await supabaseServerClient({ req, res })
-                .from<UserReadonlyProfile>('squeak_profiles_readonly')
-                .select('role')
-                .eq('user_id', user?.id)
-                .eq('organization_id', organizationId)
-                .limit(1)
-                .single()
+            const userReadonlyProfile = await getUserRole(organizationId, user.id)
 
             if (!userReadonlyProfile) {
                 res.status(401).json({
@@ -61,19 +55,12 @@ const withAdminAccess = (arg: Args) => {
     } else {
         return async (context: GetServerSidePropsContext) => {
             try {
-                const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-                const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-                const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
-
                 const isMultiTenancy = process.env.MULTI_TENANCY ?? false
 
                 if (!isMultiTenancy) {
-                    const { data: config } = await supabaseClient
-                        .from<Config>('squeak_config')
-                        .select(`preflight_complete`)
-                        .limit(1)
-                        .single()
+                    const config = await prisma.squeakConfig.findFirst({
+                        select: { preflight_complete: true },
+                    })
 
                     if (!config || !config?.preflight_complete) {
                         return {
@@ -85,7 +72,7 @@ const withAdminAccess = (arg: Args) => {
                     }
                 }
 
-                const { user } = await getUser(context)
+                const user: User | null = await getSessionUser(context.req)
                 const organizationId = getActiveOrganization(context)
 
                 if (!user) {
@@ -97,15 +84,13 @@ const withAdminAccess = (arg: Args) => {
                     }
                 }
 
-                const { data: userReadonlyProfile } = await supabaseServerClient(context)
-                    .from<UserReadonlyProfile>('squeak_profiles_readonly')
-                    .select('role')
-                    .eq('user_id', user?.id)
-                    .eq('organization_id', organizationId)
-                    .limit(1)
-                    .single()
+                context.req.user = user
+
+                const userReadonlyProfile = await getUserRole(organizationId, user.id)
 
                 if (!userReadonlyProfile) {
+                    console.log('no readonly profile', user)
+
                     return {
                         redirect: {
                             destination: arg.redirectTo && arg.redirectTo(context.resolvedUrl),
@@ -126,11 +111,15 @@ const withAdminAccess = (arg: Args) => {
                 }
 
                 if (arg.getServerSideProps) {
-                    return await arg.getServerSideProps(context)
+                    const props = await arg.getServerSideProps(context)
+                    props.props.user = user
+                    return props
                 }
 
                 return {
-                    props: {},
+                    props: {
+                        user,
+                    },
                 }
             } catch (error) {
                 return {

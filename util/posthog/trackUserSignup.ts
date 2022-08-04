@@ -1,4 +1,4 @@
-import type { User } from '@supabase/gotrue-js'
+import { User } from '@prisma/client'
 import withPostHog from './withPostHog'
 
 const trackUserSignup = async (

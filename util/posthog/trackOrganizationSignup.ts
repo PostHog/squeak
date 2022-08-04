@@ -1,8 +1,5 @@
-import type { User } from '@supabase/gotrue-js'
+import { Organization, User } from '@prisma/client'
 import withPostHog from './withPostHog'
-import { definitions } from '../../@types/supabase'
-
-type Organization = definitions['squeak_organizations']
 
 const trackOrganizationSignup = async (
     user: User,
