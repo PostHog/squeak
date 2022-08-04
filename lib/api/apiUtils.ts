@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Session, unstable_getServerSession } from 'next-auth'
 import superjson from 'superjson'
 
 import getActiveOrganization from '../../util/getActiveOrganization'
-import { authOptions } from '../../pages/api/auth/[...nextauth]'
 import { getReadonlyProfileForUser } from '../../db'
 import { getSessionUser } from '../auth'
 import { User } from '@prisma/client'
@@ -100,10 +98,6 @@ export async function requireOrgAdmin(req: NextApiRequest, res: NextApiResponse)
     }
 
     return true
-}
-
-export async function getServerSession(req: NextApiRequest, res: NextApiResponse): Promise<Session | null> {
-    return await unstable_getServerSession(req, res, authOptions)
 }
 
 export function safeJson(res: NextApiResponse, data: any, statusCode?: number) {
