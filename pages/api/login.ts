@@ -4,10 +4,10 @@ import { User } from '@prisma/client'
 
 import passport from '../../lib/passport'
 import { setLoginSession } from '../../lib/auth/'
+import prisma from '../../lib/db'
+import { setCookie } from 'nookies'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({})
-
-handler
     .use(async (req, res, next) => {
         const controlHeaders = req.headers['access-control-request-headers'] || ''
 
@@ -17,8 +17,6 @@ handler
         res.setHeader('Access-Control-Allow-Credentials', 'true')
 
         if (req.method === 'OPTIONS') {
-            console.log('serving options request')
-
             res.status(200)
             res.end()
         }
@@ -30,8 +28,16 @@ handler
     .post(passport.authenticate('local', { session: false, failureMessage: false, failWithError: true }), handleLogin)
 
 async function handleLogin(req: NextApiRequest & { user: User }, res: NextApiResponse) {
-    // const token = generateToken(req.user)
-    await setLoginSession(res, { user_id: req.user.id })
+    await setLoginSession(res, req.user.id)
+
+    const readOnly = await prisma.profileReadonly.findFirst({
+        where: { user_id: req.user.id },
+    })
+
+    // set the active organization
+    if (readOnly) {
+        setCookie({ res }, 'squeak_organization_id', `${readOnly.organization_id}`, { path: '/' })
+    }
 
     return res.status(200).json({ success: true })
 }

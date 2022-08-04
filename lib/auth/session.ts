@@ -26,10 +26,10 @@ export interface SessionData {
     maxAge: number
 }
 
-export async function setLoginSession(res: NextApiResponse, session: Partial<SessionData>) {
+export async function setLoginSession(res: NextApiResponse, userId: string) {
     const createdAt = Date.now()
     // Create a session object with a max age that we can validate later
-    const obj = { ...session, createdAt, maxAge: MAX_AGE }
+    const obj = { user_id: userId, createdAt, maxAge: MAX_AGE }
     const token = await Iron.seal(obj, TOKEN_SECRET, Iron.defaults)
 
     setTokenCookie(res, token)

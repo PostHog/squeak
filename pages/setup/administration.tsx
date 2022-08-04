@@ -1,11 +1,12 @@
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useEffect, useState } from 'react'
+
 import { NextPageWithLayout } from '../../@types/types'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import SetupSignUp from '../../components/setup/SetupSignUp'
 import SetupProfile from '../../components/setup/SetupProfile'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
+import { useUser } from '../../contexts/user'
 
 interface Props {}
 
