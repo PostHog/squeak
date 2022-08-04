@@ -1,4 +1,5 @@
 export * from './organization'
 export * from './profiles'
+export * from './question'
 export * from './squeak_config'
 export * from './user'
