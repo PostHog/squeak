@@ -92,7 +92,12 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                 helperText="Check to mark as solved"
                             />
                             <div className="flex space-x-4">
-                                <Button loading={loading} disabled={!isValid} className="mt-4 border-2 border-red">
+                                <Button
+                                    loading={loading}
+                                    disabled={!isValid}
+                                    className="mt-4 border-2 border-red"
+                                    type="submit"
+                                >
                                     Save
                                 </Button>
                                 <Button
