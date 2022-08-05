@@ -1,5 +1,5 @@
+import { User } from '@prisma/client'
 import withPostHog from './withPostHog'
-import { User } from '@supabase/gotrue-js'
 
 const capture = async (
     event: string,
