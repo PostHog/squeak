@@ -1,36 +1,26 @@
-import { createClient } from '@supabase/supabase-js'
 /* eslint-enable @typescript-eslint/no-var-requires */
-import type { definitions } from '../@types/supabase'
+import prisma from '../lib/db'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const Mailgun = require('mailgun.js')
 const formData = require('form-data')
 const { URL } = require('url')
 
-type Config = definitions['squeak_config']
-type Message = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
-
 const sendReplyNotification = async (organizationId: string, messageId: number, body: string) => {
-    const supabaseServiceUserClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
+    const config = await prisma.squeakConfig.findFirst({
+        where: { organization_id: organizationId },
+        select: {
+            mailgun_api_key: true,
+            mailgun_domain: true,
+            mailgun_from_name: true,
+            mailgun_from_email: true,
+            company_name: true,
+            company_domain: true,
+        },
+    })
 
-    const { data: config, error: configError } = await supabaseServiceUserClient
-        .from<Config>('squeak_config')
-        .select(`mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain`)
-        .eq('organization_id', organizationId)
-        .limit(1)
-        .single()
-
-    if (!config || configError) {
+    if (!config) {
         console.warn(`[⚙️ Config] Failed to fetch config for mailgun`)
-
-        if (configError) {
-            console.error(`[⚙️ Config] ${configError.message}`)
-        }
 
         return
     }
@@ -43,18 +33,13 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         return
     }
 
-    const { data: message, error: messageError } = await supabaseServiceUserClient
-        .from<Message>('squeak_messages')
-        .select(`subject, profile_id, slug`)
-        .eq('id', messageId)
-        .single()
+    const message = await prisma.question.findUnique({
+        where: { id: messageId },
+        select: { subject: true, profile_id: true, slug: true },
+    })
 
-    if (!message || messageError) {
+    if (!message) {
         console.warn(`[📧 Mailgun] Message not found for id ${messageId}`)
-
-        if (messageError) {
-            console.error(`[📧 Mailgun] ${messageError.message}`)
-        }
 
         return
     }
@@ -64,34 +49,23 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         return
     }
 
-    const { data: userReadonlyProfile, error: userReadonlyProfileError } = await supabaseServiceUserClient
-        .from<UserProfileReadonly>('squeak_profiles_readonly')
-        .select(`user_id`)
-        .eq('profile_id', message.profile_id)
-        .eq('organization_id', organizationId)
-        .limit(1)
-        .single()
+    const userReadonlyProfile = await prisma.profileReadonly.findFirst({
+        where: { organization_id: organizationId, profile_id: message.profile_id },
+        select: { user_id: true },
+    })
 
-    if (!userReadonlyProfile || userReadonlyProfileError) {
+    if (!userReadonlyProfile || !userReadonlyProfile.user_id) {
         console.warn(`[📧 Mailgun] Profile not found for message`)
-
-        if (userReadonlyProfileError) {
-            console.error(`[📧 Mailgun] ${userReadonlyProfileError.message}`)
-        }
 
         return
     }
 
-    const { data: user, error: userError } = await supabaseServiceUserClient.auth.api.getUserById(
-        userReadonlyProfile.user_id || ''
-    )
+    const user = await prisma.user.findUnique({
+        where: { id: userReadonlyProfile.user_id },
+    })
 
-    if (!user || userError) {
+    if (!user) {
         console.warn(`[📧 Mailgun] User not found for id ${message?.profile_id}`)
-
-        if (userError) {
-            console.error(`[📧 Mailgun] ${userError.message}`)
-        }
 
         return
     }
@@ -103,20 +77,14 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         return
     }
 
-    const { data: question, error: questionError } = await supabaseServiceUserClient
-        .from<Reply>('squeak_replies')
-        .select(`body`)
-        .eq('message_id', messageId)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single()
+    const question = await prisma.reply.findFirst({
+        where: { message_id: messageId },
+        select: { body: true },
+        orderBy: { created_at: 'asc' },
+    })
 
-    if (!question || questionError) {
+    if (!question) {
         console.warn(`[📧 Mailgun] Question not found for id ${messageId}`)
-
-        if (questionError) {
-            console.error(`[📧 Mailgun] ${questionError.message}`)
-        }
 
         return
     }
