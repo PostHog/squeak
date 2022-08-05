@@ -5,8 +5,7 @@ import { safeJson } from '../../lib/api/apiUtils'
 import nextConnect from 'next-connect'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 
-const handler = nextConnect
-handler<NextApiRequest, NextApiResponse>()
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(allowedOrigin)
     .post(fetchQuestions)
