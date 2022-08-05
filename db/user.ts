@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 
 import prisma from '../lib/db'
-import createUserProfile from '../util/createUserProfile'
 
 export enum UserRoles {
     admin = 'admin',
