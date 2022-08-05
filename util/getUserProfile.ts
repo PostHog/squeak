@@ -1,115 +1,93 @@
-import { User } from '@supabase/gotrue-js'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import type { GetServerSidePropsContext, NextApiResponse } from 'next'
-import { NextApiRequest } from 'next'
-import { definitions } from '../@types/supabase'
+import { Prisma, Profile as UserProfile, User } from '@prisma/client'
+
+import prisma from '../lib/db'
 import createUserProfile from './createUserProfile'
 import createUserProfileReadonly from './createUserProfileReadonly'
 
-type UserProfile = definitions['squeak_profiles']
-type UserProfileReadonly = definitions['squeak_profiles_readonly']
+interface Result {
+    data?: UserProfile | null
+    error?: Error | string
+}
 
-type Context =
-    | GetServerSidePropsContext
-    | {
-          req: NextApiRequest
-          res: NextApiResponse
-      }
+async function lookupUserProfile(user: User, organizationId: string): Promise<Result> {
+    try {
+        const userProfileReadonly = await prisma.profileReadonly.findFirst({
+            select: { profile_id: true },
+            where: {
+                user_id: user.id,
+                organization_id: organizationId,
+            },
+        })
+
+        // If the user does not have a profile, they likely have one for another org, but not this one, so we'll create one
+        // for this org.
+        if (!userProfileReadonly) {
+            // Get an existing profile from another org
+            const existingProfile = await prisma.profileReadonly.findFirst({
+                where: { user_id: user.id },
+                include: { profile: true },
+            })
+
+            if (!existingProfile) {
+                return { error: new Error('User has no profile in any organization') }
+            }
+
+            // Create profile for this org
+            const { data: createdProfile, error: createdProfileError } = await createUserProfile({
+                first_name: existingProfile.profile.first_name,
+                last_name: existingProfile.profile.last_name,
+                avatar: existingProfile.profile.avatar,
+            })
+
+            if (!createdProfile || createdProfileError) {
+                return { error: new Error(createdProfileError?.message ?? 'Failed to create profile') }
+            }
+
+            // Create readonly profile
+            const { data: createdProfileReadonly, error: createdProfileReadonlyError } =
+                await createUserProfileReadonly(user.id, organizationId, createdProfile.id, 'user')
+
+            if (!createdProfileReadonly || createdProfileReadonlyError) {
+                return { error: new Error(createdProfileReadonlyError?.message ?? 'Failed to create readonly profile') }
+            }
+
+            return { data: createdProfile }
+        }
+
+        const { profile_id } = userProfileReadonly
+
+        try {
+            const userProfile = await prisma.profile.findUnique({ where: { id: profile_id } })
+            if (!userProfile) {
+                return { error: new Error(`User profile '${profile_id}' not found`) }
+            }
+
+            return { data: userProfile }
+        } catch (err) {
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                return { error: new Error(err.message) }
+            }
+        }
+    } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            return { error: new Error(err.message) }
+        }
+        return { error: 'unexpected error' }
+    }
+
+    return { error: 'Unexpected error' }
+}
 
 interface Args {
     organizationId: string
-    context: Context
-    user?: User
-    token?: string
-}
-
-interface Result {
-    data?: UserProfile | null
-    error?: Error
-}
-
-const lookupUserProfile = async (context: Context, user: User, organizationId: string): Promise<Result> => {
-    const { data: userProfileReadonly, error: userProfileReadonlyError } = await supabaseServerClient(context)
-        .from<UserProfileReadonly>('squeak_profiles_readonly')
-        .select('profile_id')
-        .eq('user_id', user.id)
-        .eq('organization_id', organizationId)
-        .limit(1)
-
-    if (userProfileReadonlyError) {
-        return { error: new Error(userProfileReadonlyError.message) }
-    }
-
-    // If the user does not have a profile, they likely have one for another org, but not this one, so we'll create one
-    // for this org.
-    if (!userProfileReadonly || userProfileReadonly.length === 0) {
-        // Get an existing profile from another org
-        const { data: existingProfile, error: existingProfileError } = await supabaseServerClient(context)
-            .from('squeak_profiles_readonly')
-            .select('id, profile:squeak_profiles(first_name, last_name, avatar)')
-            .eq('user_id', user.id)
-            .limit(1)
-            .single()
-
-        if (!existingProfile || existingProfileError) {
-            return { error: new Error(existingProfileError?.message ?? 'User has no profile in any organization') }
-        }
-
-        // Create profile
-        const { data: createdProfile, error: createdProfileError } = await createUserProfile(
-            existingProfile.profile.first_name,
-            existingProfile.profile.last_name,
-            existingProfile.profile.avatar
-        )
-
-        if (!createdProfile || createdProfileError) {
-            return { error: new Error(createdProfileError?.message ?? 'Failed to create profile') }
-        }
-
-        const { data: createdProfileReadonly, error: createdProfileReadonlyError } = await createUserProfileReadonly(
-            user.id,
-            organizationId,
-            createdProfile.id,
-            'user'
-        )
-
-        if (!createdProfileReadonly || createdProfileReadonlyError) {
-            return { error: new Error(createdProfileReadonlyError?.message ?? 'Failed to create readonly profile') }
-        }
-
-        return { data: createdProfile }
-    }
-
-    const [{ profile_id }] = userProfileReadonly
-    const { data: userProfile, error: userProfileError } = await supabaseServerClient(context)
-        .from<UserProfile>('squeak_profiles')
-        .select('*')
-        .eq('id', profile_id)
-        .limit(1)
-        .single()
-
-    if (userProfileError) {
-        return { error: new Error(userProfileError.message) }
-    }
-
-    return { data: userProfile }
+    user: User | null
 }
 
 const getUserProfile = async (args: Args): Promise<Result> => {
-    const { organizationId, context, user, token } = args
+    const { organizationId, user } = args
 
     if (user) {
-        return lookupUserProfile(context, user, organizationId)
-    }
-
-    if (token) {
-        const { user } = await supabaseServerClient(context).auth.api.getUser(token)
-
-        if (!user) {
-            return { error: new Error('User not found for token') }
-        }
-
-        return lookupUserProfile(context, user, organizationId)
+        return lookupUserProfile(user, organizationId)
     }
 
     throw new Error('Must provide either a user or a token')

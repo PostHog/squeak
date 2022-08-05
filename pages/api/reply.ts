@@ -39,7 +39,6 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     })
 
     const { data: userProfile, error: userProfileError } = await getUserProfile({
-        context: { req, res },
         organizationId,
         user,
     })

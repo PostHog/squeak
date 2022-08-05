@@ -78,7 +78,6 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     if (!user) return notAuthenticated(res)
 
     const { data: userProfile, error: userProfileError } = await getUserProfile({
-        context: { req, res },
         organizationId,
         user,
     })
