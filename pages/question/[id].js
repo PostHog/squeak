@@ -46,7 +46,7 @@ const Question = ({ question: initialQuestion, organizationId, user }) => {
                         organizationId={organizationId}
                         onResolve={handleResolve}
                         onSubmit={handleSubmit}
-                        question={question.question}
+                        question={question}
                     />
                 </div>
             </div>
