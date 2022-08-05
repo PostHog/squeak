@@ -12,25 +12,8 @@ interface SqueakEmailConfig {
     company_domain: string
 }
 
-export async function sendUserConfirmation(organizationId: string, user: User) {
-    // const config = await fetchConfig(organizationId)
-    // if (!config) throw new Error('Squeak config not found for organization')
-
-    // const emailConfig = checkValidMailgunConfig(config)
-    // const client = await getClient(emailConfig.mailgun_api_key)
-
-    // const mailgunOptions = mailgunSendOptions(confirmation(), emailConfig)
-
-    // return client.messages.create(
-    //     emailConfig.mailgun_domain,
-    //     Object.assign(mailgunOptions, {
-    //         to: user.email,
-    //     })
-    // )
-
-    // `${origin}/profile`
-
-    return sendEmail(organizationId, user.email!, confirmation())
+export async function sendUserConfirmation(organizationId: string, user: User, url: string) {
+    return sendEmail(organizationId, user.email!, confirmation(url))
 }
 
 export async function sendUserInvite(organizationId: string, user: User, confirmationUrl: string) {
