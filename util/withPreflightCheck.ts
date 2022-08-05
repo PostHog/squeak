@@ -1,12 +1,8 @@
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next'
 
-import { definitions } from '../@types/supabase'
-import { createClient } from '@supabase/supabase-js'
-import { getUser, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
-
-type Config = definitions['squeak_config']
-type UserReadonlyProfile = definitions['squeak_profiles_readonly']
+import prisma from '../lib/db'
+import { getSessionUser } from '../lib/auth'
 
 type Args<P> =
     | {
@@ -30,7 +26,7 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
                 return
             }
 
-            const { data: config } = await getConfig()
+            const config = await getConfig()
 
             if (config && config.preflight_complete) {
                 res.status(404).json({
@@ -57,7 +53,7 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
                     }
                 }
 
-                const { data: config } = await getConfig()
+                const config = await getConfig()
 
                 if (config && config.preflight_complete) {
                     return {
@@ -71,7 +67,7 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
                 const { authCheck = false, authRedirectTo = '/setup/administration' } = arg
 
                 if (authCheck) {
-                    const { user } = await getUser(context)
+                    const user = await getSessionUser(context.req)
 
                     if (!user) {
                         return {
@@ -82,11 +78,10 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
                         }
                     }
 
-                    const { data: userReadonlyProfile } = await supabaseServerClient(context)
-                        .from<UserReadonlyProfile>('squeak_profiles_readonly')
-                        .select('role')
-                        .eq('user_id', user?.id)
-                        .single()
+                    const userReadonlyProfile = await prisma.profileReadonly.findFirst({
+                        where: { user_id: user.id },
+                        select: { role: true },
+                    })
 
                     if (!userReadonlyProfile) {
                         return {
@@ -123,12 +118,9 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
 }
 
 const getConfig = async () => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
-
-    return await supabaseClient.from<Config>('squeak_config').select(`preflight_complete`).single()
+    return await prisma.squeakConfig.findFirst({
+        select: { preflight_complete: true },
+    })
 }
 
 export default withPreflightCheck
