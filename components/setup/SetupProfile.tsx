@@ -1,11 +1,11 @@
 import Router from 'next/router'
 import { useState } from 'react'
+import posthog from 'posthog-js'
+import { User } from '@prisma/client'
 
 import ProfileForm from '../ProfileForm'
 import useActiveOrganization from '../../hooks/useActiveOrganization'
-import posthog from 'posthog-js'
-import { User } from '@prisma/client'
-import { doPost } from '../../lib/api'
+import { setupProfile } from '../../lib/api/setup'
 
 interface Props {
     user: User
@@ -26,31 +26,31 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
         setError(null)
 
         setLoading(true)
-        const response = await fetch('/api/setup', {
-            method: 'POST',
-            body: JSON.stringify({
+        try {
+            const { data } = await setupProfile({
                 firstName,
                 lastName,
                 organizationName,
                 url,
                 distinctId: posthog?.get_distinct_id(),
-            }),
-        })
+            })
 
-        if (!response.ok) {
-            const errorResponse = await response.json()
-            setError(errorResponse.error)
-            return
+            if (!data) return
+
+            const { userId, organizationId } = data
+
+            await setActiveOrganization(userId, organizationId)
+
+            posthog.identify(userId)
+            posthog.group('organization', `id:${organizationId}`)
+
+            Router.push('/setup/notifications')
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message)
+                return
+            }
         }
-
-        const { userId, organizationId } = await response.json()
-
-        await setActiveOrganization(userId, organizationId)
-
-        posthog.identify(userId)
-        posthog.group('organization', `id:${organizationId}`)
-
-        Router.push('/setup/notifications')
     }
 
     return (
@@ -67,9 +67,9 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
                         name="email"
                         type="email"
                         autoComplete="none"
-                        value={user.email}
+                        value={user.email || ''}
                         disabled
-                        className="appearance-none block w-full px-3 py-2 bg-gray-100 cursor-not-allowed border border-gray-light rounded-md shadow-sm sm:text-sm"
+                        className="block w-full px-3 py-2 bg-gray-100 border rounded-md shadow-sm appearance-none cursor-not-allowed border-gray-light sm:text-sm"
                     />
                 </div>
             </div>
