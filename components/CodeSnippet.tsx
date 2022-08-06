@@ -16,10 +16,6 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, ...rest
 <script>
 (function() {
     window.squeak = {
-        supabase: {
-            apiKey: "${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}",
-            url: "${process.env.NEXT_PUBLIC_SUPABASE_URL}",
-        },
         apiHost: "https://${typeof window !== 'undefined' && window.location.host}",
         organizationId: "${organizationId}"${
         allQuestions
@@ -49,9 +45,9 @@ const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, ...rest
                 {snippet}
             </SyntaxHighlighter>
 
-            <button onClick={copyToClipboard} className="mt-2 text-accent-light font-semibold flex space-x-2 pl-8">
+            <button onClick={copyToClipboard} className="flex pl-8 mt-2 space-x-2 font-semibold text-accent-light">
                 <span>Copy to clipboard</span>
-                {snippetCopied && <span className="text-green-600 font-normal">Copied</span>}
+                {snippetCopied && <span className="font-normal text-green-600">Copied</span>}
             </button>
         </>
     )
