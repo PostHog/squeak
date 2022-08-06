@@ -1,12 +1,13 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { createClient } from '@supabase/supabase-js'
 import { GetStaticPropsResult } from 'next'
 import { useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
+
 import { NextPageWithLayout } from '../../@types/types'
 import Button from '../../components/Button'
 import { sql } from '../../components/SQLSnippet'
 import SetupLayout from '../../layout/SetupLayout'
+import { doPost } from '../../lib/api'
+import prisma from '../../lib/db'
 import withPreflightCheck from '../../util/withPreflightCheck'
 
 interface Props {
@@ -19,8 +20,13 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
     const [sqlCopied, setSqlCopied] = useState(false)
 
     const validateDatabaseSetup = async () => {
-        const { error } = await supabaseClient.from('squeak_messages').select('*').single()
-        setDatabaseSetup(!(error && error.code === '42P01'))
+        try {
+            await doPost('/api/database/check')
+            setDatabaseSetup(true)
+        } catch (error) {
+            console.error(error)
+            setDatabaseSetup(false)
+        }
     }
 
     const copyToClipboard = () => {
@@ -76,10 +82,10 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
 
                         <button
                             onClick={copyToClipboard}
-                            className="mt-2 mb-12 text-accent-light font-semibold flex space-x-2"
+                            className="flex mt-2 mb-12 space-x-2 font-semibold text-accent-light"
                         >
                             <span>Copy to clipboard</span>
-                            {sqlCopied && <span className="text-green-600 font-normal">Copied</span>}
+                            {sqlCopied && <span className="font-normal text-green-600">Copied</span>}
                         </button>
 
                         <Button onClick={validateDatabaseSetup}>Validate</Button>
@@ -93,18 +99,21 @@ const Database: NextPageWithLayout<Props> = ({ initialDatabaseSetup, databaseUrl
 export const getServerSideProps = withPreflightCheck({
     redirectTo: '/',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-        const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
-
-        const { error } = await supabaseClient.from('squeak_messages').select('*').single()
-
-        return {
-            props: {
-                initialDatabaseSetup: !(error && error.code === '42P01'),
-                databaseUrlProvided: !!process.env.DATABASE_URL,
-            },
+        try {
+            await prisma.question.findFirst()
+            return {
+                props: {
+                    initialDatabaseSetup: true,
+                    databaseUrlProvided: !!process.env.DATABASE_URL,
+                },
+            }
+        } catch (error) {
+            return {
+                props: {
+                    initialDatabaseSetup: true,
+                    databaseUrlProvided: !!process.env.DATABASE_URL,
+                },
+            }
         }
     },
 })
