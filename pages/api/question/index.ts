@@ -213,10 +213,11 @@ async function getQuestion(organizationId: string, permalink: string) {
     // The supbase query library allowed a syntax for querying a relationship and mapping it to a virtual
     // attribute on the parent object.
     const repliesW: ReplyWithMetadata[] = (replies || []).map((reply) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const replyWithMetadata: any = {
             ...reply,
             metadata: {
-                role: reply.profile?.profiles_readonly?.role,
+                role: reply.profile?.profiles_readonly?.[0]?.role,
             },
         }
 

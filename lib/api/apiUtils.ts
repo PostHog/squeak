@@ -100,7 +100,7 @@ export async function requireOrgAdmin(req: NextApiRequest, res: NextApiResponse)
     return true
 }
 
-export function safeJson(res: NextApiResponse, data: any, statusCode?: number) {
+export function safeJson(res: NextApiResponse, data: unknown, statusCode?: number) {
     const { json } = superjson.serialize(data)
     res.status(statusCode || 200)
         .setHeader('Content-Type', 'application/json')

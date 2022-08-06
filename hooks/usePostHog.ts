@@ -8,7 +8,7 @@ import { useUser } from '../contexts/user'
 const usePostHog = () => {
     const router = useRouter()
     const { getActiveOrganization } = useActiveOrganization()
-    const { user, status, isLoading: userLoading } = useUser()
+    const { user, isLoading: userLoading } = useUser()
     const organizationId = getActiveOrganization()
 
     const capturePageView = () => posthog?.capture('$pageview')
@@ -21,8 +21,8 @@ const usePostHog = () => {
                 persistence: 'localStorage+cookie',
                 capture_pageview: false,
                 loaded: function (ph) {
-                    if (user && user.user?.email) {
-                        ph.identify(user.user?.email)
+                    if (user && user.email) {
+                        ph.identify(user.email)
                     }
 
                     if (organizationId) {

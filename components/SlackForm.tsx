@@ -11,7 +11,7 @@ import { doPost, updateSqueakConfig } from '../lib/api'
 type SlackFormContentProps = Pick<FormikComputedProps<InitialValues>, 'initialValues'> &
     Pick<FormikHelpers<InitialValues>, 'setFieldValue'>
 
-type SlackMessageResponse = Record<string, object>[]
+type SlackMessageResponse = (Record<string, unknown> & { name: string; id: string })[]
 
 const SlackFormContent: React.VoidFunctionComponent<SlackFormContentProps> = ({ setFieldValue, initialValues }) => {
     const [channels, setChannels] = useState<SlackMessageResponse>([])

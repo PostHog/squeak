@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 
 import { getQuestionTopics, updateQuestionTopics } from '../lib/api'
 import { createTopic, deleteTopic, getTopics } from '../lib/api/topics'
-import { GetTopicsResponse } from '../pages/api/topics'
 import Button from './Button'
 import Input from './Input'
 import Modal from './Modal'
@@ -49,7 +48,7 @@ const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label
 
 export default function Topics({ questionId, organizationId }: TopicsProps) {
     const [selectedTopics, setSelectedTopics] = useState<string[]>([])
-    const [allTopics, setAllTopics] = useState<{ label: string; id: number | bigint }[] | []>([])
+    const [allTopics, setAllTopics] = useState<{ label: string; id: number }[] | []>([])
     const [modalOpen, setModalOpen] = useState(false)
     const [creatingTopic, setCreatingTopic] = useState(false)
 
@@ -68,13 +67,13 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
     }
 
     const getAllTopics = async () => {
-        const { body } = await getTopics(organizationId)
-        return body
+        const { data } = await getTopics(organizationId)
+        return data || []
     }
 
     const getSelectedTopics = async () => {
-        const { body } = await getQuestionTopics(questionId)
-        return body
+        const { data } = await getQuestionTopics(questionId)
+        return data || []
     }
 
     const handleNewTopic = async ({ topic }: { topic: string }) => {

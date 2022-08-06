@@ -122,6 +122,12 @@ Profile.getLayout = function getLayout(page: ReactElement<Props>) {
 
 export async function getServerSideProps(context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
     const user = await getSessionUser(context.req)
+    if (!user) {
+        return {
+            redirect: { destination: '/login', permanent: false },
+        }
+    }
+
     const profilero = await prisma.profileReadonly.findFirst({
         where: { user_id: user.id },
     })

@@ -8,8 +8,9 @@ import type { NextPageWithLayout } from '../@types/types'
 import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Surface from '../components/Surface'
-import { getCompanyDomain, getConfig } from '../db'
+import { getConfig } from '../db'
 import AdminLayout from '../layout/AdminLayout'
+import prisma from '../lib/db'
 import dateToDays from '../util/dateToDays'
 import dayFormat from '../util/dayFormat'
 import getActiveOrganization from '../util/getActiveOrganization'
@@ -180,7 +181,10 @@ export const getServerSideProps = withAdminAccess({
 
         const organizationId = await getActiveOrganization(context)
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
-        const config = await getConfig(organizationId, { company_domain: true })
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+            select: { company_domain: true },
+        })
 
         if (!config) {
             return {

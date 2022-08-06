@@ -3,6 +3,7 @@ import type { ConversationsHistoryResponse } from '@slack/web-api/dist/response/
 import type { ConversationsRepliesResponse } from '@slack/web-api/dist/response/ConversationsRepliesResponse'
 import { NextApiRequest, NextApiResponse } from 'next'
 import xss from 'xss'
+import { safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import formatSlackMessage from '../../../util/formatSlackMessage'
 
@@ -65,7 +66,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
         return
     }
 
-    const formattedMessages = []
+    const formattedMessages: unknown[] = []
     for (const message of messages.filter((message) => message.subtype !== 'channel_join')) {
         const { ts, reply_count = 0, client_msg_id = null } = message
 
@@ -83,7 +84,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
                       .then(({ messages: replies = [] }: ConversationsRepliesResponse) => replies)
                 : null
 
-        const formattedReplies = []
+        const formattedReplies: unknown[] = []
 
         if (replies) {
             for (const reply of replies) {
@@ -113,7 +114,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
         })
     }
 
-    res.status(200).json(formattedMessages)
+    safeJson(res, formattedMessages)
 }
 
 export default messages

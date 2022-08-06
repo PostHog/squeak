@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import absoluteUrl from 'next-absolute-url'
 
 import prisma from '../../lib/db'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
@@ -127,9 +128,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json(response)
 
+    const { origin } = absoluteUrl(req)
+    const redirectUrl = `${origin}/profile`
+    const confirmationUrl = `${origin}/api/user/confirm?token=${user.confirmation_token}&redirect=${redirectUrl}`
+
     await trackUserSignup(user, distinctId, { firstName, lastName, role: 'admin' })
     await trackOrganizationSignup(user, organization, {})
-    await sendUserConfirmation(organization.id, user)
+    await sendUserConfirmation(organization.id, user, confirmationUrl)
 }
 
 export default handler

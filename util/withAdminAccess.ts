@@ -84,7 +84,7 @@ const withAdminAccess = (arg: Args) => {
                     }
                 }
 
-                context.req.user = user
+                // context.req.user = user
 
                 const userReadonlyProfile = await getUserRole(organizationId, user.id)
 
@@ -112,8 +112,11 @@ const withAdminAccess = (arg: Args) => {
 
                 if (arg.getServerSideProps) {
                     const props = await arg.getServerSideProps(context)
-                    props.props.user = user
-                    return props
+                    return Object.assign(props, {
+                        props: {
+                            user,
+                        },
+                    })
                 }
 
                 return {

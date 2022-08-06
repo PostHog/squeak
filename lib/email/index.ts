@@ -13,15 +13,17 @@ interface SqueakEmailConfig {
 }
 
 export async function sendUserConfirmation(organizationId: string, user: User, url: string) {
-    return sendEmail(organizationId, user.email!, confirmation(url))
+    if (!user.email) throw new Error('user email is null')
+    return sendEmail(organizationId, user.email, confirmation(url))
 }
 
 export async function sendUserInvite(organizationId: string, user: User, confirmationUrl: string) {
     const config = await fetchConfig(organizationId)
     if (!config) throw new Error('Squeak config not found for organization')
     const emailConfig = checkValidMailgunConfig(config)
+    if (!user.email) throw new Error('user email is null')
 
-    return sendEmail(organizationId, user.email!, userInvite(confirmationUrl, emailConfig.company_domain))
+    return sendEmail(organizationId, user.email, userInvite(confirmationUrl, emailConfig.company_domain))
 }
 
 export async function sendEmail(organizationId: string, to: string, template: EmailTemplateOptions) {
