@@ -6,6 +6,6 @@ export function getConfig(organizationId: string) {
     return doGet<SqueakConfig>('/api/config', { organizationId })
 }
 
-export async function updateSqueakConfig(params: UpdateConfigPayload) {
+export async function updateSqueakConfig(params: Partial<UpdateConfigPayload>) {
     return doPatch('/api/config', { ...params })
 }
