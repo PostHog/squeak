@@ -8,7 +8,6 @@ import type { NextPageWithLayout } from '../@types/types'
 import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Surface from '../components/Surface'
-import { getConfig } from '../db'
 import AdminLayout from '../layout/AdminLayout'
 import prisma from '../lib/db'
 import dateToDays from '../util/dateToDays'
@@ -177,8 +176,6 @@ Questions.getLayout = function getLayout(page) {
 export const getServerSideProps = withAdminAccess({
     redirectTo: () => '/login',
     async getServerSideProps(context) {
-        // console.log('get serverside props context=', context)
-
         const organizationId = await getActiveOrganization(context)
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
         const config = await prisma.squeakConfig.findFirst({

@@ -1,4 +1,4 @@
-import { Prisma, Question, Reply } from '@prisma/client'
+import { Prisma, Profile, Question, Reply } from '@prisma/client'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 import prisma from '../lib/db'
 
@@ -39,6 +39,8 @@ interface GetQuestionsPayload {
 const getQuestions = async (context: Context, params: GetQuestionsParams): Promise<GetQuestionsPayload> => {
     const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
     // const end = start + (perPage - 1)
+
+    console.log('getQuestions params', params)
 
     const queryConditions: Prisma.QuestionWhereInput = {
         organization_id: organizationId,
