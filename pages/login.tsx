@@ -148,6 +148,15 @@ Login.getLayout = function getLayout(page: ReactElement<Props>) {
 export async function getServerSideProps(context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {
     const user = await getSessionUser(context.req)
 
+    if (user) {
+        return {
+            redirect: {
+                destination: '/questions',
+                permanent: false,
+            },
+        }
+    }
+
     return {
         props: {
             isMultiTenancy: process.env.MULTI_TENANCY ?? false,
