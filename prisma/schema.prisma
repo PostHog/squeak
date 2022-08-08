@@ -116,12 +116,12 @@ model Topic {
 }
 
 model WebhookConfig {
-  id                   BigInt        @id @default(autoincrement())
+  id                   BigInt       @id @default(autoincrement())
   type                 String
   url                  String
-  organization_id      String        @db.Uuid
-  created_at           DateTime      @default(now()) @db.Timestamptz(6)
-  squeak_organizations Organization? @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "webhook_config_organization_id_fkey")
+  organization_id      String       @db.Uuid
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "webhook_config_organization_id_fkey")
 
   @@map("squeak_webhook_config")
 }
@@ -153,7 +153,7 @@ model User {
   phone_change                String?           @default("") @db.VarChar(15)
   phone_change_token          String?           @default("") @db.VarChar(255)
   phone_change_sent_at        DateTime?         @db.Timestamptz(6)
-  confirmed_at                DateTime?         @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @db.Timestamptz(6)
+  confirmed_at                DateTime?         @db.Timestamptz(6)
   email_change_token_current  String?           @default("") @db.VarChar(255)
   email_change_confirm_status Int?              @default(0) @db.SmallInt
   banned_until                DateTime?         @db.Timestamptz(6)
