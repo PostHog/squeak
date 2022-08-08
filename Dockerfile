@@ -27,6 +27,7 @@ ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
 ARG DATABASE_URL
 
+RUN npx prisma generate
 RUN yarn build --no-lint
 
 # Production image, copy all the files and run next
