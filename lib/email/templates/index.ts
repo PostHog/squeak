@@ -23,10 +23,12 @@ export const confirmation = (confirmationUrl: string): EmailTemplateOptions => {
     }
 }
 
-export const resetPassword: EmailTemplateOptions = {
-    subject: 'Reset Your Password',
-    html: `<h2>Reset Password</h2>
+export const resetPassword = (confirmationUrl: string): EmailTemplateOptions => {
+    return {
+        subject: 'Reset Your Password',
+        html: `<h2>Reset Password</h2>
 
   <p>Follow this link to reset the password for your user:</p>
-  <p><a href="{{ .ConfirmationURL }}">Reset Password</a></p>a`,
+  <p><a href="${confirmationUrl}">Reset Password</a></p>a`,
+    }
 }

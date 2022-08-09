@@ -41,8 +41,7 @@ export function getReadonlyProfileForUser(userId: string, organizationId: string
  * @returns Promise
  */
 export async function createUser(email: string, password: string, role: UserRoles): Promise<User> {
-    const salt = await bcrypt.genSalt(10)
-    const encryptedPassword = await bcrypt.hash(password, salt)
+    const encryptedPassword = await hashPassword(password)
 
     return prisma.user.create({
         data: {
@@ -54,6 +53,11 @@ export async function createUser(email: string, password: string, role: UserRole
             confirmation_sent_at: new Date(),
         },
     })
+}
+
+export async function hashPassword(plain: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10)
+    return bcrypt.hash(plain, salt)
 }
 
 export async function inviteUser(email: string) {
@@ -86,8 +90,7 @@ export async function confirmUser(user: User) {
 }
 
 export async function updateUserPassword(user: User, password: string) {
-    const salt = await bcrypt.genSalt(10)
-    const encrypted = await bcrypt.hash(password, salt)
+    const encrypted = await hashPassword(password)
     return prisma.user.update({
         where: { id: user.id },
         data: { encrypted_password: encrypted },

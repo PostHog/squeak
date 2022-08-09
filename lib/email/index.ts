@@ -1,7 +1,7 @@
 import { SqueakConfig, User } from '@prisma/client'
 import prisma from '../db'
 import getClient from './client'
-import { confirmation, EmailTemplateOptions, userInvite } from './templates'
+import { confirmation, EmailTemplateOptions, resetPassword, userInvite } from './templates'
 
 interface SqueakEmailConfig {
     mailgun_from_name: string | null
@@ -24,6 +24,11 @@ export async function sendUserInvite(organizationId: string, user: User, confirm
     if (!user.email) throw new Error('user email is null')
 
     return sendEmail(organizationId, user.email, userInvite(confirmationUrl, emailConfig.company_domain))
+}
+
+export async function sendForgotPassword(organizationId: string, user: User, url: string) {
+    if (!user.email) throw new Error('user email is null')
+    return sendEmail(organizationId, user.email, resetPassword(url))
 }
 
 export async function sendEmail(organizationId: string, to: string, template: EmailTemplateOptions) {
