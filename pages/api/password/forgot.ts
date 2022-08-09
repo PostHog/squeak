@@ -5,9 +5,10 @@ import nextConnect from 'next-connect'
 
 import prisma from '../../../lib/db'
 import { sendForgotPassword } from '../../../lib/email'
+import { corsMiddleware } from '../../../lib/middleware'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
-const handler = nextConnect().post(doPost)
+const handler = nextConnect().use(corsMiddleware).post(doPost)
 
 async function doPost(req: NextApiRequest, res: NextApiResponse) {
     const { email } = req.body

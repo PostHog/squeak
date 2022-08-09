@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 import { hashPassword } from '../../../db'
 import prisma from '../../../lib/db'
+import { corsMiddleware } from '../../../lib/middleware'
 
-const handler = nextConnect().post(doResetPassword)
+const handler = nextConnect().use(corsMiddleware).post(doResetPassword)
 
 async function doResetPassword(req: NextApiRequest, res: NextApiResponse) {
     const { token, password } = req.body
