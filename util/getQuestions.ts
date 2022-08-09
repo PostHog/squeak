@@ -1,4 +1,4 @@
-import { Prisma, Profile, Question, Reply } from '@prisma/client'
+import { Prisma, Question, Reply } from '@prisma/client'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 import prisma from '../lib/db'
 
@@ -40,14 +40,12 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
     const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
     // const end = start + (perPage - 1)
 
-    console.log('getQuestions params', params)
-
     const queryConditions: Prisma.QuestionWhereInput = {
         organization_id: organizationId,
     }
 
     if (published) queryConditions.published = published
-    if (slug) queryConditions.slug = { has: slug }
+    if (slug && slug !== '') queryConditions.slug = { has: slug }
     if (topic) queryConditions.topics = { has: topic }
 
     const messages = await prisma.question.findMany({
