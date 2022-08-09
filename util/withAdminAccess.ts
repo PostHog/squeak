@@ -112,11 +112,12 @@ const withAdminAccess = (arg: Args) => {
 
                 if (arg.getServerSideProps) {
                     const props = await arg.getServerSideProps(context)
-                    return Object.assign(props, {
-                        props: {
-                            user,
-                        },
-                    })
+                    props['props'] = {
+                        ...props['props'],
+                        user,
+                    }
+
+                    return props
                 }
 
                 return {
