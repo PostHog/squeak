@@ -4404,9 +4404,9 @@ split2@^4.1.0:
   resolved "https://registry.npmjs.org/split2/-/split2-4.1.0.tgz"
   integrity sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==
 
-"squeak-react@https://github.com/ajsharp/squeak-react#supabase-refactor":
+"squeak-react@https://github.com/ajsharp/squeak-react.git#supabase-refactor":
   version "3.0.0-pre"
-  resolved "https://github.com/ajsharp/squeak-react#ba4272a486c651d669a1bf768e780885348364a0"
+  resolved "https://github.com/ajsharp/squeak-react.git#ba4272a486c651d669a1bf768e780885348364a0"
   dependencies:
     formik "^2.2.9"
     gravatar "^1.8.2"

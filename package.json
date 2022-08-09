@@ -53,7 +53,7 @@
         "react-popper": "^2.2.5",
         "react-syntax-highlighter": "^15.4.5",
         "react-toast-notifications": "^2.5.1",
-        "squeak-react": "https://github.com/ajsharp/squeak-react#supabase-refactor",
+        "squeak-react": "https://github.com/ajsharp/squeak-react.git#supabase-refactor",
         "superjson": "^1.9.1",
         "swr": "^1.3.0",
         "tinytime": "^0.2.6",
