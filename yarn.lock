@@ -4406,7 +4406,7 @@ split2@^4.1.0:
 
 "squeak-react@https://github.com/ajsharp/squeak-react#supabase-refactor":
   version "3.0.0-pre"
-  resolved "https://github.com/ajsharp/squeak-react#0b96bfb67a9cd143814467ad86cbc1f079f197ab"
+  resolved "https://github.com/ajsharp/squeak-react#ba4272a486c651d669a1bf768e780885348364a0"
   dependencies:
     formik "^2.2.9"
     gravatar "^1.8.2"
