@@ -4,6 +4,7 @@ FROM node:16-alpine AS deps
 RUN apk add --no-cache --virtual libc6-compat python3 make g++ git
 WORKDIR /app
 COPY package.json yarn.lock ./
+ENV NODE_ENV production
 RUN yarn install --frozen-lockfile
 
 # If using npm with a `package-lock.json` comment out above and use below instead
@@ -25,7 +26,6 @@ ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
-ARG DATABASE_URL
 
 RUN npx prisma generate
 RUN yarn build --no-lint
