@@ -14,6 +14,10 @@ RUN yarn install --frozen-lockfile --production=false
 FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+
+COPY prisma/schema.prisma ./
+RUN npx prisma generate
+
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -26,7 +30,7 @@ ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
 
-RUN npx prisma generate
+
 RUN yarn build --no-lint
 
 # Production image, copy all the files and run next
@@ -55,7 +59,7 @@ COPY ./bin/docker ./bin/docker
 
 ## Database migrations
 COPY --from=builder /app/node_modules ./node_modules
-COPY ./migrations ./migrations
+COPY . .
 
 USER nextjs
 
