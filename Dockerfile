@@ -4,8 +4,7 @@ FROM node:16-alpine AS deps
 RUN apk add --no-cache --virtual libc6-compat python3 make g++ git
 WORKDIR /app
 COPY package.json yarn.lock ./
-ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile --network-concurrency 1
+RUN yarn install --frozen-lockfile --production=false
 
 # If using npm with a `package-lock.json` comment out above and use below instead
 # COPY package.json package-lock.json ./
