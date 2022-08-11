@@ -7,6 +7,15 @@ import prisma from '../../lib/db'
 import { corsMiddleware } from '../../lib/middleware'
 import { notAuthenticated, safeJson } from '../../lib/api/apiUtils'
 import getActiveOrganization from '../../util/getActiveOrganization'
+import { Profile, ProfileReadonly } from '@prisma/client'
+
+export interface GetUserResponse {
+    id: string
+    email: string | null
+    role: string | null
+    isModerator: boolean
+    profile: ProfileReadonly
+}
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>()
 
@@ -38,7 +47,14 @@ handler
         if (!user) return res.status(401).json({ error: 'Not authenticated' })
 
         const profile = user.squeak_profiles_readonly && user.squeak_profiles_readonly[0]
-        safeJson(res, { id: user.id, email: user.email, role: user.role, profile })
+        const response: GetUserResponse = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            profile,
+            isModerator: profile.role === 'moderator' || profile.role === 'admin',
+        }
+        safeJson(res, response)
     })
 
 export default handler
