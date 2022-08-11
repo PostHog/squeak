@@ -14,7 +14,7 @@ export function validateBody(schema: object, ajvOptions?: AjvOptions) {
         if (validate.errors?.[0]) {
             const error = validate.errors[0]
             return res.status(400).json({
-                error: `"${error.instancePath.substring(1)}" ${error.message}`,
+                error: error.message,
             })
         }
 
