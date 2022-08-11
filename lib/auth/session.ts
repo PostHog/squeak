@@ -51,12 +51,20 @@ export async function getLoginSession(req: RequestWithCookies): Promise<SessionD
     return session
 }
 
-export async function getSessionUser(req: RequestWithCookies): Promise<User | null> {
+export type SafeUser = Pick<User, 'id' | 'email' | 'role'>
+
+export async function getSessionUser(req: RequestWithCookies): Promise<SafeUser | null> {
     const session = await getLoginSession(req)
     if (!session) return null
 
     const user = await prisma.user.findUnique({
         where: { id: session.user_id },
+
+        select: {
+            id: true,
+            email: true,
+            role: true,
+        },
     })
     return user
 }

@@ -1,6 +1,7 @@
 import { ProfileReadonly, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
+import { SafeUser } from '../lib/auth'
 
 import prisma from '../lib/db'
 
@@ -89,7 +90,16 @@ export async function confirmUser(user: User) {
     })
 }
 
-export async function updateUserPassword(user: User, password: string) {
+export async function getConfirmationToken(user: Pick<User, 'id'>) {
+    const existingToken = await prisma.user.findFirst({
+        where: { id: user.id },
+        select: { confirmation_token: true },
+    })
+
+    return existingToken?.confirmation_token
+}
+
+export async function updateUserPassword(user: User | SafeUser, password: string) {
     const encrypted = await hashPassword(password)
     return prisma.user.update({
         where: { id: user.id },

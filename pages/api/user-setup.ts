@@ -11,6 +11,7 @@ import { SqueakConfig } from '@prisma/client'
 
 import { getSessionUser } from '../../lib/auth'
 import { sendUserConfirmation } from '../../lib/email'
+import { getConfirmationToken } from '../../db'
 
 export interface SetupUserRequestPayload {
     firstName: string
@@ -128,9 +129,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(200).json(response)
 
+    const confirmationToken = await getConfirmationToken(user)
+
     const { origin } = absoluteUrl(req)
     const redirectUrl = `${origin}/profile`
-    const confirmationUrl = `${origin}/api/user/confirm?token=${user.confirmation_token}&redirect=${redirectUrl}`
+    const confirmationUrl = `${origin}/api/user/confirm?token=${confirmationToken}&redirect=${redirectUrl}`
 
     await trackUserSignup(user, distinctId, { firstName, lastName, role: 'admin' })
     await trackOrganizationSignup(user, organization, {})

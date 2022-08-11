@@ -9,8 +9,7 @@ import type {
 import getActiveOrganization from './getActiveOrganization'
 import prisma from '../lib/db'
 import { getUserRole } from '../db/profiles'
-import { User } from '@prisma/client'
-import { getSessionUser } from '../lib/auth'
+import { getSessionUser, SafeUser } from '../lib/auth'
 
 type Args =
     | {
@@ -23,7 +22,7 @@ const withAdminAccess = (arg: Args) => {
     if (typeof arg === 'function') {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             const organizationId = getActiveOrganization({ req, res })
-            const user: User | null = await getSessionUser(req)
+            const user: SafeUser | null = await getSessionUser(req)
             // console.log('session=', session)
 
             if (!user) {
@@ -72,7 +71,7 @@ const withAdminAccess = (arg: Args) => {
                     }
                 }
 
-                const user: User | null = await getSessionUser(context.req)
+                const user: SafeUser | null = await getSessionUser(context.req)
                 const organizationId = getActiveOrganization(context)
 
                 if (!user) {

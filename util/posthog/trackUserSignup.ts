@@ -1,8 +1,9 @@
 import { User } from '@prisma/client'
+import { SafeUser } from '../../lib/auth'
 import withPostHog from './withPostHog'
 
 const trackUserSignup = async (
-    user: User,
+    user: User | SafeUser,
     prevDistinctId?: string,
     properties: Record<string | number, unknown> = {}
 ) => {

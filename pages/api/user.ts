@@ -7,7 +7,7 @@ import prisma from '../../lib/db'
 import { corsMiddleware } from '../../lib/middleware'
 import { notAuthenticated, safeJson } from '../../lib/api/apiUtils'
 import getActiveOrganization from '../../util/getActiveOrganization'
-import { ProfileReadonly } from '@prisma/client'
+import { ProfileReadonly, User } from '@prisma/client'
 
 export interface GetUserResponse {
     id: string
@@ -17,9 +17,20 @@ export interface GetUserResponse {
     profile: ProfileReadonly
 }
 
-const handler = nextConnect<NextApiRequest, NextApiResponse>()
+export function safeSerializeUser(
+    user: Pick<User, 'id' | 'email' | 'role'>,
+    profile: ProfileReadonly
+): GetUserResponse {
+    return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        profile,
+        isModerator: profile.role === 'moderator' || profile.role === 'admin',
+    }
+}
 
-handler
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(passport.initialize())
     .get(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -47,14 +58,7 @@ handler
         if (!user) return res.status(401).json({ error: 'Not authenticated' })
 
         const profile = user.squeak_profiles_readonly && user.squeak_profiles_readonly[0]
-        const response: GetUserResponse = {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            profile,
-            isModerator: profile.role === 'moderator' || profile.role === 'admin',
-        }
-        safeJson(res, response)
+        safeJson(res, safeSerializeUser(user, profile))
     })
 
 export default handler

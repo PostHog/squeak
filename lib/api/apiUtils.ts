@@ -3,8 +3,7 @@ import superjson from 'superjson'
 
 import getActiveOrganization from '../../util/getActiveOrganization'
 import { getReadonlyProfileForUser } from '../../db'
-import { getSessionUser } from '../auth'
-import { User } from '@prisma/client'
+import { getSessionUser, SafeUser } from '../auth'
 
 /**
  * Checks either request query params or the json request body for the presence of a list of parameters. If those don't exist, this method returns false and sends a 400 response.
@@ -74,7 +73,7 @@ export async function isAdmin(req: NextApiRequest, res: NextApiResponse): Promis
     return readonlyProfile.role === 'admin'
 }
 
-export async function requireSession(req: NextApiRequest, res: NextApiResponse): Promise<User | undefined> {
+export async function requireSession(req: NextApiRequest, res: NextApiResponse): Promise<SafeUser | undefined> {
     const user = await getSessionUser(req)
     if (!user) {
         notAuthenticated(res)

@@ -1,4 +1,5 @@
 import { Prisma, Profile as UserProfile, User } from '@prisma/client'
+import { SafeUser } from '../lib/auth'
 
 import prisma from '../lib/db'
 import createUserProfile from './createUserProfile'
@@ -9,7 +10,7 @@ interface Result {
     error?: Error | string
 }
 
-async function lookupUserProfile(user: User, organizationId: string): Promise<Result> {
+async function lookupUserProfile(user: Pick<User, 'id'>, organizationId: string): Promise<Result> {
     try {
         const userProfileReadonly = await prisma.profileReadonly.findFirst({
             select: { profile_id: true },
@@ -80,7 +81,7 @@ async function lookupUserProfile(user: User, organizationId: string): Promise<Re
 
 interface Args {
     organizationId: string
-    user: User | null
+    user: User | SafeUser | null
 }
 
 const getUserProfile = async (args: Args): Promise<Result> => {

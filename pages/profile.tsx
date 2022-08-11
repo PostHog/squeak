@@ -3,15 +3,15 @@ import { ReactElement, useState } from 'react'
 import LoginLayout from '../layout/LoginLayout'
 import { useToasts } from 'react-toast-notifications'
 import Router from 'next/router'
-import { Profile as UserProfile, User } from '@prisma/client'
-import { getSessionUser } from '../lib/auth'
+import { Profile as UserProfile } from '@prisma/client'
+import { getSessionUser, SafeUser } from '../lib/auth'
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 import prisma from '../lib/db'
 import { doPatch } from '../lib/api'
 import { useUser } from '../contexts/user'
 
 interface Props {
-    user: User
+    user: SafeUser
     profile: UserProfile
 }
 

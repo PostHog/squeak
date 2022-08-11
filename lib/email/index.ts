@@ -12,7 +12,7 @@ interface SqueakEmailConfig {
     company_domain: string
 }
 
-export async function sendUserConfirmation(organizationId: string, user: User, url: string) {
+export async function sendUserConfirmation(organizationId: string, user: Pick<User, 'email'>, url: string) {
     if (!user.email) throw new Error('user email is null')
     return sendEmail(organizationId, user.email, confirmation(url))
 }
