@@ -7,7 +7,7 @@ import prisma from '../../lib/db'
 import { corsMiddleware } from '../../lib/middleware'
 import { notAuthenticated, safeJson } from '../../lib/api/apiUtils'
 import getActiveOrganization from '../../util/getActiveOrganization'
-import { Profile, ProfileReadonly } from '@prisma/client'
+import { ProfileReadonly } from '@prisma/client'
 
 export interface GetUserResponse {
     id: string

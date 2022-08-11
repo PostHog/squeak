@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import absoluteUrl from 'next-absolute-url'
 
 import prisma from '../../lib/db'
-import withMultiTenantCheck from '../../util/withMultiTenantCheck'
+// import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import createUserProfile from '../../util/createUserProfile'
 import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 import trackUserSignup from '../../util/posthog/trackUserSignup'

@@ -15,7 +15,7 @@ import { getConfig } from '../../db'
 import { getSessionUser } from '../../lib/auth'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, organizationId, user }) => {
+const Question = ({ question: initialQuestion, organizationId }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,

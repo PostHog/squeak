@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import { WebhookValues } from '../@types/types'
 
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import Button from './Button'
 import Input from './Input'
 import { createWebhook, deleteWebhook, updateWebhook } from '../lib/api'
