@@ -31,7 +31,7 @@ ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
 
 
-RUN yarn build --no-lint
+RUN yarn build
 
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
