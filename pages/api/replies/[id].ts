@@ -1,15 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc from 'next-connect'
+import { JSONSchemaType } from 'ajv'
 
 import { safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import { validateBody, allowedOrigin, corsMiddleware, requireOrgAdmin } from '../../../lib/middleware'
 import { Reply } from '@prisma/client'
 
-const schema = {
+export interface UpdateReplyPayload {
+    published: boolean
+    organizationId: string
+}
+
+const schema: JSONSchemaType<UpdateReplyPayload> = {
     type: 'object',
     properties: {
-        organizationId: 'string',
+        organizationId: { type: 'string' },
+        published: { type: 'boolean' },
     },
     required: ['organizationId'],
     additionalProperties: true,
@@ -22,11 +29,6 @@ const handler = nc<NextApiRequest, NextApiResponse>()
     .use(requireOrgAdmin)
     .delete(handleDelete)
     .patch(handlePatch)
-
-export interface UpdateReplyPayload {
-    published: boolean
-    organizationId: string
-}
 
 async function findReply(req: NextApiRequest, res: NextApiResponse): Promise<Reply | boolean> {
     const id = parseInt(req.query.id as string)
