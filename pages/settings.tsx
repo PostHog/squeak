@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import CompanyDetails from '../components/CompanyDetails'
 import NotificationForm from '../components/NotificationForm'
+import PermalinkSettings from '../components/PermalinkSettings'
 import ResetPassword from '../components/ResetPassword'
 import AllowedOriginTable from '../components/settings/AllowedOriginTable'
 import SlackForm from '../components/SlackForm'
@@ -32,6 +33,8 @@ interface Props {
     questionAutoPublish: boolean
     replyAutoPublish: boolean
     initialShowSlackUserInfo: boolean
+    permalinkBase: string
+    permalinksEnabled: boolean
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -46,6 +49,8 @@ const Settings: NextPageWithLayout<Props> = ({
     questionAutoPublish: initialQuestionAutoPublish,
     replyAutoPublish: initialReplyAutoPublish,
     initialShowSlackUserInfo,
+    permalinkBase,
+    permalinksEnabled,
 }) => {
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
@@ -108,6 +113,19 @@ const Settings: NextPageWithLayout<Props> = ({
                     setChecked={handleReplyAutoPublish}
                     label="Publish new replies automatically"
                     helper="Disable to moderate replies before they appear on your site"
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Permalinks</h3>
+                <PermalinkSettings
+                    companyDomain={companyDomain}
+                    permalinkBase={permalinkBase}
+                    permalinksEnabled={permalinksEnabled}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
                 />
             </Surface>
             <Surface className="mb-4">
@@ -217,6 +235,8 @@ export const getServerSideProps = withAdminAccess({
                 question_auto_publish: true,
                 reply_auto_publish: true,
                 show_slack_user_profiles: true,
+                permalink_base: true,
+                permalinks_enabled: true,
             },
             where: { organization_id: organizationId },
         })
@@ -236,6 +256,8 @@ export const getServerSideProps = withAdminAccess({
                 questionAutoPublish: config?.question_auto_publish || false,
                 replyAutoPublish: config?.reply_auto_publish || false,
                 initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
+                permalinkBase: config?.permalink_base || '',
+                permalinksEnabled: config?.permalinks_enabled || false,
             },
         }
     },

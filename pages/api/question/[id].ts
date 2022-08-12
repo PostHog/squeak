@@ -1,26 +1,29 @@
 import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { deleteQuestion, getQuestion, UpdateQuestionParams } from '../../../db/question'
+import { deleteQuestion, getQuestion } from '../../../db/question'
 
 import { updateQuestion } from '../../../db/question'
 import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import { validateBody } from '../../../lib/middleware'
 import nextConnect from 'next-connect'
+import getActiveOrganization from '../../../util/getActiveOrganization'
 
-interface UpdateQuestionRequestPayload {
-    subject: string
+export interface UpdateQuestionRequestPayload {
+    subject: string | null
     published: boolean
     resolved: boolean
     replyId: number
+    permalink: string | null
 }
 
 const updateSchema: JSONSchemaType<UpdateQuestionRequestPayload> = {
     type: 'object',
     properties: {
-        subject: { type: 'string' },
+        subject: { type: 'string', nullable: true },
         published: { type: 'boolean' },
         resolved: { type: 'boolean' },
         replyId: { type: 'number' },
+        permalink: { type: 'string', nullable: true },
     },
     required: [],
     additionalProperties: true,
@@ -56,13 +59,19 @@ async function doDeleteQuestion(req: NextApiRequest, res: NextApiResponse) {
 // PATCH /api/question/[id]
 export async function doUpdateQuestion(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
+    const organizationId = getActiveOrganization({ req, res })
 
     const id = parseInt(req.query.id as string)
 
-    const params: UpdateQuestionParams = req.body
-    const question = await updateQuestion(id, params)
-
-    safeJson(res, question)
+    const params: UpdateQuestionRequestPayload = req.body
+    try {
+        const question = await updateQuestion(id, organizationId, params)
+        safeJson(res, question)
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(422).json({ error: err.message })
+        }
+    }
 }
 
 export default handler

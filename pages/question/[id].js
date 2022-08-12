@@ -15,11 +15,11 @@ import { getConfig } from '../../db'
 import { getSessionUser } from '../../lib/auth'
 const SingleQuestion = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
-const Question = ({ question: initialQuestion, organizationId }) => {
+const Question = ({ question: initialQuestion, organizationId, domain, permalinkBase }) => {
     const [question, setQuestion] = useState(initialQuestion)
     const {
         replies,
-        question: { slug, subject, id, published, resolved },
+        question: { slug, subject, id, published, resolved, permalink },
     } = question
 
     const updateQuestion = async ({ subject, slug, published, resolved }) => {
@@ -58,7 +58,9 @@ const Question = ({ question: initialQuestion, organizationId }) => {
                 <Topics organizationId={organizationId} questionId={id} />
                 <h3 className="mt-8 mb-4 text-xl font-bold">Question settings</h3>
                 <EditQuestion
-                    values={{ subject, slug, id, published, resolved }}
+                    permalinkBase={permalinkBase}
+                    domain={domain}
+                    values={{ subject, slug, id, published, resolved, permalink }}
                     replyId={replies[0].id}
                     onSubmit={updateQuestion}
                 />
@@ -92,7 +94,10 @@ export const getServerSideProps = withAdminAccess({
         // We need to do this to properly serialize BigInt's
         const { json: safeQuestion } = superjson.serialize(question)
 
-        const { company_domain } = await getConfig(organizationId, { company_domain: true })
+        const { company_domain, permalink_base } = await getConfig(organizationId, {
+            company_domain: true,
+            permalink_base: true,
+        })
 
         const topics = await prisma.topic.findMany({
             where: { organization_id: organizationId },
@@ -105,6 +110,7 @@ export const getServerSideProps = withAdminAccess({
                 domain: company_domain || '',
                 organizationId,
                 topics,
+                permalinkBase: permalink_base || '',
                 user,
             },
         }

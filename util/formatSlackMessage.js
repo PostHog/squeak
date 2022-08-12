@@ -14,8 +14,8 @@ export default function formatSlackElements(elements, apiKey) {
         emoji: (el) => {
             return ''
         },
-        channel: (el) => {
-            return `**${el.channel}**`
+        channel: (_el) => {
+            return ''
         },
     }
     const message = []

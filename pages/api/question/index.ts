@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
 import xss from 'xss'
+import slugify from 'slugify'
 import { Reply } from '@prisma/client'
 import nc from 'next-connect'
 
@@ -107,6 +108,17 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
         return
     }
 
+    // generate a permalink from the subject
+    let permalink = slugify(subject, {
+        lower: true,
+    })
+
+    // Ensure the permalink is unique
+    const existing = await prisma.question.findFirst({
+        where: { permalink, organization_id: organizationId },
+        select: { permalink: true },
+    })
+
     // Create the question in the database
     const message = await prisma.question.create({
         data: {
@@ -115,6 +127,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
             subject,
             published: config.question_auto_publish,
             organization_id: organizationId,
+            permalink,
         },
     })
 
@@ -123,6 +136,18 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
         res.status(500).json({ error: 'Error creating message' })
 
         return
+    }
+
+    // If a question with this permalink already exists, update the new question a modified
+    // permalink to make it unique.
+    // TODO: We should clean this up so we don't rely on the new message's ID, which means we briefly
+    //   have two records with the same permalink
+    if (existing) {
+        permalink = `${permalink}-${message}`
+        await prisma.question.update({
+            where: { id: message.id },
+            data: { permalink },
+        })
     }
 
     // The question author's message is modeled as the first reply to the question
@@ -153,7 +178,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     safeJson(res, response, 201)
-    sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
+    await sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
 }
 
 type ReplyWithMetadata = Reply & {

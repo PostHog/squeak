@@ -1,5 +1,8 @@
 import { Prisma, Question } from '@prisma/client'
+import slugify from 'slugify'
+
 import prisma from '../lib/db'
+import { UpdateQuestionRequestPayload } from '../pages/api/question/[id]'
 import { updateRepliesPublished } from './reply'
 
 export type UpdateQuestionParams = Prisma.XOR<Prisma.QuestionUpdateInput, Prisma.QuestionUncheckedUpdateInput> & {
@@ -64,8 +67,29 @@ export async function getQuestion(id: number, params: { fields?: string } = {}) 
     return question
 }
 
-export async function updateQuestion(id: number, params: UpdateQuestionParams): Promise<Question> {
+export async function updateQuestion(
+    id: number,
+    organizationId: string,
+    params: UpdateQuestionRequestPayload
+): Promise<Question> {
     const { replyId, ...rest } = params
+    let permalink = params.permalink
+
+    if (permalink && permalink !== '') {
+        permalink = slugify(permalink, {
+            lower: true,
+        })
+
+        // Check if another question has the same permalink
+        const existing = await prisma.question.findFirst({
+            where: { permalink, organization_id: organizationId, id: { not: id } },
+            select: { permalink: true },
+        })
+
+        if (existing?.permalink && existing.permalink !== '') {
+            throw new Error('Permalink already exists')
+        }
+    }
 
     if (rest.published !== undefined && replyId) {
         await updateRepliesPublished(replyId, rest.published)
@@ -73,7 +97,7 @@ export async function updateQuestion(id: number, params: UpdateQuestionParams): 
 
     return prisma.question.update({
         where: { id },
-        data: { ...rest },
+        data: { ...rest, permalink },
     })
 }
 

@@ -22,7 +22,7 @@ const checkAllowedOrigins = async (req: NextApiRequest): Promise<Response> => {
     // Allow the host (the admin app) to make requests without origin checks.
     if (host && origin.includes(host)) return {}
 
-    const { organizationId } = req.body
+    const organizationId = req.method === 'POST' ? req.body.organizationId : req.query.organizationId
 
     if (!organizationId) {
         return { error: { statusCode: 400, message: 'Missing required parameter - organizationId' } }

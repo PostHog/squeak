@@ -1,9 +1,9 @@
 import { doPatch, doDelete, doGet, QueryParams, doPost } from './client'
 import { ID } from '../types'
-import { UpdateQuestionParams } from '../../db/question'
 import { Question, Reply } from '@prisma/client'
 import { GetQuestionTopicsResponse } from '../../pages/api/question/[id]/topics'
 import { CreateQuestionRequestPayload } from '../../pages/api/question'
+import { UpdateQuestionRequestPayload } from '../../pages/api/question/[id]'
 
 export function deleteQuestion(id: ID) {
     return doDelete(`/api/question/${id}`)
@@ -22,7 +22,7 @@ export function getQuestion(id: ID, fields?: string) {
     return doGet<Question & { replies: Reply[] }>(`/api/question/${id}`, params)
 }
 
-export function updateQuestion(id: ID, params: UpdateQuestionParams) {
+export function updateQuestion(id: ID, params: UpdateQuestionRequestPayload) {
     return doPatch<Question>(`/api/question/${id}`, params)
 }
 

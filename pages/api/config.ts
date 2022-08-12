@@ -73,6 +73,8 @@ export type UpdateConfigPayload = Pick<
     | 'question_auto_publish'
     | 'reply_auto_publish'
     | 'show_slack_user_profiles'
+    | 'permalink_base'
+    | 'permalinks_enabled'
 >
 
 // PATCH /api/config

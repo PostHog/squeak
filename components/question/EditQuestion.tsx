@@ -1,6 +1,8 @@
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
+
 import { deleteQuestion, updateQuestion } from '../../lib/api/'
 import Button from '../Button'
 import Checkbox from '../Checkbox'
@@ -8,29 +10,43 @@ import Input from '../Input'
 import { Question } from '@prisma/client'
 
 interface Props {
-    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved'>
+    permalinkBase: string
+    values: Pick<Question, 'id' | 'subject' | 'published' | 'resolved' | 'permalink'>
     replyId: number
-    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved'>) => void
+    onSubmit: (values: Pick<Question, 'subject' | 'published' | 'resolved' | 'permalink'>) => void
 }
 
 interface IValues {
     subject: string | null
     published: boolean
     resolved: boolean
+    permalink: string | null
 }
 
-const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit }) => {
-    const { subject, id, published, resolved } = values
+const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit, permalinkBase }) => {
+    const { subject, id, published, resolved, ...other } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
+    const { addToast } = useToasts()
+    const [permalink, setPermalink] = useState(other.permalink)
 
     const handleSave = async (values: IValues) => {
         setLoading(true)
         const { subject, published, resolved } = values
-        await updateQuestion(id, { subject, published, resolved, replyId })
-        onSubmit({ subject, published, resolved })
+        try {
+            const { data } = await updateQuestion(id, { subject, published, resolved, replyId, permalink })
+            if (data && data.permalink) {
+                setPermalink(data.permalink)
+            }
+            onSubmit({ subject, published, resolved, permalink })
+        } catch (err) {
+            if (err instanceof Error) {
+                addToast(err.message, { appearance: 'error' })
+            }
+        }
+
         setLoading(false)
     }
 
@@ -66,6 +82,7 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                     subject,
                     published,
                     resolved,
+                    permalink,
                 }}
                 onSubmit={handleSave}
             >
@@ -90,6 +107,14 @@ const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmi
                                 id="resolved"
                                 name="resolved"
                                 helperText="Check to mark as solved"
+                            />
+                            <Input
+                                base={`/${permalinkBase}/`}
+                                label="Permalink"
+                                id="permalink"
+                                name="permalink"
+                                placeholder="Permalink"
+                                helperText="Where the question appears on your site"
                             />
                             <div className="flex space-x-4">
                                 <Button

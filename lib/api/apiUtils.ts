@@ -85,7 +85,8 @@ export async function requireSession(req: NextApiRequest, res: NextApiResponse):
 }
 
 /**
- * Responds with 403 if user is not an admin. Responds with 401 if user is not authenticated.
+ * Responds with 403 if user is not an admin of the organization indicated in the cookie.
+ * Responds with 401 if user is not authenticated.
  * @param  {NextApiRequest} req
  * @param  {NextApiResponse} res
  */
