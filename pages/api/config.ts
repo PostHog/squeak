@@ -4,10 +4,13 @@ import { orgIdNotFound, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils
 import nc from 'next-connect'
 
 import prisma from '../../lib/db'
-import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
+import { corsMiddleware, allowedOrigin, requireUser } from '../../lib/middleware'
 import getActiveOrganization from '../../util/getActiveOrganization'
+import { getSessionUser } from '../../lib/auth'
+import { getUserRole } from '../../db'
 
 const handler = nc<NextApiRequest, NextApiResponse>()
+    .use(requireUser)
     .use(corsMiddleware)
     .use(allowedOrigin)
     .post(handleGetConfig)
@@ -29,12 +32,33 @@ async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({ error: 'Missing required fields' })
     }
 
+    let admin = false
+
+    if (req.user) {
+        const ro = await getUserRole(organizationId, req.user?.id)
+        if (ro?.role) {
+            admin = ro.role === 'admin'
+        }
+    }
+
+    // Return the entire config object for admin requests
+    if (admin) {
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+        })
+        return safeJson(res, config)
+    }
+
     const config = await prisma.squeakConfig.findFirst({
         where: { organization_id: organizationId },
-        select: { permalink_base: true, permalinks_enabled: true, allowed_origins: true },
+        select: {
+            permalink_base: true,
+            permalinks_enabled: true,
+            allowed_origins: true,
+        },
     })
 
-    res.status(200).json(config)
+    safeJson(res, config)
 }
 
 export type UpdateConfigPayload = Pick<
