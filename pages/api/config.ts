@@ -4,12 +4,11 @@ import { orgIdNotFound, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils
 import nc from 'next-connect'
 
 import prisma from '../../lib/db'
-import { corsMiddleware, allowedOrigin, requireUser } from '../../lib/middleware'
+import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import { getUserRole } from '../../db'
 
 const handler = nc<NextApiRequest, NextApiResponse>()
-    .use(requireUser)
     .use(corsMiddleware)
     .use(allowedOrigin)
     .post(handleGetConfig)
