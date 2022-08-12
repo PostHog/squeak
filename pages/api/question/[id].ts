@@ -9,21 +9,29 @@ import nextConnect from 'next-connect'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
 export interface UpdateQuestionRequestPayload {
-    subject: string | null
-    published: boolean
-    resolved: boolean
-    replyId: number
-    permalink: string | null
+    subject?: string | null
+    published?: boolean
+    resolved?: boolean
+    replyId?: number
+    permalink?: string | null
+    slug?: string[]
 }
 
 const updateSchema: JSONSchemaType<UpdateQuestionRequestPayload> = {
     type: 'object',
     properties: {
         subject: { type: 'string', nullable: true },
-        published: { type: 'boolean' },
-        resolved: { type: 'boolean' },
-        replyId: { type: 'number' },
+        published: { type: 'boolean', nullable: true },
+        resolved: { type: 'boolean', nullable: true },
+        replyId: { type: 'number', nullable: true },
         permalink: { type: 'string', nullable: true },
+        slug: {
+            type: 'array',
+            nullable: true,
+            items: {
+                type: 'string',
+            },
+        },
     },
     required: [],
     additionalProperties: true,
