@@ -6,7 +6,6 @@ import nc from 'next-connect'
 import prisma from '../../lib/db'
 import { corsMiddleware, allowedOrigin, requireUser } from '../../lib/middleware'
 import getActiveOrganization from '../../util/getActiveOrganization'
-import { getSessionUser } from '../../lib/auth'
 import { getUserRole } from '../../db'
 
 const handler = nc<NextApiRequest, NextApiResponse>()
