@@ -79,6 +79,8 @@ export async function requireSession(req: NextApiRequest, res: NextApiResponse):
         notAuthenticated(res)
         return
     }
+
+    req.user = user
     return user
 }
 
