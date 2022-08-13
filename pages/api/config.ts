@@ -7,6 +7,7 @@ import prisma from '../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import { getUserRole } from '../../db'
+import { getSessionUser } from '../../lib/auth'
 
 const handler = nc<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
@@ -32,8 +33,10 @@ async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
 
     let admin = false
 
-    if (req.user) {
-        const ro = await getUserRole(organizationId, req.user?.id)
+    const user = await getSessionUser(req)
+
+    if (user) {
+        const ro = await getUserRole(organizationId, user?.id)
         if (ro?.role) {
             admin = ro.role === 'admin'
         }
