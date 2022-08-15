@@ -39,7 +39,7 @@ async function handleLogin(req: NextApiRequest & { user: User }, res: NextApiRes
         setCookie({ res }, 'squeak_organization_id', `${readOnly.organization_id}`, { path: '/' })
     }
 
-    return res.status(200).json({ success: true })
+    return res.status(200).json({ success: true, id: req.user.id })
 }
 
 export default handler
