@@ -1,3 +1,4 @@
+import { JSONSchemaType } from 'ajv'
 import { randomUUID } from 'crypto'
 import { NextApiRequest, NextApiResponse } from 'next'
 import absoluteUrl from 'next-absolute-url'
@@ -5,13 +6,27 @@ import nextConnect from 'next-connect'
 
 import prisma from '../../../lib/db'
 import { sendForgotPassword } from '../../../lib/email'
-import { corsMiddleware } from '../../../lib/middleware'
+import { corsMiddleware, validateBody } from '../../../lib/middleware'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
-const handler = nextConnect().use(corsMiddleware).post(doPost)
+interface ForgotPasswordRequestParams {
+    email: string
+    redirect: string
+}
+
+const schema: JSONSchemaType<ForgotPasswordRequestParams> = {
+    type: 'object',
+    properties: {
+        email: { type: 'string' },
+        redirect: { type: 'string' },
+    },
+    required: ['email'],
+}
+
+const handler = nextConnect().use(corsMiddleware).use(validateBody(schema)).post(doPost)
 
 async function doPost(req: NextApiRequest, res: NextApiResponse) {
-    const { email } = req.body
+    const { email, redirect } = req.body
     const organizationId = getActiveOrganization({ req, res })
 
     let user = await prisma.user.findFirst({
@@ -31,7 +46,9 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     })
 
     const { origin } = absoluteUrl(req)
-    const confirmationUrl = `${origin}/reset-password?token=${user.recovery_token}`
+    let confirmationUrl = `${origin}/reset-password?token=${user.recovery_token}`
+    if (redirect) confirmationUrl += '&redirect=' + redirect
+
     await sendForgotPassword(organizationId, user, confirmationUrl)
 
     res.status(200).json({ success: true })

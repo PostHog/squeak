@@ -13,9 +13,12 @@ export default function ResetPassword({ actionButtons }) {
     const handleSubmit = async ({ password }) => {
         setLoading(true)
         try {
-            await doPost('/api/password/reset', { password, token: router.query.token })
+            await doPost('/api/password/reset', {
+                password,
+                token: router.query.token,
+            })
             setErrorMessage('Password has been updated')
-            router.push('/login')
+            router.push(router.query.redirect || '/login')
         } catch (error) {
             setErrorMessage(error.message)
         } finally {
