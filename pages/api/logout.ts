@@ -1,15 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import nc from 'next-connect'
 
 import { removeTokenCookie } from '../../lib/auth/cookies'
-import { allowedOrigin, corsMiddleware } from '../../lib/middleware'
-import nc from 'next-connect'
+import { corsMiddleware } from '../../lib/middleware'
 import { clearOrganization } from '../../util/getActiveOrganization'
 
-const handler = nc<NextApiRequest, NextApiResponse>()
-    .use(corsMiddleware)
-    .use(allowedOrigin)
-    .post(doLogout)
-    .get(doLogout)
+const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).post(doLogout).get(doLogout)
 
 // POST /api/logout
 async function doLogout(req: NextApiRequest, res: NextApiResponse) {
