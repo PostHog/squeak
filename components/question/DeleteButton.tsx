@@ -1,8 +1,9 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { Dispatch, SetStateAction } from 'react'
 
+import { deleteReply } from '../../lib/api/replies'
+
 interface Props {
-    id: number | string
+    id: number | string | bigint
     setDeleted: Dispatch<SetStateAction<boolean>>
     confirmDelete: boolean
     setConfirmDelete: Dispatch<SetStateAction<boolean>>
@@ -13,7 +14,7 @@ const DeleteButton: React.FunctionComponent<Props> = ({ id, setDeleted, confirmD
         e.stopPropagation()
 
         if (confirmDelete) {
-            await supabaseClient.from('squeak_replies').delete().match({ id })
+            await deleteReply(id)
             setDeleted(true)
         } else {
             setConfirmDelete(true)
@@ -21,7 +22,7 @@ const DeleteButton: React.FunctionComponent<Props> = ({ id, setDeleted, confirmD
     }
 
     return (
-        <button onClick={handleClick} className="ml-4 text-red font-bold">
+        <button onClick={handleClick} className="ml-4 font-bold text-red">
             {confirmDelete ? 'Click again to confirm' : 'Delete'}
         </button>
     )

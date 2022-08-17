@@ -1,8 +1,9 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import type { Dispatch, SetStateAction } from 'react'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
+import { updateReply } from '../../lib/api/'
 
 interface Props {
-    id: number | string
+    id: number | string | bigint
     published: boolean
     setPublished: Dispatch<SetStateAction<boolean>>
     confirmPublish: boolean
@@ -16,11 +17,12 @@ const PublishButton: React.FunctionComponent<Props> = ({
     confirmPublish,
     setConfirmPublish,
 }) => {
+    const { getActiveOrganization } = useActiveOrganization()
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
 
         if (confirmPublish) {
-            await supabaseClient.from('squeak_replies').update({ published: !published }).match({ id })
+            await updateReply(id, { published: !published, organizationId: getActiveOrganization() })
             setPublished(!published)
             setConfirmPublish(false)
         } else {
@@ -29,7 +31,7 @@ const PublishButton: React.FunctionComponent<Props> = ({
     }
 
     return (
-        <button onClick={handleClick} className="text-red font-bold">
+        <button onClick={handleClick} className="font-bold text-red">
             {confirmPublish ? 'Click again to confirm' : published ? 'Unpublish' : 'Publish'}
         </button>
     )

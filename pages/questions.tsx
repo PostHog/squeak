@@ -1,33 +1,31 @@
 import { CheckCircleIcon } from '@heroicons/react/outline'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { Question, Profile, Reply, Prisma } from '@prisma/client'
 import groupBy from 'lodash.groupby'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import type { definitions } from '../@types/supabase'
+
 import type { NextPageWithLayout } from '../@types/types'
 import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
+import prisma from '../lib/db'
 import dateToDays from '../util/dateToDays'
 import dayFormat from '../util/dayFormat'
 import getActiveOrganization from '../util/getActiveOrganization'
 import getQuestions from '../util/getQuestions'
 import withAdminAccess from '../util/withAdminAccess'
 
-type Message = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
-type Profile = definitions['squeak_profiles']
 type ReplyWithProfile = Pick<Reply, 'body'> & { profile: Pick<Profile, 'first_name' | 'last_name' | 'avatar'> }
 
-interface Question {
-    question: Message
+interface IQuestion {
+    question: Question
     replies: Array<ReplyWithProfile>
 }
 
 interface Props {
     results: {
-        questions: Array<Question>
+        questions: Array<IQuestion>
         count: number
     }
     start: number
@@ -37,10 +35,11 @@ interface Props {
 const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, start }) => {
     const { questions } = results
 
-    const grouped = groupBy(questions, (question: Question) => {
+    const grouped = groupBy(questions, (question: IQuestion) => {
         const { created_at } = question.question
         return dateToDays(created_at)
     })
+
     return (
         <div>
             <h1 className="mb-2">
@@ -60,7 +59,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                             <li key={days}>
                                 <h4 className="text-[14px] opacity-30 m-0 font-bold">{dayFormat(Number(days))}</h4>
                                 <ul className="grid gap-4">
-                                    {grouped[days].map((question: Question) => {
+                                    {grouped[days].map((question: IQuestion) => {
                                         const [firstReply] = question.replies
                                         const replyCount = question.replies.length - 1
                                         const slackTimestamp = question.question.slack_timestamp
@@ -78,7 +77,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                             href={`/question/${question.question.id}`}
                                                             className="bg-white text-left !p-0"
                                                         >
-                                                            <h3 className="text-red font-bold my-0 pr-12">
+                                                            <h3 className="pr-12 my-0 font-bold text-red">
                                                                 {question.question.subject}
                                                             </h3>
                                                         </Button>
@@ -112,7 +111,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                         <div className="flex items-end justify-between">
                                                             <Button
                                                                 href={`/question/${question.question.id}`}
-                                                                className="mt-3 bg-gray-light text-red bg-opacity-10 font-bold hover:bg-opacity-20 active:bg-opacity-25"
+                                                                className="mt-3 font-bold bg-gray-light text-red bg-opacity-10 hover:bg-opacity-20 active:bg-opacity-25"
                                                             >{`${replyCount} ${
                                                                 replyCount === 1 ? 'reply' : 'replies'
                                                             }`}</Button>
@@ -124,8 +123,10 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                                                 </div>
                                                 <div className="flex items-start max-w-[200px] w-full flex-shrink-0 py-8">
                                                     <div className="flex items-center space-x-3">
-                                                        <Avatar image={firstReply?.profile?.avatar} />
-                                                        <div className="opacity-50 text-xs">
+                                                        {firstReply?.profile?.avatar && (
+                                                            <Avatar image={firstReply?.profile?.avatar} />
+                                                        )}
+                                                        <div className="text-xs opacity-50">
                                                             <p className="font-semibold">{`${
                                                                 slackTimestamp
                                                                     ? 'Slack User'
@@ -143,7 +144,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                     })}
                 </ul>
             )}
-            <nav className="py-3 flex items-center justify-between" aria-label="Pagination">
+            <nav className="flex items-center justify-between py-3" aria-label="Pagination">
                 <div className="hidden sm:block">
                     <p className="text-sm text-gray-700">
                         {/* Showing <span className="font-medium">{start + 1}</span> to{' '}
@@ -151,7 +152,7 @@ const QuestionsLayout: React.VoidFunctionComponent<Props> = ({ results, domain, 
                         <span className="font-medium">{results.count}</span> results
                     </p>
                 </div>
-                <div className="flex-1 flex justify-between sm:justify-end space-x-4">
+                <div className="flex justify-between flex-1 space-x-4 sm:justify-end">
                     {start > 0 && <a href={`/questions?start=${start - 20}`}>Previous</a>}
                     {start + 20 < results.count && <a href={`/questions?start=${start + 20}`}>Next</a>}
                 </div>
@@ -177,26 +178,34 @@ export const getServerSideProps = withAdminAccess({
     async getServerSideProps(context) {
         const organizationId = await getActiveOrganization(context)
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
-        const {
-            data: { company_domain },
-        } = await supabaseServerClient(context)
-            .from('squeak_config')
-            .select('company_domain')
-            .eq('organization_id', organizationId)
-            .single()
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+            select: { company_domain: true },
+        })
 
-        const { data, error } = await getQuestions(context, { start, organizationId })
-
-        if (error) {
-            return { props: { error: error.message } }
+        if (!config) {
+            return {
+                props: {
+                    error: 'No config found',
+                },
+            }
         }
+        const { company_domain } = config
 
-        return {
-            props: {
-                results: data,
-                start,
-                domain: company_domain,
-            },
+        try {
+            const { data } = await getQuestions(context, { start, organizationId })
+            return {
+                props: {
+                    results: data,
+                    start,
+                    domain: company_domain,
+                },
+            }
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                return { props: { error: error.message } }
+            }
+            return { props: { error } }
         }
     },
 })

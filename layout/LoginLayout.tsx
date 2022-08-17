@@ -20,16 +20,16 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children
                 <link rel="icon" href="/favicon.png" />
             </Head>
 
-            <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="flex flex-col justify-center min-h-full py-12 sm:px-6 lg:px-8">
                 <div className="flex justify-center sm:mx-auto sm:w-full sm:max-w-md">
                     <AnimatedLogo className="w-[600px]" />
                 </div>
 
-                {title && <h2 className="text-center text-4xl font-extrabold text-primary-light">{title}</h2>}
+                {title && <h2 className="text-4xl font-extrabold text-center text-primary-light">{title}</h2>}
                 {subtitle}
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">{children}</div>
+                    <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">{children}</div>
                 </div>
             </div>
         </div>

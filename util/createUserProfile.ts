@@ -1,34 +1,24 @@
-import type { definitions } from '../@types/supabase'
-import { createClient } from '@supabase/supabase-js'
-
-type UserProfile = definitions['squeak_profiles']
+import prisma from '../lib/db'
+import { Prisma, Profile } from '@prisma/client'
 
 interface Result {
-    data?: UserProfile
+    data?: Profile
     error?: Error
 }
 
-const createUserProfile = async (first_name?: string, last_name?: string, avatar?: string): Promise<Result> => {
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    const { data, error } = await supabaseServiceRoleClient
-        .from<UserProfile>('squeak_profiles')
-        .insert({
-            first_name: first_name,
-            last_name: last_name,
-            avatar,
+const createUserProfile = async (
+    params: Prisma.XOR<Prisma.ProfileCreateInput, Prisma.ProfileUncheckedCreateInput>
+): Promise<Result> => {
+    try {
+        const data = await prisma.profile.create({
+            data: params,
         })
-        .limit(1)
-        .single()
 
-    if (!data || error) {
-        return { error: new Error(error?.message ?? 'Failed to create profile') }
+        if (!data) return { error: new Error('Failed to create profile') }
+        return { data }
+    } catch (error) {
+        return { error: new Error('Failed to create profile') }
     }
-
-    return { data }
 }
 
 export default createUserProfile

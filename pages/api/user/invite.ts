@@ -1,41 +1,33 @@
 import withAdminAccess from '../../../util/withAdminAccess'
-import { createClient } from '@supabase/supabase-js'
 import absoluteUrl from 'next-absolute-url'
 import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
 import createUserProfile from '../../../util/createUserProfile'
 import trackUserSignup from '../../../util/posthog/trackUserSignup'
+import { sendUserInvite } from '../../../lib/email'
+import { findUserByEmail, inviteUser } from '../../../db'
 
 export default withAdminAccess(async (req, res) => {
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    const { organizationId, email, role = 'admin', firstName } = JSON.parse(req.body)
+    const { organizationId, email, role = 'admin', firstName } = req.body
 
     const { origin } = absoluteUrl(req)
 
-    const { data: invitedUser, error: invitedUserError } = await supabaseServiceRoleClient.auth.api.inviteUserByEmail(
-        email,
-        {
-            redirectTo: `${origin}/profile`,
-        }
-    )
+    const user = await findUserByEmail(email)
+    if (user) {
+        return res.status(400).json({ error: 'User with this email already exists' })
+    }
 
-    if (!invitedUser || invitedUserError) {
+    const invitedUser = await inviteUser(email)
+
+    if (!invitedUser) {
         console.error(`[🧵 Invite] Error inviting user`)
-        res.status(500)
-
-        if (invitedUserError) {
-            console.error(`[🧵 Invite] ${invitedUserError.message}`)
-
-            res.status(500).json({ error: invitedUserError.message })
-        }
+        res.status(500).json({ error: 'Error inviting user' })
 
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await createUserProfile(firstName)
+    const { data: userProfile, error: userProfileError } = await createUserProfile({
+        first_name: firstName,
+    })
 
     if (!userProfile || userProfileError) {
         console.error(`[🧵 Invite] Error inviting user`)
@@ -63,6 +55,11 @@ export default withAdminAccess(async (req, res) => {
         return
     }
 
-    res.json(true)
+    const redirectUrl = `${origin}/profile`
+
+    const confirmationUrl = `${origin}/api/user/confirm?token=${invitedUser.confirmation_token}&redirect=${redirectUrl}`
+    await sendUserInvite(organizationId, invitedUser, confirmationUrl)
+
+    res.status(201).json({ success: true })
     trackUserSignup(invitedUser, undefined, { firstName, role })
 })

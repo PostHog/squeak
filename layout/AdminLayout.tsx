@@ -1,10 +1,10 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Logo from '../components/Logo'
 import posthog from 'posthog-js'
 import usePostHog from '../hooks/usePostHog'
+import { logout } from '../lib/api/auth'
 
 const navigation = [
     { name: 'Questions', href: '/questions' },
@@ -28,8 +28,8 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
     const router = useRouter()
     usePostHog()
 
-    const handleLogout = () => {
-        supabaseClient.auth.signOut()
+    const handleLogout = async () => {
+        await logout()
         posthog?.reset()
         router.push('/login')
     }
@@ -42,12 +42,12 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 <link rel="icon" href="/favicon.png" />
             </Head>
-            <div className="items-start flex" style={navStyle}>
+            <div className="flex items-start" style={navStyle}>
                 {/* Static sidebar for desktop */}
                 <div className="sticky top-0 w-full grow-0 shrink-0 basis-[300px] md:mr-8">
                     {/* Sidebar component, swap this element with another sidebar if you like */}
                     <div className="pt-8 pb-4 overflow-y-auto">
-                            <Logo />
+                        <Logo />
                         <nav className="px-7 space-y-[1px]">
                             {navigation.map((item) => (
                                 <Link key={item.name} href={item.href} passHref>
@@ -74,10 +74,8 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                         </nav>
                     </div>
                 </div>
-                <main style={contentStyle} className="flex flex-col flex-1 pr-4 col-span-2 py-12">
-                    {!hideTitle && (
-                        <h1 className="pb-2">{title}</h1>
-                    )}
+                <main style={contentStyle} className="flex flex-col flex-1 col-span-2 py-12 pr-4">
+                    {!hideTitle && <h1 className="pb-2">{title}</h1>}
                     {children}
                 </main>
             </div>

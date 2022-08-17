@@ -1,9 +1,10 @@
 import type { UsersInfoResponse } from '@slack/web-api'
 import type { ConversationsHistoryResponse } from '@slack/web-api/dist/response/ConversationsHistoryResponse'
 import type { ConversationsRepliesResponse } from '@slack/web-api/dist/response/ConversationsRepliesResponse'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import xss from 'xss'
+import { safeJson } from '../../../lib/api/apiUtils'
+import prisma from '../../../lib/db'
 import formatSlackMessage from '../../../util/formatSlackMessage'
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -36,7 +37,7 @@ export interface Message {
 }
 
 const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message> | { error: string }>) => {
-    const { token, organizationId, channel } = JSON.parse(req.body)
+    const { token, organizationId, channel } = req.body
 
     if (!token || !organizationId || !channel) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -65,15 +66,14 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
         return
     }
 
-    const formattedMessages = []
+    const formattedMessages: unknown[] = []
     for (const message of messages.filter((message) => message.subtype !== 'channel_join')) {
         const { ts, reply_count = 0, client_msg_id = null } = message
 
-        const { data } = await supabaseServerClient({ req, res })
-            .from('squeak_messages')
-            .select('slack_timestamp')
-            .eq('slack_timestamp', ts)
-            .single()
+        const data = await prisma.question.findFirst({
+            where: { slack_timestamp: ts },
+            select: { slack_timestamp: true },
+        })
 
         if (data) continue
 
@@ -84,7 +84,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
                       .then(({ messages: replies = [] }: ConversationsRepliesResponse) => replies)
                 : null
 
-        const formattedReplies = []
+        const formattedReplies: unknown[] = []
 
         if (replies) {
             for (const reply of replies) {
@@ -114,7 +114,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
         })
     }
 
-    res.status(200).json(formattedMessages)
+    safeJson(res, formattedMessages)
 }
 
 export default messages

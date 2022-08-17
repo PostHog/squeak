@@ -47,3 +47,15 @@ Visit the [wiki](https://github.com/PostHog/squeak/wiki) for guides on:
 ## About
 
 Squeak! was created by [PostHog](https://posthog.com) out of a need to better support our own customers and move conversations out of our Slack community. Squeak! is open source under MIT.
+
+## Prisma
+
+We use Prisma as our ORM. Prisma works by interpreting a schema file defined in `prisma/schema.prisma` and using a generated client. Prisma generates a strongly-typed client based on the schema file. The client is generated at runtime and not checked into version control. See the [prisma docs about this](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client#keeping-the-query-engine-out-of-version-control-by-default). This means that the prisma client needs to be generated as part of any deployment process. As noted in the prisma docs, the `prisma generate` command is run as a postinstall hook when the prisma library is installed.
+
+On deployment, the database needs to be migrated by running: `npx prisma migrate deploy`. See below for useful docs on production migrations:
+* https://www.prisma.io/docs/concepts/components/prisma-migrate#production-and-testing-environments
+* https://www.prisma.io/docs/guides/deployment/deploy-database-changes-with-prisma-migrate
+* https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy
+### Superjson
+
+This project uses [superjson](https://github.com/blitz-js/superjson#using-with-nextjs) to automatically handle serialization issues, primarily with `BigInt`, which we use for certain IDs.

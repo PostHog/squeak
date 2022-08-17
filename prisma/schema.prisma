@@ -1,0 +1,215 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model pgmigrations {
+  id     Int      @id @default(autoincrement())
+  name   String   @db.VarChar(255)
+  run_on DateTime @db.Timestamp(6)
+}
+
+model SqueakConfig {
+  id                       BigInt       @id @default(autoincrement())
+  preflight_complete       Boolean      @default(false)
+  slack_api_key            String?
+  slack_question_channel   String?
+  slack_signing_secret     String?
+  mailgun_api_key          String?
+  mailgun_domain           String?
+  company_name             String?
+  company_domain           String?
+  organization_id          String       @db.Uuid
+  question_auto_publish    Boolean      @default(true)
+  allowed_origins          String[]
+  reply_auto_publish       Boolean      @default(true)
+  show_slack_user_profiles Boolean      @default(false)
+  mailgun_from_name        String?
+  mailgun_from_email       String?
+  permalink_base           String?
+  permalinks_enabled       Boolean?     @default(false)
+  organization             Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "config_organizations_id_fkey")
+
+  @@map("squeak_config")
+}
+
+model Question {
+  id                   BigInt       @id @default(autoincrement())
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  subject              String?
+  slug                 String[]
+  published            Boolean      @default(false)
+  slack_timestamp      String?
+  organization_id      String       @db.Uuid
+  profile_id           String?      @db.Uuid
+  resolved             Boolean      @default(false)
+  resolved_reply_id    BigInt?
+  topics               String[]
+  permalink            String?
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_organizations_id_fkey")
+  squeak_profiles      Profile?     @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_profile_id_fkey")
+  resolved_replies     Reply?       @relation("squeak_messages_resolved_reply_idTosqueak_replies", fields: [resolved_reply_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_resolved_reply_replies_id_fkey")
+  replies              Reply[]      @relation("squeak_messagesTosqueak_replies_message_id")
+
+  @@map("squeak_messages")
+}
+
+model Organization {
+  name                     String?
+  id                       String            @id(map: "organizations_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at               DateTime          @default(now()) @db.Timestamptz(6)
+  squeak_config            SqueakConfig[]
+  squeak_messages          Question[]
+  squeak_profiles_readonly ProfileReadonly[] @relation("squeak_organizationsTosqueak_profiles_readonly")
+  squeak_replies           Reply[]
+  squeak_replies_feedback  ReplyFeedback[]
+  squeak_topics            Topic[]
+  squeak_webhook_config    WebhookConfig[]
+
+  @@map("squeak_organizations")
+}
+
+model Reply {
+  id                                                                BigInt          @id @default(autoincrement())
+  created_at                                                        DateTime        @default(now()) @db.Timestamptz(6)
+  body                                                              String?
+  message_id                                                        BigInt
+  organization_id                                                   String          @db.Uuid
+  profile_id                                                        String?         @db.Uuid
+  published                                                         Boolean         @default(false)
+  squeak_messages_squeak_messagesTosqueak_replies_message_id        Question        @relation("squeak_messagesTosqueak_replies_message_id", fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_message_id_fkey")
+  squeak_organizations                                              Organization    @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_organizations_id_fkey")
+  profile                                                           Profile?        @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_profile_id_fkey")
+  squeak_messages_squeak_messages_resolved_reply_idTosqueak_replies Question[]      @relation("squeak_messages_resolved_reply_idTosqueak_replies")
+  squeak_replies_feedback                                           ReplyFeedback[]
+
+  @@map("squeak_replies")
+}
+
+model ReplyFeedback {
+  id                   BigInt       @id @default(autoincrement())
+  reply_id             BigInt
+  type                 String
+  organization_id      String       @db.Uuid
+  profile_id           String       @db.Uuid
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_organization_id_fkey")
+  squeak_profiles      Profile      @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_profile_id_fkey")
+  squeak_replies       Reply        @relation(fields: [reply_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_reply_id_fkey")
+
+  @@index([type], map: "squeak_profiles_feedback_type_idx")
+  @@map("squeak_replies_feedback")
+}
+
+model Topic {
+  id                   BigInt       @id @default(autoincrement())
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  organization_id      String       @db.Uuid
+  label                String
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
+
+  @@map("squeak_topics")
+}
+
+model WebhookConfig {
+  id                   BigInt       @id @default(autoincrement())
+  type                 String
+  url                  String
+  organization_id      String       @db.Uuid
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "webhook_config_organization_id_fkey")
+
+  @@map("squeak_webhook_config")
+}
+
+model User {
+  instance_id                 String?           @db.Uuid
+  id                          String            @id @db.Uuid
+  aud                         String?           @db.VarChar(255)
+  role                        String?           @db.VarChar(255)
+  email                       String?           @unique @db.VarChar(255)
+  encrypted_password          String?           @db.VarChar(255)
+  email_confirmed_at          DateTime?         @db.Timestamptz(6)
+  invited_at                  DateTime?         @db.Timestamptz(6)
+  confirmation_token          String?           @db.VarChar(255)
+  confirmation_sent_at        DateTime?         @db.Timestamptz(6)
+  recovery_token              String?           @db.VarChar(255)
+  recovery_sent_at            DateTime?         @db.Timestamptz(6)
+  email_change_token_new      String?           @db.VarChar(255)
+  email_change                String?           @db.VarChar(255)
+  email_change_sent_at        DateTime?         @db.Timestamptz(6)
+  last_sign_in_at             DateTime?         @db.Timestamptz(6)
+  raw_app_meta_data           Json?
+  raw_user_meta_data          Json?
+  is_super_admin              Boolean?
+  created_at                  DateTime?         @db.Timestamptz(6)
+  updated_at                  DateTime?         @db.Timestamptz(6)
+  phone                       String?           @unique @db.VarChar(15)
+  phone_confirmed_at          DateTime?         @db.Timestamptz(6)
+  phone_change                String?           @default("") @db.VarChar(15)
+  phone_change_token          String?           @default("") @db.VarChar(255)
+  phone_change_sent_at        DateTime?         @db.Timestamptz(6)
+  confirmed_at                DateTime?         @db.Timestamptz(6)
+  email_change_token_current  String?           @default("") @db.VarChar(255)
+  email_change_confirm_status Int?              @default(0) @db.SmallInt
+  banned_until                DateTime?         @db.Timestamptz(6)
+  reauthentication_token      String?           @default("") @db.VarChar(255)
+  reauthentication_sent_at    DateTime?         @db.Timestamptz(6)
+  squeak_profiles_readonly    ProfileReadonly[] @relation("squeak_profiles_readonlyTousers")
+
+  @@index([instance_id], map: "users_instance_id_email_idx")
+  @@index([instance_id])
+  @@map("users")
+}
+
+model Profile {
+  first_name              String?
+  last_name               String?
+  avatar                  String?
+  id                      String            @id(map: "profiles_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at              DateTime          @default(now()) @db.Timestamptz(6)
+  squeak_messages         Question[]
+  profiles_readonly       ProfileReadonly[] @relation("squeak_profilesTosqueak_profiles_readonly")
+  squeak_replies          Reply[]
+  squeak_replies_feedback ReplyFeedback[]
+
+  @@map("squeak_profiles")
+}
+
+model ProfileReadonly {
+  role                 String       @default("user")
+  user_id              String?      @db.Uuid
+  id                   BigInt       @id @default(autoincrement())
+  organization_id      String       @db.Uuid
+  profile_id           String       @db.Uuid
+  created_at           DateTime     @default(now()) @db.Timestamptz(6)
+  slack_user_id        String?
+  squeak_organizations Organization @relation("squeak_organizationsTosqueak_profiles_readonly", fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_organizations_id_fkey")
+  profile              Profile      @relation("squeak_profilesTosqueak_profiles_readonly", fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_profile_id_fkey")
+  user                 User?        @relation("squeak_profiles_readonlyTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_user_id_fkey")
+
+  @@map("squeak_profiles_readonly")
+}
+
+model RefreshToken {
+  instance_id          String?        @db.Uuid
+  id                   BigInt         @id @default(autoincrement())
+  token                String?        @unique(map: "refresh_tokens_token_unique") @db.VarChar(255)
+  user_id              String?        @db.VarChar(255)
+  revoked              Boolean?
+  created_at           DateTime?      @db.Timestamptz(6)
+  updated_at           DateTime?      @db.Timestamptz(6)
+  parent               String?        @db.VarChar(255)
+  refresh_tokens       RefreshToken?  @relation("refresh_tokensTorefresh_tokens_parent", fields: [parent], references: [token], onDelete: NoAction, onUpdate: NoAction)
+  other_refresh_tokens RefreshToken[] @relation("refresh_tokensTorefresh_tokens_parent")
+
+  @@index([instance_id])
+  @@index([instance_id, user_id])
+  @@index([parent])
+  @@index([token])
+  @@map("refresh_tokens")
+}

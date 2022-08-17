@@ -1,24 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
-import { supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../../@types/supabase'
 
-type ProfileReadonly = definitions['squeak_profiles_readonly']
+import prisma from '../../../lib/db'
+import { getSessionUser } from '../../../lib/auth'
+import nextConnect from 'next-connect'
+import { corsMiddleware } from '../../../lib/middleware'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
+const handler = nextConnect<NextApiRequest, NextApiResponse>().use(corsMiddleware).get(doCheck).post(doCheck)
 
-    const { token, organizationId } = JSON.parse(req.body)
+async function doCheck(req: NextApiRequest, res: NextApiResponse) {
+    const { organizationId } = req.body
 
-    if (!token || !organizationId) {
+    if (!organizationId) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
 
-    const { user } = await supabaseServerClient({ req, res }).auth.api.getUser(token)
+    const user = await getSessionUser(req)
 
     if (!user) {
         console.error(`[🧵 Check] Error fetching user profile from token`)
@@ -26,15 +23,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    const { error } = await supabaseServerClient({ req, res })
-        .from<ProfileReadonly>('squeak_profiles_readonly')
-        .select('id')
-        .eq('organization_id', organizationId)
-        .eq('user_id', user.id)
-        .limit(1)
-        .single()
+    const profile = await prisma.profileReadonly.findFirst({
+        where: { organization_id: organizationId },
+        select: { id: true },
+    })
 
-    res.status(200).json({ hasProfile: !error })
+    res.status(200).json({ hasProfile: !!profile })
 }
 
 export default handler

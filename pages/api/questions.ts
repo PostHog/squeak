@@ -1,31 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import getQuestions from '../../util/getQuestions'
-import NextCors from 'nextjs-cors'
-import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
+import getQuestions, { GetQuestionsParams } from '../../util/getQuestions'
+import { safeJson } from '../../lib/api/apiUtils'
+import nextConnect from 'next-connect'
+import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
 
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+const handler = nextConnect<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(fetchQuestions)
+    .get(fetchQuestions)
 
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
+// POST /api/questions
+// Public API endpoint to fetch a list of questions
+async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
+    const params = req.body as GetQuestionsParams
 
-    const params = JSON.parse(req.body)
-    const { data, error } = await getQuestions({ req, res }, params)
+    const { data } = await getQuestions({ req, res }, params)
 
-    if (error) {
-        console.error(`[Questions] ${error.message}`)
-        res.status(500).json({ error: error.message })
-        return
-    }
-
-    res.status(200).json(data)
+    safeJson(res, data)
 }
 
 export default handler

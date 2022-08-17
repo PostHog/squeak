@@ -1,36 +1,39 @@
-import { createClient } from '@supabase/supabase-js'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
-import { definitions } from '../../../@types/supabase'
+import nc from 'next-connect'
+
 import getUserProfile from '../../../util/getUserProfile'
-import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
+import prisma from '../../../lib/db'
+import { corsMiddleware, allowedOrigin, validateBody } from '../../../lib/middleware'
+import { notAuthenticated, safeJson } from '../../../lib/api/apiUtils'
+import { getSessionUser } from '../../../lib/auth'
 
-type Message = definitions['squeak_messages']
+const schema = {
+    type: 'object',
+    properties: {
+        messageId: { type: 'number' },
+        replyId: { type: 'number', nullable: true },
+        organizationId: { type: 'string' },
+        resolved: { type: 'boolean' },
+    },
+    required: ['messageId', 'organizationId', 'resolved'],
+}
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
+const handler = nc<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .post(validateBody(schema, { coerceTypes: true }), doResolve)
 
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+// POST /api/question/resolve
+// Public API to resolve a question
+async function doResolve(req: NextApiRequest, res: NextApiResponse) {
+    const { messageId, replyId, organizationId, resolved } = req.body
 
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
-
-    const { token, messageId, replyId, organizationId, resolved } = JSON.parse(req.body)
-
-    if (!messageId || !token || !organizationId) {
-        res.status(400).json({ error: 'Missing required fields' })
-        return
-    }
+    const user = await getSessionUser(req)
+    if (!user) return notAuthenticated(res)
 
     const { data: userProfile, error: userProfileError } = await getUserProfile({
-        context: { req, res },
         organizationId,
-        token,
+        user,
     })
 
     if (!userProfile || userProfileError) {
@@ -38,45 +41,41 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500)
 
         if (userProfileError) {
-            console.error(`[🧵 Question] ${userProfileError.message}`)
-            res.json({ error: userProfileError.message })
+            console.error(`[🧵 Question] ${userProfileError}`)
+            res.json({ error: userProfileError })
         }
 
         return
     }
 
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    const { data: message, error: messageError } = await supabaseServiceRoleClient
-        .from<Message>('squeak_messages')
-        .update({
-            resolved,
-            resolved_reply_id: replyId || null,
-        })
-        .match({ id: messageId, organization_id: organizationId })
-        .limit(1)
-        .single()
-
-    if (!message || messageError) {
-        console.error(`[🧵 Question] Error resolving message`)
-        res.status(500)
-
-        if (messageError) {
-            console.error(`[🧵 Question] ${messageError.message}`)
-            res.json({ error: messageError.message })
-        }
-
-        return
-    }
-
-    res.status(200).json({
-        messageId: message.id,
-        resolved: message.resolved,
-        resolved_reply_id: message.resolved_reply_id,
+    // Find the message, ensure it exists
+    let message = await prisma.question.findFirst({
+        where: { id: messageId, organization_id: organizationId },
     })
+
+    if (!message) {
+        res.status(404).json({ error: 'Message not found' })
+        return
+    }
+
+    try {
+        message = await prisma.question.update({
+            where: { id: message.id },
+            data: {
+                resolved,
+                resolved_reply_id: replyId || null,
+            },
+        })
+
+        safeJson(res, {
+            messageId: message.id,
+            resolved: message.resolved,
+            resolved_reply_id: message.resolved_reply_id,
+        })
+    } catch (err) {
+        console.error(`[🧵 Question] Error updating message`)
+        return res.status(500).json({ error: err })
+    }
 }
 
 export default handler

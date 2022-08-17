@@ -1,15 +1,13 @@
 import { useState } from 'react'
+import { Profile, Reply } from '@prisma/client'
+
 import Surface from '../Surface'
 import Avatar from '../Avatar'
 import dayFormat from '../../util/dayFormat'
 import dateToDays from '../../util/dateToDays'
 import ReactMarkdown from 'react-markdown'
 import DeleteButton from './DeleteButton'
-import { definitions } from '../../@types/supabase'
 import PublishButton from './PublishButton'
-
-type Reply = definitions['squeak_replies']
-type Profile = definitions['squeak_profiles']
 
 interface Props {
     reply: Reply
@@ -38,18 +36,18 @@ const Reply: React.FunctionComponent<Props> = ({
         <Surface onClick={handleSurfaceClick}>
             <div className={`rounded-md w-full transition-opacity`}>
                 <div className={`flex space-x-4 items-start transition-opacity ${confirmDelete ? 'opacity-40' : ''}`}>
-                    <Avatar className="flex-shrink-0" image={avatar} />
+                    {avatar && <Avatar className="flex-shrink-0" image={avatar} />}
                     <div className="flex-grow min-w-0">
                         <p className="m-0 font-semibold">
                             <span>{first_name || 'Anonymous'}</span>
                             <span className={`ml-2 opacity-30 font-bold`}>{dayFormat(dateToDays(created_at))}</span>
                         </p>
-                        <div className="bg-gray-100 p-5 rounded-md overflow-auto my-3 w-full">
+                        <div className="w-full p-5 my-3 overflow-auto bg-gray-100 rounded-md">
                             <ReactMarkdown>{body || ''}</ReactMarkdown>
                         </div>
                     </div>
                 </div>
-                <p className="text-right m-0">
+                <p className="m-0 text-right">
                     {!hidePublish && (
                         <PublishButton
                             id={id}

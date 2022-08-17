@@ -1,13 +1,9 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
-import type { definitions } from '../@types/supabase'
-import useActiveOrganization from '../hooks/useActiveOrganization'
+import { updateSqueakConfig } from '../lib/api'
 import Input from './Input'
 import Toggle from './Toggle'
-
-type Config = definitions['squeak_config']
 
 interface Props {
     permalinkBase: string
@@ -27,24 +23,22 @@ const PermalinkSettings: React.VoidFunctionComponent<Props> = ({
     ...other
 }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
     const [loading, setLoading] = useState(false)
     const [permalinksEnabled, setPermalinksEnabled] = useState(other.permalinksEnabled)
 
     const handleSaveNotifications = async (values: InitialValues) => {
         setLoading(true)
 
-        const { error } = await supabaseClient
-            .from<Config>('squeak_config')
-            .update({
-                permalink_base: values.permalinkBase,
-            })
-            .match({ organization_id: organizationId })
-
-        addToast(error ? error.message : 'Permalink base saved', {
-            appearance: error ? 'error' : 'success',
-        })
+        try {
+            await updateSqueakConfig({ permalink_base: values.permalinkBase })
+            addToast('Permalink base saved', { appearance: 'success' })
+        } catch (error) {
+            if (error instanceof Error) {
+                addToast(error.message, { appearance: 'error' })
+            } else {
+                addToast(error as string, { appearance: 'error' })
+            }
+        }
 
         setLoading(false)
     }
@@ -55,15 +49,18 @@ const PermalinkSettings: React.VoidFunctionComponent<Props> = ({
 
     const setPermalinks = async (enabled: boolean) => {
         setPermalinksEnabled(enabled)
-        const { error } = await supabaseClient
-            .from('squeak_config')
-            .update({
-                permalinks_enabled: enabled,
+        try {
+            await updateSqueakConfig({ permalinks_enabled: enabled })
+            addToast(`Permalinks ${enabled ? 'enabled' : 'disabled'}`, {
+                appearance: 'success',
             })
-            .match({ organization_id: organizationId })
-        addToast(error ? error.message : `Permalinks ${enabled ? 'enabled' : 'disabled'}`, {
-            appearance: error ? 'error' : 'success',
-        })
+        } catch (error) {
+            if (error instanceof Error) {
+                addToast(error.message, { appearance: 'error' })
+            } else {
+                addToast(error as string, { appearance: 'error' })
+            }
+        }
     }
 
     return (
@@ -100,7 +97,7 @@ const PermalinkSettings: React.VoidFunctionComponent<Props> = ({
                                     placeholder="Permalink base"
                                 />
 
-                                <div className="flex space-x-6 items-center mt-4">
+                                <div className="flex items-center mt-4 space-x-6">
                                     {actionButtons(isValid, loading)}
                                 </div>
                             </Form>

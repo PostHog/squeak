@@ -1,11 +1,11 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import type { NextPageWithLayout } from '../../@types/types'
 import SignupForm from '../../components/SignupForm'
 import LoginLayout from '../../layout/LoginLayout'
+import { createUser } from '../../lib/api/'
 
 interface Props {
     isMultiTenancy: boolean
@@ -16,29 +16,18 @@ const Signup: NextPageWithLayout<Props> = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    useEffect(() => {
-        const { data: subscription } = supabaseClient.auth.onAuthStateChange((event: string) => {
-            if (event === 'SIGNED_IN') {
-                setTimeout(() => {
-                    Router.push('/signup/profile')
-                }, 1000)
-            }
-        })
-
-        return () => {
-            subscription?.unsubscribe()
-        }
-    }, [])
-
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError(null)
 
-        const { error } = await supabaseClient.auth.signUp({ email, password })
-
-        if (error) {
-            setError(error.message)
-            return
+        try {
+            await createUser(email, password)
+            Router.push('/signup/profile')
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message)
+                return
+            }
         }
     }
 
@@ -53,7 +42,7 @@ const Signup: NextPageWithLayout<Props> = () => {
                 setPassword={setPassword}
             />
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 text-sm text-center">
                 <Link href="/login" passHref>
                     <a className="font-medium text-accent-light hover:text-accent-light">
                         Already got an account? Sign in instead
@@ -70,7 +59,7 @@ Signup.getLayout = function getLayout(page: ReactElement<Props>) {
             title="Sign up for an account"
             subtitle={
                 page.props.isMultiTenancy && (
-                    <p className="mt-4 text-center text-lg text-gray-600 max-w-prose mx-auto">
+                    <p className="mx-auto mt-4 text-lg text-center text-gray-600 max-w-prose">
                         Squeak! is a Q&A widget that lets your users ask questions on any page of your website or docs.
                         Learn more at <a href="https://squeak.posthog.com">squeak.posthog.com</a>.
                     </p>

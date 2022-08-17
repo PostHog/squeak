@@ -1,22 +1,19 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
+import { SqueakConfig } from '@prisma/client'
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
-import { definitions } from '../@types/supabase'
+
 import Button from '../components/Button'
 import SlackForm from '../components/SlackForm'
 import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import SlackTableSkeleton from '../components/SlackTableSkeleton'
 import Surface from '../components/Surface'
+import { useUser } from '../contexts/user'
 import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
+import { doGet, doPost } from '../lib/api'
 import withAdminAccess from '../util/withAdminAccess'
 import { Message as MessageResponse } from './api/slack/messages'
-
-type Config = definitions['squeak_config']
-type Message = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
 
 interface SlackData {
     slackApiKey: string
@@ -61,47 +58,6 @@ const Slack = () => {
 
     const template = tinytime('{Mo}/{DD}/{YYYY}', { padMonth: true })
 
-    const insertReply = async ({
-        body,
-        id,
-        created_at,
-        user,
-    }: {
-        body: string
-        id: number
-        created_at: Date | null
-        user?: {
-            first_name: string
-            last_name: string
-            avatar: string
-            user_id: string
-        }
-    }) => {
-        const { profileId } = await fetch('/api/user/create', {
-            method: 'POST',
-            body: JSON.stringify({
-                first_name: user?.first_name,
-                last_name: user?.last_name,
-                avatar: user?.avatar,
-                organization_id: organizationId,
-                slack_user_id: user?.user_id,
-            }),
-        }).then((res) => res.json())
-
-        return supabaseClient
-            .from<Reply>('squeak_replies')
-            .insert({
-                created_at: created_at ? created_at.toISOString() : '',
-                body,
-                message_id: id,
-                organization_id: organizationId,
-                profile_id: profileId,
-                published: true,
-            })
-            .limit(1)
-            .single()
-    }
-
     const importSelected = async () => {
         setLoading(true)
         const newMessages = [...questions]
@@ -110,41 +66,20 @@ const Slack = () => {
             const index = newMessages.indexOf(question)
             newMessages.splice(index, 1)
             const { subject, slug, body, replies, reply_count, ts, user } = question
-            const { data: message } = await supabaseClient
-                .from<Message>('squeak_messages')
-                .insert({
+
+            // TODO: A better version of this would bulk-import all selected messages in one api call
+            await doPost('/api/slack/import', {
+                question: { replies, body, ts, reply_count, user },
+                organizationId,
+                message: {
                     slack_timestamp: ts,
                     created_at: ts ? new Date(parseInt(ts) * 1000).toISOString() : '',
                     subject: subject || 'No subject',
                     slug: slug.split(','),
                     published: !!subject && !!slug,
                     organization_id: organizationId,
-                })
-                .single()
-
-            if (!message) {
-                continue
-            }
-
-            if (reply_count && reply_count >= 1 && replies) {
-                await Promise.all(
-                    replies.map(({ body, ts, user }) => {
-                        return insertReply({
-                            body: body || '',
-                            id: message.id,
-                            created_at: ts ? new Date(parseInt(ts) * 1000) : null,
-                            user,
-                        })
-                    })
-                )
-            } else {
-                await insertReply({
-                    body: body ?? '',
-                    id: message.id,
-                    created_at: ts ? new Date(parseInt(ts) * 1000) : null,
-                    user,
-                })
-            }
+                },
+            })
         }
 
         setSelectedQuestions([])
@@ -169,12 +104,9 @@ const Slack = () => {
     const getQuestions = useCallback(async () => {
         if (!isLoading) {
             setLoadingQuestions(true)
-            const { data } = await supabaseClient
-                .from<Config>('squeak_config')
-                .select(`slack_api_key, slack_question_channel`)
-                .eq('organization_id', organizationId)
-                .single()
+            const { body: data } = await doGet<SqueakConfig>('/api/config', { organizationId })
 
+            // Return if we don't have a slack API key
             if (!data || !data?.slack_api_key || !data?.slack_question_channel) {
                 setSlackData({
                     slackApiKey: data?.slack_api_key || '',
@@ -186,16 +118,15 @@ const Slack = () => {
             const { slack_api_key, slack_question_channel } = data
             setSlackData({ slackApiKey: slack_api_key, slackQuestionChannel: slack_question_channel })
 
-            const messages = await fetch('/api/slack/messages', {
-                method: 'POST',
-                body: JSON.stringify({
-                    token: slack_api_key,
-                    organizationId,
-                    channel: slack_question_channel,
-                }),
-            }).then((res) => (res.ok ? res.json() : []))
+            // fetch slack messages
+            const { body } = await doPost<MessageResponse[]>('/api/slack/messages', {
+                token: slack_api_key,
+                organizationId,
+                channel: slack_question_channel,
+            })
+            const messages = body
             setLoadingQuestions(false)
-            setQuestions(messages)
+            setQuestions(messages || [])
         }
     }, [isLoading, organizationId])
 
@@ -212,10 +143,10 @@ const Slack = () => {
         <>
             {slackSetup ? (
                 <>
-                    <h3 className="pb-0 font-bold text-lg">
+                    <h3 className="pb-0 text-lg font-bold">
                         Import recent Slack threads and display them on specific pages of your site.
                     </h3>
-                    <p className="pt-0 mt-0 pb-4">
+                    <p className="pt-0 pb-4 mt-0">
                         This allows you to answer a question from your Slack community <em>once</em> and let others see
                         your answer where users are most likely to ask it.
                     </p>
@@ -247,13 +178,13 @@ const Slack = () => {
                             <input
                                 type="checkbox"
                                 id="toggle-all"
-                                className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500 mr-2"
+                                className="w-4 h-4 mr-2 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
                                 ref={checkbox}
                                 checked={checked}
                                 onChange={toggleAll}
                             />
 
-                            <label htmlFor="toggle-all" className="text-sm cursor-pointer mr-4">
+                            <label htmlFor="toggle-all" className="mr-4 text-sm cursor-pointer">
                                 Toggle all
                             </label>
 
@@ -263,7 +194,7 @@ const Slack = () => {
                                         disabled={loading}
                                         onClick={importSelected}
                                         type="button"
-                                        className="inline-flex items-center rounded bg-red px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
+                                        className="inline-flex items-center px-3 py-2 text-sm text-white rounded bg-red focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                                     >
                                         Import selected
                                     </button>
@@ -291,7 +222,7 @@ const Slack = () => {
 
                                         <input
                                             type="checkbox"
-                                            className="absolute left-4 top-6 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                            className="absolute w-4 h-4 text-orange-600 border-gray-300 rounded left-4 top-6 focus:ring-orange-500"
                                             value={ts}
                                             checked={selectedQuestions.includes(message)}
                                             onChange={(e) =>
@@ -329,14 +260,14 @@ const Slack = () => {
                                                                 : 'N/A'}
                                                         </span>
                                                     </div>
-                                                    <div className="squeak-post-content pb-2">
+                                                    <div className="pb-2 squeak-post-content">
                                                         <input
                                                             onChange={(e) => updateSubject(e, index)}
                                                             value={subject}
                                                             placeholder="Add a subject..."
                                                             className="!rounded-bl-none !rounded-br-none"
                                                         />
-                                                        <div className="squeak-post-markdown mb-2">
+                                                        <div className="mb-2 squeak-post-markdown">
                                                             <div className="overflow-hidden text-ellipsis bg-gray-light bg-opacity-20 cursor-not-allowed px-3 py-4 max-w-full border border-solid border-[#BFBFBC] border-t-0 rounded-bl rounded-br">
                                                                 <ReactMarkdown>{body || ''}</ReactMarkdown>
                                                             </div>

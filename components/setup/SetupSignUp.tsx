@@ -1,6 +1,6 @@
 import SignupForm from '../SignupForm'
 import { Dispatch, SetStateAction, useState } from 'react'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
+import { createUser } from '../../lib/api'
 
 interface Props {
     setView: Dispatch<SetStateAction<'signup' | 'profile'>>
@@ -15,11 +15,13 @@ const SetupSignUp: React.VoidFunctionComponent<Props> = ({ setView }) => {
         e.preventDefault()
         setError(null)
 
-        const { error } = await supabaseClient.auth.signUp({ email, password })
-
-        if (error) {
-            setError(error.message)
-            return
+        try {
+            await createUser(email, password)
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message)
+                return
+            }
         }
 
         setView('profile')

@@ -1,14 +1,13 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
-import { definitions } from '../@types/supabase'
-import { WebhookValues } from '../@types/types'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useToasts } from 'react-toast-notifications'
+import { WebhookValues } from '../@types/types'
+
 import Button from './Button'
 import Input from './Input'
+import { createWebhook, deleteWebhook, updateWebhook } from '../lib/api'
+import { ApiResponseError } from '../lib/api/client'
 
-type WebhookConfig = definitions['squeak_webhook_config']
 type FormValues = Pick<WebhookValues, 'url'>
 
 interface Props {
@@ -18,30 +17,29 @@ interface Props {
 
 const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
     const [saveLoading, setSaveloading] = useState(false)
     const [deleteLoading, setDeleteloading] = useState(false)
 
     const handleSave = async ({ url }: FormValues) => {
         setSaveloading(true)
         if (initialValues) {
-            const { error } = await supabaseClient
-                .from<WebhookConfig>('squeak_webhook_config')
-                .update({ url })
-                .match({ id: initialValues.id, organization_id: organizationId })
-
-            addToast(error ? error.message : 'Webhook updated', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await updateWebhook(initialValues.id, { url })
+                addToast('Webhook updated', { appearance: 'success' })
+            } catch (err) {
+                if (err instanceof ApiResponseError) {
+                    addToast(err.message, { appearance: 'error' })
+                }
+            }
         } else {
-            const { error } = await supabaseClient
-                .from<WebhookConfig>('squeak_webhook_config')
-                .insert({ url, type: 'webhook', organization_id: organizationId })
-
-            addToast(error ? error.message : 'Webhook created', {
-                appearance: error ? 'error' : 'success',
-            })
+            try {
+                await createWebhook({ url, type: 'webhook' })
+                addToast('Webhook created', { appearance: 'success' })
+            } catch (err) {
+                if (err instanceof ApiResponseError) {
+                    addToast(err.message, { appearance: 'error' })
+                }
+            }
         }
         setSaveloading(false)
         onSubmit()
@@ -54,10 +52,8 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
             return
         }
 
-        await supabaseClient
-            .from<WebhookConfig>('squeak_webhook_config')
-            .delete()
-            .match({ id: initialValues.id, organization_id: organizationId })
+        await deleteWebhook(initialValues.id)
+
         setDeleteloading(false)
         onSubmit()
     }
@@ -80,7 +76,7 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
                     return (
                         <Form>
                             <Input label="Webhook URL" id="url" name="url" type="url" placeholder="Webhook URL" />
-                            <div className="flex space-x-2 mt-3">
+                            <div className="flex mt-3 space-x-2">
                                 <Button loading={saveLoading} disabled={!isValid} type="submit">
                                     {initialValues ? 'Save' : 'Add'}
                                 </Button>
@@ -88,7 +84,7 @@ const Webhook: React.VoidFunctionComponent<Props> = ({ onSubmit, initialValues }
                                     <Button
                                         loading={deleteLoading}
                                         onClick={handleDelete}
-                                        className="bg-transparent text-red font-bold border-2 border-red"
+                                        className="font-bold bg-transparent border-2 text-red border-red"
                                     >
                                         Delete
                                     </Button>

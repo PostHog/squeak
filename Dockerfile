@@ -1,10 +1,10 @@
 # Install dependencies only when needed
 FROM node:16-alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache --virtual libc6-compat python3 make g++
+RUN apk add --no-cache --virtual libc6-compat python3 make g++ openssl-dev
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --production=false
 
 # If using npm with a `package-lock.json` comment out above and use below instead
 # COPY package.json package-lock.json ./
@@ -14,6 +14,10 @@ RUN yarn install --frozen-lockfile
 FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+
+COPY prisma/schema.prisma ./
+RUN npx prisma generate
+
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -24,9 +28,8 @@ COPY . .
 ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
-ENV NEXT_PUBLIC_SUPABASE_URL=APP_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=APP_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
+
 
 RUN yarn build
 
@@ -56,7 +59,7 @@ COPY ./bin/docker ./bin/docker
 
 ## Database migrations
 COPY --from=builder /app/node_modules ./node_modules
-COPY ./migrations ./migrations
+COPY . .
 
 USER nextjs
 
@@ -66,4 +69,4 @@ ENV PORT 3000
 
 ENTRYPOINT ["./bin/docker"]
 
-CMD ["node", "server.js"]
+CMD ["yarn", "start"]

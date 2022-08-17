@@ -1,77 +1,86 @@
-import { createClient } from '@supabase/supabase-js'
+import { JSONSchemaType } from 'ajv'
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
-import slugify from 'slugify'
 import xss from 'xss'
-import { definitions } from '../../../@types/supabase'
-import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
-import getQuestion from '../../../util/getQuestion'
+import slugify from 'slugify'
+import { Reply } from '@prisma/client'
+import nc from 'next-connect'
+
+import prisma from '../../../lib/db'
 import getUserProfile from '../../../util/getUserProfile'
 import sendQuestionAlert from '../../../util/sendQuestionAlert'
+import { allowedOrigin, corsMiddleware, validateBody } from '../../../lib/middleware'
+import { getSessionUser } from '../../../lib/auth'
+import { notAuthenticated, safeJson } from '../../../lib/api/apiUtils'
 
-type Config = definitions['squeak_config']
-type Message = definitions['squeak_messages']
-type Reply = definitions['squeak_replies']
+export interface CreateQuestionRequestPayload {
+    body: string
+    slug: string
+    subject: string
+    organizationId: string
+}
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-        origin: '*',
-    })
+export interface CreateQuestionResponse {
+    messageId: bigint
+    profileId: string
+    subject: string
+    body: string
+    slug: string[]
+    published: boolean
+}
 
-    const { error: allowedOriginError } = await checkAllowedOrigins(req)
+const schema: JSONSchemaType<CreateQuestionRequestPayload> = {
+    type: 'object',
+    properties: {
+        body: { type: 'string' },
+        slug: { type: 'string', nullable: true },
+        organizationId: { type: 'string' },
+        subject: { type: 'string' },
+    },
+    required: ['body', 'organizationId', 'subject'],
+}
 
-    if (allowedOriginError) {
-        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-        return
-    }
+const handler = nc<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .get(doGet)
+    .post(validateBody(schema, { coerceTypes: true }), doPost)
 
-    if (req.method === 'GET') {
-        const { organizationId, permalink } = req.query as { organizationId: string; permalink: string }
-        if (organizationId && permalink) {
-            const supabaseServiceRoleClient = createClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL,
-                process.env.SUPABASE_SERVICE_ROLE_KEY
-            )
-            const { data: config } = await supabaseServiceRoleClient
-                .from<Config>('squeak_config')
-                .select('permalink_base')
-                .eq('organization_id', organizationId)
-                .limit(1)
-                .single()
-            if (permalink.startsWith(`/${config?.permalink_base}/`)) {
-                const question = await getQuestion(
-                    undefined,
-                    organizationId,
-                    permalink.replace(`/${config?.permalink_base}/`, '')
-                )
-                return res.status(200).json(question)
-            } else {
-                res.status(500)
-                return res.json({ error: 'Question not found' })
-            }
+async function doGet(req: NextApiRequest, res: NextApiResponse) {
+    const { organizationId, permalink } = req.query as { organizationId: string; permalink: string }
+
+    if (organizationId && permalink) {
+        const config = await prisma.squeakConfig.findFirst({
+            where: { organization_id: organizationId },
+            select: { permalink_base: true },
+        })
+
+        if (permalink.startsWith(`/${config?.permalink_base}/`)) {
+            const question = await getQuestion(organizationId, permalink.replace(`/${config?.permalink_base}/`, ''))
+            return res.status(200).json(question)
         } else {
-            res.status(500)
-            return res.json({ error: 'Missing required info' })
+            return res.status(404).json({ error: 'Question not found' })
         }
+    } else {
+        return res.status(500).json({ error: 'Missing required params' })
     }
+}
 
-    const { slug, subject, organizationId, token } = JSON.parse(req.body)
+// POST /api/question
+// Endpoint used by sdk to allow end users to create questions
+async function doPost(req: NextApiRequest, res: NextApiResponse) {
+    const { slug, subject, body: rawBody, organizationId }: CreateQuestionRequestPayload = req.body
 
-    if (!slug || !subject || !JSON.parse(req.body).body || !organizationId || !token) {
-        res.status(400).json({ error: 'Missing required fields' })
-        return
-    }
-
-    const body = xss(JSON.parse(req.body).body, {
+    const body = xss(rawBody, {
         whiteList: {},
         stripIgnoreTag: true,
     })
 
+    const user = await getSessionUser(req)
+    if (!user) return notAuthenticated(res)
+
     const { data: userProfile, error: userProfileError } = await getUserProfile({
-        context: { req, res },
         organizationId,
-        token,
+        user,
     })
 
     if (!userProfile || userProfileError) {
@@ -79,114 +88,171 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500)
 
         if (userProfileError) {
-            console.error(`[🧵 Question] ${userProfileError.message}`)
-            res.json({ error: userProfileError.message })
+            console.error(`[🧵 Question] ${userProfileError}`)
+            res.json({ error: userProfileError })
         }
 
         return
     }
 
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
+    // Fetch auto_publish config for this organization
+    const config = await prisma.squeakConfig.findFirst({
+        where: { organization_id: organizationId },
+        select: { question_auto_publish: true },
+    })
 
-    const { data: config, error: configError } = await supabaseServiceRoleClient
-        .from<Config>('squeak_config')
-        .select('question_auto_publish')
-        .eq('organization_id', organizationId)
-        .limit(1)
-        .single()
-
-    if (!config || configError) {
+    if (!config) {
         console.error(`[🧵 Question] Error fetching config`)
-        res.status(500)
-
-        if (configError) {
-            console.error(`[🧵 Question] ${configError.message}`)
-            res.json({ error: configError.message })
-        }
+        res.status(500).json({ error: 'Error fetching config' })
 
         return
     }
 
-    const permalink = slugify(subject, {
+    // generate a permalink from the subject
+    let permalink = slugify(subject, {
         lower: true,
     })
 
-    const { data: permalinkExists } = await supabaseServiceRoleClient
-        .from('squeak_messages')
-        .select('permalink')
-        .match({ permalink, organization_id: organizationId })
-        .single()
+    // Ensure the permalink is unique
+    const existing = await prisma.question.findFirst({
+        where: { permalink, organization_id: organizationId },
+        select: { permalink: true },
+    })
 
-    const { data: message, error: messageError } = await supabaseServiceRoleClient
-        .from<Message>('squeak_messages')
-        .insert({
+    // Create the question in the database
+    const message = await prisma.question.create({
+        data: {
             slug: [slug],
             profile_id: userProfile.id,
             subject,
             published: config.question_auto_publish,
             organization_id: organizationId,
             permalink,
-        })
-        .limit(1)
-        .single()
+        },
+    })
 
-    if (!message || messageError) {
+    if (!message) {
         console.error(`[🧵 Question] Error creating message`)
-        res.status(500)
-
-        if (messageError) {
-            console.error(`[🧵 Question] ${messageError.message}`)
-            res.json({ error: messageError.message })
-        }
+        res.status(500).json({ error: 'Error creating message' })
 
         return
     }
 
-    if (permalinkExists) {
-        await supabaseServiceRoleClient
-            .from('squeak_messages')
-            .update({ permalink: `${permalink}-${message.id}` })
-            .match({ id: message.id })
+    // If a question with this permalink already exists, update the new question a modified
+    // permalink to make it unique.
+    // TODO: We should clean this up so we don't rely on the new message's ID, which means we briefly
+    //   have two records with the same permalink
+    if (existing) {
+        permalink = `${permalink}-${message}`
+        await prisma.question.update({
+            where: { id: message.id },
+            data: { permalink },
+        })
     }
 
-    const { data: reply, error: replyError } = await supabaseServiceRoleClient
-        .from<Reply>('squeak_replies')
-        .insert({
+    // The question author's message is modeled as the first reply to the question
+    const reply = await prisma.reply.create({
+        data: {
             body,
             message_id: message.id,
             organization_id: organizationId,
             profile_id: userProfile.id,
             published: true,
-        })
-        .limit(1)
-        .single()
+        },
+    })
 
-    if (!reply || replyError) {
+    if (!reply) {
         console.error(`[🧵 Question] Error creating reply`)
-
-        res.status(500)
-
-        if (replyError) {
-            console.error(`[🧵 Question] ${replyError.message}`)
-            res.json({ error: replyError.message })
-        }
+        res.status(500).json({ error: 'Error creating reply' })
 
         return
     }
 
-    res.status(200).json({
+    const response: CreateQuestionResponse = {
         messageId: message.id,
         profileId: userProfile.id,
         subject,
         body,
         slug: [slug],
         published: message.published,
+    }
+
+    safeJson(res, response, 201)
+    await sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
+}
+
+type ReplyWithMetadata = Reply & {
+    metadata: { role?: string }
+}
+
+async function getQuestion(organizationId: string, permalink: string) {
+    const question = await prisma.question.findFirst({
+        where: {
+            organization_id: organizationId,
+            [permalink ? 'permalink' : 'id']: permalink,
+        },
+        select: {
+            subject: true,
+            id: true,
+            slug: true,
+            created_at: true,
+            published: true,
+            slack_timestamp: true,
+            resolved: true,
+            resolved_reply_id: true,
+            permalink: true,
+        },
     })
 
-    sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
+    if (!question) {
+        return {
+            question: null,
+            replies: [],
+        }
+    }
+
+    const replies = await prisma.reply.findMany({
+        where: { message_id: question.id },
+        select: {
+            id: true,
+            body: true,
+            created_at: true,
+            published: true,
+            profile: {
+                select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                    avatar: true,
+                    profiles_readonly: {
+                        select: {
+                            role: true,
+                        },
+                    },
+                },
+            },
+        },
+    })
+
+    // This is a hacky way to replicate replicate the `profiles_readonly` field on the `metadata` field.
+    // The supbase query library allowed a syntax for querying a relationship and mapping it to a virtual
+    // attribute on the parent object.
+    const repliesW: ReplyWithMetadata[] = (replies || []).map((reply) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const replyWithMetadata: any = {
+            ...reply,
+            metadata: {
+                role: reply.profile?.profiles_readonly?.[0]?.role,
+            },
+        }
+
+        return replyWithMetadata
+    })
+
+    return {
+        question,
+        replies: repliesW || [],
+    }
 }
 
 export default handler

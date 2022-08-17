@@ -1,9 +1,8 @@
-import { supabaseClient, supabaseServerClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
-import { definitions } from '../@types/supabase'
 import { NextPageWithLayout } from '../@types/types'
+
 import Button from '../components/Button'
 import CodeSnippet from '../components/CodeSnippet'
 import CompanyDetails from '../components/CompanyDetails'
@@ -16,12 +15,11 @@ import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import Surface from '../components/Surface'
 import Toggle from '../components/Toggle'
 import WebhookTable from '../components/WebhookTable'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
+import { updateSqueakConfig } from '../lib/api'
+import prisma from '../lib/db'
 import getActiveOrganization from '../util/getActiveOrganization'
 import withAdminAccess from '../util/withAdminAccess'
-
-type Config = definitions['squeak_config']
 
 interface Props {
     mailgunApiKey: string
@@ -54,44 +52,23 @@ const Settings: NextPageWithLayout<Props> = ({
     permalinkBase,
     permalinksEnabled,
 }) => {
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
-
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
     const [allQuestions, setAllQuestions] = useState(false)
     const [showSlackUserInfo, setShowSlackUserInfo] = useState(initialShowSlackUserInfo)
 
     const handleQuestionAutoPublish = async () => {
-        await supabaseClient
-            .from('squeak_config')
-            .update({
-                question_auto_publish: !questionAutoPublish,
-            })
-            .match({ organization_id: organizationId })
-
+        await updateSqueakConfig({ question_auto_publish: !questionAutoPublish })
         setQuestionAutoPublish(!questionAutoPublish)
     }
 
     const handleReplyAutoPublish = async () => {
-        await supabaseClient
-            .from('squeak_config')
-            .update({
-                reply_auto_publish: !replyAutoPublish,
-            })
-            .match({ organization_id: organizationId })
-
+        await updateSqueakConfig({ reply_auto_publish: !replyAutoPublish })
         setReplyAutoPublish(!replyAutoPublish)
     }
 
     const handleShowSlackUserInfo = async () => {
-        await supabaseClient
-            .from('squeak_config')
-            .update({
-                show_slack_user_profiles: !showSlackUserInfo,
-            })
-            .match({ organization_id: organizationId })
-
+        await updateSqueakConfig({ show_slack_user_profiles: !showSlackUserInfo })
         setShowSlackUserInfo(!showSlackUserInfo)
     }
 
@@ -122,7 +99,7 @@ const Settings: NextPageWithLayout<Props> = ({
                     label="Display Slack user info"
                     helper="Turn this on to display first name and avatar on Slack messages"
                 />
-                <h3 className="font-bold mt-6">Moderation settings</h3>
+                <h3 className="mt-6 font-bold">Moderation settings</h3>
                 <Toggle
                     className="pt-1"
                     checked={questionAutoPublish}
@@ -245,13 +222,24 @@ export const getServerSideProps = withAdminAccess({
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
         const organizationId = getActiveOrganization(context)
 
-        const { data: config } = await supabaseServerClient(context)
-            .from<Config>('squeak_config')
-            .select(
-                `mailgun_api_key, mailgun_domain, mailgun_from_name, mailgun_from_email, company_name, company_domain, slack_api_key, slack_question_channel, question_auto_publish, reply_auto_publish, show_slack_user_profiles, permalink_base, permalinks_enabled`
-            )
-            .eq('organization_id', organizationId)
-            .single()
+        const config = await prisma.squeakConfig.findFirst({
+            select: {
+                mailgun_api_key: true,
+                mailgun_domain: true,
+                mailgun_from_name: true,
+                mailgun_from_email: true,
+                company_name: true,
+                company_domain: true,
+                slack_api_key: true,
+                slack_question_channel: true,
+                question_auto_publish: true,
+                reply_auto_publish: true,
+                show_slack_user_profiles: true,
+                permalink_base: true,
+                permalinks_enabled: true,
+            },
+            where: { organization_id: organizationId },
+        })
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all
 

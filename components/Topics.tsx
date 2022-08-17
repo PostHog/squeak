@@ -1,6 +1,8 @@
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
+
+import { getQuestionTopics, updateQuestionTopics } from '../lib/api'
+import { createTopic, deleteTopic, getTopics } from '../lib/api/topics'
 import Button from './Button'
 import Input from './Input'
 import Modal from './Modal'
@@ -29,7 +31,7 @@ const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label
                 selected ? 'bg-accent-light border-accent-light' : 'border-gray-500 text-black'
             } rounded-full  inline-flex space-x-2 items-center shadow-sm transition-colors border text-white text-sm ${className}`}
         >
-            <button className="pl-4 py-1" title={`Click to ${selected ? 'remove' : 'add'} topic`} onClick={handleClick}>
+            <button className="py-1 pl-4" title={`Click to ${selected ? 'remove' : 'add'} topic`} onClick={handleClick}>
                 <span>{label}</span>
             </button>
             <button
@@ -46,9 +48,10 @@ const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label
 
 export default function Topics({ questionId, organizationId }: TopicsProps) {
     const [selectedTopics, setSelectedTopics] = useState<string[]>([])
-    const [allTopics, setAllTopics] = useState<{ label: string; id: number }[] | [] | null>([])
+    const [allTopics, setAllTopics] = useState<{ label: string; id: number }[] | []>([])
     const [modalOpen, setModalOpen] = useState(false)
     const [creatingTopic, setCreatingTopic] = useState(false)
+
     const handleSelect = async (selected: boolean, label: string) => {
         const newSelectedTopics = [...selectedTopics]
         if (!selected) {
@@ -60,30 +63,23 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
             newSelectedTopics.push(label)
         }
         setSelectedTopics(newSelectedTopics)
-        return await supabaseClient
-            .from('squeak_messages')
-            .update({ topics: newSelectedTopics })
-            .match({ id: questionId })
+        return await updateQuestionTopics(questionId, newSelectedTopics)
     }
 
     const getAllTopics = async () => {
-        const { data } = await supabaseClient
-            .from<{ label: string; id: number }>('squeak_topics')
-            .select('label, id')
-            .match({ organization_id: organizationId })
-        return data
+        const { data } = await getTopics(organizationId)
+        return data || []
     }
 
     const getSelectedTopics = async () => {
-        const {
-            data: { topics },
-        } = await supabaseClient.from('squeak_messages').select('topics').eq('id', questionId).single()
-        return topics
+        const { data } = await getQuestionTopics(questionId)
+        return data || []
     }
 
     const handleNewTopic = async ({ topic }: { topic: string }) => {
         setCreatingTopic(true)
-        await supabaseClient.from('squeak_topics').insert({ label: topic, organization_id: organizationId })
+
+        await createTopic(topic)
         getAllTopics().then((allTopics) => {
             setAllTopics(allTopics)
             setCreatingTopic(false)
@@ -92,7 +88,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
     }
 
     const handleDelete = async (id: number) => {
-        await supabaseClient.from('squeak_topics').delete().match({ id, organization_id: organizationId })
+        await deleteTopic(id)
         getAllTopics().then((allTopics) => setAllTopics(allTopics))
     }
 
@@ -124,7 +120,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                             <Form>
                                 <Input label="New topic" id="topic" name="topic" placeholder="New topic" />
 
-                                <div className="flex space-x-6 items-center mt-4">
+                                <div className="flex items-center mt-4 space-x-6">
                                     <Button loading={creatingTopic} disabled={creatingTopic}>
                                         Add topic
                                     </Button>
@@ -134,12 +130,12 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                     }}
                 </Formik>
             </Modal>
-            <ul className="flex space-x-2 items-center flex-wrap">
+            <ul className="flex flex-wrap items-center space-x-2">
                 {allTopics &&
                     allTopics.map(({ label, id }, index) => {
                         return (
                             <Chip
-                                id={id}
+                                id={id as number}
                                 label={label}
                                 selected={selectedTopics?.includes(label)}
                                 key={index}

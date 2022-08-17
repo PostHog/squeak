@@ -1,13 +1,12 @@
-import Modal from '../Modal'
 import { Field, Form, Formik } from 'formik'
-import Button from '../Button'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
 import { useToasts } from 'react-toast-notifications'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
-import { definitions } from '../../@types/supabase'
 import { useCallback } from 'react'
 
-type Config = definitions['squeak_config']
+import Modal from '../Modal'
+import Button from '../Button'
+import useActiveOrganization from '../../hooks/useActiveOrganization'
+import { updateSqueakConfig } from '../../lib/api'
+import { ApiResponseError } from '../../lib/api/client'
 
 interface Props {
     open?: boolean
@@ -20,6 +19,17 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
     const { addToast } = useToasts()
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
+
+    const doConfigUpdate = async (allowedOrigins: string[]) => {
+        try {
+            await updateSqueakConfig({ allowed_origins: allowedOrigins })
+            addToast('Allowed origin added', { appearance: 'success' })
+        } catch (error) {
+            if (error instanceof ApiResponseError) {
+                addToast(error.message, { appearance: 'error' })
+            }
+        }
+    }
 
     const handleSave = useCallback(
         async ({ allowedOrigin }: { allowedOrigin: string }) => {
@@ -34,14 +44,7 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
 
             const allowedOrigins = [...(filteredValues || []), allowedOrigin]
 
-            const { error } = await supabaseClient
-                .from<Config>('squeak_config')
-                .update({ allowed_origins: allowedOrigins })
-                .match({ organization_id: organizationId })
-
-            addToast(error ? error.message : 'Allowed origin added', {
-                appearance: error ? 'error' : 'success',
-            })
+            await doConfigUpdate(allowedOrigins)
 
             onSubmit()
         },
@@ -64,14 +67,7 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
                 (origin) => origin !== initialValues.allowedOrigin
             )
 
-            const { error } = await supabaseClient
-                .from<Config>('squeak_config')
-                .update({ allowed_origins: allowedOrigins })
-                .match({ organization_id: organizationId })
-
-            addToast(error ? error.message : 'Allowed origin deleted', {
-                appearance: error ? 'error' : 'success',
-            })
+            await doConfigUpdate(allowedOrigins)
 
             onSubmit()
         },
@@ -105,7 +101,7 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
                                 type="url"
                             />
                             <p className="text-sm opacity-70">Ex: https://yoursite.com</p>
-                            <div className="flex space-x-2 mt-3">
+                            <div className="flex mt-3 space-x-2">
                                 <Button disabled={!isValid} type="submit">
                                     {initialValues?.allowedOrigin !== '' ? 'Save' : 'Add'}
                                 </Button>

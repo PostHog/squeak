@@ -1,42 +1,33 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useUser } from '@supabase/supabase-auth-helpers/react'
+
 import useActiveOrganization from '../../hooks/useActiveOrganization'
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../@types/supabase'
 import SlugModal from './SlugModal'
 import Button from '../Button'
-
-type Question = definitions['squeak_messages']
-
+import { getQuestion } from '../../lib/api'
+import { useUser } from '../../contexts/user'
 interface Props {
     questionId: number
 }
 
 const SlugTable: React.VoidFunctionComponent<Props> = ({ questionId }) => {
-    const { isLoading: isUserLoading } = useUser()
+    const { status } = useUser()
     const [slugs, setSlugs] = useState<string[]>([])
     const [initialValues, setInitialValues] = useState<{ slugs: Array<string>; slug: string } | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
+
+    const isUserLoading = status === 'loading'
 
     const { getActiveOrganization } = useActiveOrganization()
     const organizationId = getActiveOrganization()
 
     const getSlugsForQuestion = useCallback(async () => {
         if (!isUserLoading) {
-            await supabaseClient
-                .from<Question>('squeak_messages')
-                .select('slug')
-                .eq('organization_id', organizationId)
-                .eq('id', questionId)
-                .limit(1)
-                .single()
-                .then(({ data }) => {
-                    setSlugs((data?.slug as Array<string>) || [])
-                    setInitialValues({
-                        slugs: (data?.slug as Array<string>) || [],
-                        slug: '',
-                    })
-                })
+            const { body: data } = await getQuestion(questionId, 'slug')
+            setSlugs(data?.slug || [])
+            setInitialValues({
+                slugs: data?.slug || [],
+                slug: '',
+            })
         }
     }, [isUserLoading, organizationId, questionId])
 
@@ -71,22 +62,22 @@ const SlugTable: React.VoidFunctionComponent<Props> = ({ questionId }) => {
             />
 
             {slugs.length > 0 && (
-                <div className="mt-4 flex flex-col">
-                    <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="flex flex-col mt-4">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table className="min-w-full table-fixed divide-y divide-gray-300">
-                                    <tbody className="divide-y divide-gray-200 bg-white">
+                                <table className="min-w-full divide-y divide-gray-300 table-fixed">
+                                    <tbody className="bg-white divide-y divide-gray-200">
                                         {slugs.map((slug) => {
                                             return (
                                                 <tr key={slug}>
-                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {slug}
                                                     </td>
 
-                                                    <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                    <td className="py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
                                                         <button
-                                                            className="text-accent-light font-bold"
+                                                            className="font-bold text-accent-light"
                                                             onClick={() => handleEdit(slug)}
                                                         >
                                                             Edit

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import classNames from 'classnames'
 import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useToasts } from 'react-toast-notifications'
+import { doPost } from '../lib/api'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     onInvite?: () => void
@@ -22,10 +23,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
     const handleInvite = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        await fetch('/api/user/invite', {
-            method: 'POST',
-            body: JSON.stringify({ email, firstName, role, organizationId }),
-        })
+        await doPost('/api/user/invite', { email, firstName, role, organizationId })
 
         if (onInvite) {
             onInvite()
@@ -48,7 +46,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="User's email"
-                className="inline px-4 py-2 border-gray-light border rounded-md"
+                className="inline px-4 py-2 border rounded-md border-gray-light"
             />
             <input
                 type="text"
@@ -56,12 +54,12 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="User's first name"
-                className="inline px-4 py-2 border-gray-light border rounded-md"
+                className="inline px-4 py-2 border rounded-md border-gray-light"
             />
             <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="inline px-4 py-2 border-gray-light border rounded-md"
+                className="inline px-4 py-2 border rounded-md border-gray-light"
             >
                 <option value="user">User</option>
                 <option value="moderator">Moderator</option>

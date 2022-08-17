@@ -1,23 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
-import { getUser } from '@supabase/supabase-auth-helpers/nextjs'
-import { definitions } from '../../@types/supabase'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import createUserProfile from '../../util/createUserProfile'
 import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
-
-type Config = definitions['squeak_config']
-type Organization = definitions['squeak_organizations']
+import { getSessionUser } from '../../lib/auth'
+import prisma from '../../lib/db'
 
 // This API route is for user setup in the self-hosted preflight.
 export default withPreflightCheck(async (req, res) => {
-    const supabaseServiceRoleClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    const { user } = await getUser({ req, res })
+    const user = await getSessionUser(req)
 
     if (!user) {
         res.status(401).json({
@@ -27,7 +18,7 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { data: organizations } = await supabaseServiceRoleClient.from<Organization>('squeak_organizations')
+    const organizations = await prisma.organization.findMany()
 
     if (organizations?.length) {
         console.error(`[🧵 Setup] Organization already exists, limited to one`)
@@ -37,61 +28,43 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName, url, distinctId } = JSON.parse(req.body)
+    const { firstName, lastName, organizationName, url, distinctId } = req.body
 
     if (!firstName || !lastName || !organizationName) {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
 
-    const { data: organization, error: organisatizationError } = await supabaseServiceRoleClient
-        .from<Organization>('squeak_organizations')
-        .insert({
-            name: organizationName,
-        })
-        .limit(1)
-        .single()
+    const organization = await prisma.organization.create({
+        data: { name: organizationName },
+    })
 
-    if (!organization || organisatizationError) {
+    if (!organization) {
         console.error(`[🧵 Setup] Error creating organization`)
-
-        res.status(500)
-
-        if (organisatizationError) {
-            console.error(`[🧵 Setup] ${organisatizationError.message}`)
-
-            res.json({ error: organisatizationError.message })
-        }
+        res.status(500).json({ error: 'An unexpected error occurred creating the organization' })
 
         return
     }
 
-    const { data: config, error: configError } = await supabaseServiceRoleClient
-        .from<Config>('squeak_config')
-        .insert({
+    const config = await prisma.squeakConfig.create({
+        data: {
             organization_id: organization.id,
             preflight_complete: false,
             company_domain: url,
             company_name: organizationName,
-        })
-        .limit(1)
-        .single()
+        },
+    })
 
-    if (!config || configError) {
+    if (!config) {
         console.error(`[🧵 Setup] Error creating config`)
-
-        res.status(500)
-
-        if (configError) {
-            console.error(`[🧵 Setup] ${configError.message}`)
-
-            res.json({ error: configError.message })
-        }
-
+        res.status(500).json({ error: 'An unexpected error occurred creating config' })
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await createUserProfile(firstName, lastName)
+    const { data: userProfile, error: userProfileError } = await createUserProfile({
+        first_name: firstName,
+        last_name: lastName,
+    })
 
     if (!userProfile || userProfileError) {
         console.error(`[🧵 Setup] Error creating user profile`)
