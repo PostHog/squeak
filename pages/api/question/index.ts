@@ -56,7 +56,7 @@ async function doGet(req: NextApiRequest, res: NextApiResponse) {
 
         if (permalink.startsWith(`/${config?.permalink_base}/`)) {
             const question = await getQuestion(organizationId, permalink.replace(`/${config?.permalink_base}/`, ''))
-            return res.status(200).json(question)
+            return safeJson(res, question)
         } else {
             return res.status(404).json({ error: 'Question not found' })
         }
