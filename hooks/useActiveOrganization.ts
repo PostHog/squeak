@@ -6,7 +6,7 @@ const SQUEAK_ORG_ID_COOKIE_KEY = 'squeak_organization_id'
 const useActiveOrganization = () => {
     const setActiveOrganization = async (userId: string, organizationId?: string) => {
         if (organizationId) {
-            setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organizationId}`, { path: '/' })
+            setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organizationId}`, { path: '/', sameSite: 'none' })
             return
         }
 
@@ -20,7 +20,7 @@ const useActiveOrganization = () => {
         // get the first organization
         const [organization] = organizations
 
-        setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organization.organization_id}`, { path: '/' })
+        setCookie(null, SQUEAK_ORG_ID_COOKIE_KEY, `${organization.organization_id}`, { path: '/', sameSite: 'none' })
     }
 
     const getActiveOrganization = (): string => {
