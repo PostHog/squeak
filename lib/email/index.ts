@@ -31,7 +31,7 @@ const defaultEmailConfig: ValidEmailConfig = {
     mailgun_domain: 'mail.squeak.cloud',
     mailgun_from_email: 'noreply@squeak.cloud',
     mailgun_from_name: 'PostHog',
-    company_domain: 'squeak.cloud',
+    company_domain: 'https://squeak.cloud',
     company_name: 'Squeak',
 }
 
@@ -71,8 +71,16 @@ export async function sendEmail(organizationId: string, to: string, template: Em
     )
 }
 
+function formatCompanyDomain(domain: string) {
+    if (domain.startsWith('http://') || domain.startsWith('https://')) {
+        return domain
+    }
+
+    return `https://${domain}`
+}
+
 function mailgunSendOptions(templateOptions: EmailTemplateOptions, config: SqueakEmailConfig) {
-    const url = new URL(config.company_domain)
+    const url = new URL(formatCompanyDomain(config.company_domain))
 
     const fromName = config.mailgun_from_name || config.company_name
     const fromDomain = config.mailgun_from_email || `noreply@${url.hostname}`
