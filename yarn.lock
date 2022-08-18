@@ -4414,10 +4414,10 @@ split2@^4.1.0:
   resolved "https://registry.npmjs.org/split2/-/split2-4.1.0.tgz"
   integrity sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==
 
-squeak-react@3.0.0-pre.4:
-  version "3.0.0-pre.4"
-  resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-3.0.0-pre.4.tgz#91fd53cf0c5c030a8e298cb828fec999b64be4ea"
-  integrity sha512-SFumhl9DKpJUEga3ddY3y2io7w3zFNw7QuX1ZYjawpQ5TAd686rM1fTyt1daQ8DZdsnEaktm0tneiPinKpD9uQ==
+squeak-react@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-3.0.1.tgz#794f1177a9f43d539afb945619e590aac5aaf5c3"
+  integrity sha512-ug3ux4evOh4Ganew50aYKAmErJjEvKL8g4R1Ugfp8OyK1/2iKjcN12ZYPtLRm+ZyK/rfD+d9UnEe5J5NwU1Mow==
   dependencies:
     formik "^2.2.9"
     gravatar "^1.8.2"
