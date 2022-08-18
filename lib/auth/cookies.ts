@@ -23,6 +23,9 @@ export function removeTokenCookie(res: NextApiResponse) {
     const cookie = serialize(TOKEN_NAME, '', {
         maxAge: -1,
         path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     })
 
     res.setHeader('Set-Cookie', cookie)
