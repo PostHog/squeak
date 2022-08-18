@@ -26,9 +26,32 @@ export async function sendUserInvite(organizationId: string, user: User, confirm
     return sendEmail(organizationId, user.email, userInvite(confirmationUrl, emailConfig.company_domain))
 }
 
-export async function sendForgotPassword(organizationId: string, user: User, url: string) {
+const defaultEmailConfig: ValidEmailConfig = {
+    mailgun_api_key: process.env.MAILGUN_API_KEY as string,
+    mailgun_domain: 'mail.squeak.cloud',
+    mailgun_from_email: 'noreply@squeak.cloud',
+    mailgun_from_name: 'PostHog',
+    company_domain: 'squeak.cloud',
+    company_name: 'Squeak',
+}
+
+export async function sendForgotPassword(user: User, url: string, organizationId?: string) {
     if (!user.email) throw new Error('user email is null')
-    return sendEmail(organizationId, user.email, resetPassword(url))
+
+    const config = organizationId ? await fetchConfig(organizationId) : defaultEmailConfig
+
+    const emailConfig = checkValidMailgunConfig(config)
+    const client = await getClient(emailConfig.mailgun_api_key)
+
+    const template = resetPassword(url)
+    const mailgunOptions = mailgunSendOptions(template, emailConfig)
+
+    return client.messages.create(
+        emailConfig.mailgun_domain,
+        Object.assign(mailgunOptions, {
+            to: user.email,
+        })
+    )
 }
 
 export async function sendEmail(organizationId: string, to: string, template: EmailTemplateOptions) {
@@ -62,17 +85,18 @@ function mailgunSendOptions(templateOptions: EmailTemplateOptions, config: Squea
     )
 }
 
-function checkValidMailgunConfig(
-    config: Pick<
-        SqueakConfig,
-        | 'mailgun_api_key'
-        | 'mailgun_domain'
-        | 'company_domain'
-        | 'mailgun_from_email'
-        | 'mailgun_from_name'
-        | 'company_name'
-    >
-): SqueakEmailConfig {
+type ValidEmailConfig = Pick<
+    SqueakConfig,
+    | 'mailgun_api_key'
+    | 'mailgun_domain'
+    | 'company_domain'
+    | 'mailgun_from_email'
+    | 'mailgun_from_name'
+    | 'company_name'
+>
+
+function checkValidMailgunConfig(config: ValidEmailConfig | null): SqueakEmailConfig {
+    if (!config) throw new Error('no email config is present')
     if (!config.mailgun_api_key) throw new Error('mailgun_api_key is not configured')
     if (!config.mailgun_domain) throw new Error('mailgun_domain is not configured')
     if (!config.company_domain) throw new Error('company_domain is not configured')
