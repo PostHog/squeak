@@ -13,7 +13,7 @@ export function setTokenCookie(res: NextApiResponse, token: string) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     })
 
     res.setHeader('Set-Cookie', cookie)
