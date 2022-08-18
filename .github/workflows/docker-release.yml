@@ -23,3 +23,9 @@ jobs:
               with:
                   push: true
                   tags: posthog/squeak:latest
+            - name: Deploy app
+              env:
+                DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
+                DO_APP_ID: ${{ secrets.DO_APP_ID }}
+              run: |
+                curl -X POST -H "Authorization: Bearer $DO_API_TOKEN" https://api.digitalocean.com/v2/apps/$DO_APP_ID/deployments
