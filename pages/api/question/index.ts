@@ -213,6 +213,7 @@ async function getQuestion(organizationId: string, permalink: string) {
 
     const replies = await prisma.reply.findMany({
         where: { message_id: question.id },
+        orderBy: { created_at: 'asc' },
         select: {
             id: true,
             body: true,
