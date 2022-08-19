@@ -56,6 +56,13 @@ On deployment, the database needs to be migrated by running: `npx prisma migrate
 * https://www.prisma.io/docs/concepts/components/prisma-migrate#production-and-testing-environments
 * https://www.prisma.io/docs/guides/deployment/deploy-database-changes-with-prisma-migrate
 * https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy
+
+## Sentry
+
+We use Sentry to capture errors, and we need to upload source maps to sentry and create a release in sentry. Currently this happens while building the docker image. Sentry automatically hooks into the `yarn build` process and uploads source maps and creates a release. This requires having a `SENTRY_AUTH_TOKEN` environment variable set to be picked up by the sentry-cli.
+
+We handle this currently during docker builds via Github Actions. We pass in the `SENTRY_AUTH_TOKEN` as an build-arg to Docker from a github secret. See `.github/docker-release.yml` for that configuration.
+
 ### Superjson
 
 This project uses [superjson](https://github.com/blitz-js/superjson#using-with-nextjs) to automatically handle serialization issues, primarily with `BigInt`, which we use for certain IDs.

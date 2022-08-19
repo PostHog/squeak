@@ -30,6 +30,11 @@ ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 # Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
 
+# Sentry hooks into `yarn build` and uploads the source maps to Sentry automatically.
+# SENTRY_AUTH_TOKEN needs to be set in the build environment to enable uploading of source maps by the sentry-cli
+# This is set via github actions as a build-arg
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 RUN yarn build
 

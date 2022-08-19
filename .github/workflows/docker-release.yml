@@ -23,6 +23,8 @@ jobs:
               with:
                   push: true
                   tags: posthog/squeak:latest
+                  build-args: |
+                    SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             - name: Deploy app
               env:
                 DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
