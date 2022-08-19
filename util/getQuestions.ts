@@ -52,6 +52,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
         where: queryConditions,
         include: {
             replies: {
+                orderBy: { created_at: 'asc' },
                 include: {
                     profile: {
                         include: {
