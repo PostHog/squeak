@@ -108,3 +108,12 @@ export function safeJson(res: NextApiResponse, data: unknown, statusCode?: numbe
         .setHeader('Content-Type', 'application/json')
         .send(json)
 }
+
+const API_DOMAIN = process.env.NODE_ENV === 'production' ? process.env.API_DOMAIN : 'http://localhost:3000'
+
+// This is not foolproof, as the origin header is a user-provided header, but this should work for now
+// In prod, https://squeak.cloud is the api domain, so all others will be considered SDK requests
+export function isSDKRequest(req: NextApiRequest) {
+    const origin = req.headers.origin
+    return origin !== API_DOMAIN
+}

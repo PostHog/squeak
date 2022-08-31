@@ -9,7 +9,7 @@ import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
 import { SqueakConfig } from '@prisma/client'
 
-import { getSessionUser } from '../../lib/auth'
+import { getSessionUser, setOrgIdCookie } from '../../lib/auth'
 import { sendUserConfirmation } from '../../lib/email'
 import { getConfirmationToken } from '../../db'
 
@@ -127,6 +127,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         organizationName,
     }
 
+    // Set the org cookie in the session
+    setOrgIdCookie(res, organization.id)
     res.status(200).json(response)
 
     const confirmationToken = await getConfirmationToken(user)

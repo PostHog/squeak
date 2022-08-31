@@ -3,9 +3,9 @@ import nextConnect from 'next-connect'
 import { User } from '@prisma/client'
 
 import passport from '../../lib/passport'
-import { setLoginSession } from '../../lib/auth/'
+import { setLoginSession, setOrgIdCookie } from '../../lib/auth/'
 import prisma from '../../lib/db'
-import { setCookie } from 'nookies'
+import { isSDKRequest } from '../../lib/api/apiUtils'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({})
     .use(async (req, res, next) => {
@@ -29,15 +29,25 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
 
 async function handleLogin(req: NextApiRequest & { user: User }, res: NextApiResponse) {
     await setLoginSession(res, req.user.id)
+    let orgId: string
 
-    const readOnly = await prisma.profileReadonly.findFirst({
-        where: { user_id: req.user.id },
-    })
+    // Set the org id based on whether this is a squeak.cloud login or an sdk login
+    if (isSDKRequest(req)) {
+        orgId = req.body.organizationId
+        if (!orgId) return res.status(400).json({ error: 'Missing required field organizationId' })
+    } else {
+        // Log the user into the first org they have access to
+        const readOnly = await prisma.profileReadonly.findFirst({
+            where: { user_id: req.user.id },
+        })
 
-    // set the active organization
-    if (readOnly) {
-        setCookie({ res }, 'squeak_organization_id', `${readOnly.organization_id}`, { path: '/' })
+        if (!readOnly || !readOnly.organization_id) return res.status(500).json({ error: 'User has no orgs' })
+
+        // set the active organization
+        orgId = readOnly.organization_id
     }
+
+    setOrgIdCookie(res, orgId)
 
     return res.status(200).json({ success: true, id: req.user.id })
 }
