@@ -1,5 +1,7 @@
 import { serialize, parse } from 'cookie'
 import { NextApiResponse } from 'next'
+import { setCookie } from 'nookies'
+import { SQUEAK_ORG_ID_COOKIE_KEY } from '../../hooks/useActiveOrganization'
 import { RequestWithCookies } from './session'
 
 export const TOKEN_NAME = 'squeak_session'
@@ -42,4 +44,10 @@ export function parseCookies(req: RequestWithCookies) {
 export function getTokenCookie(req: RequestWithCookies) {
     const cookies = parseCookies(req)
     return cookies[TOKEN_NAME]
+}
+
+// TODO: Move this to a iron-sealed cookie, or store in the session cookie
+export function setOrgIdCookie(res: NextApiResponse, orgId: string) {
+    if (!orgId) throw new Error('Cannot set empty org id')
+    setCookie({ res }, SQUEAK_ORG_ID_COOKIE_KEY, orgId, { path: '/' })
 }

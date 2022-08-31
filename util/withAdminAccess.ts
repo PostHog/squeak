@@ -9,7 +9,7 @@ import type {
 import getActiveOrganization from './getActiveOrganization'
 import prisma from '../lib/db'
 import { getUserRole } from '../db/profiles'
-import { getSessionUser, SafeUser } from '../lib/auth'
+import { getSessionUser, SafeUser, setOrgIdCookie } from '../lib/auth'
 
 type Args =
     | {
@@ -21,11 +21,19 @@ type Args =
 const withAdminAccess = (arg: Args) => {
     if (typeof arg === 'function') {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
-            const organizationId = getActiveOrganization({ req, res })
+            let organizationId = getActiveOrganization({ req, res })
             const user: SafeUser | null = await getSessionUser(req)
             // console.log('session=', session)
 
-            if (!user) {
+            if (!organizationId) {
+                const ro = await prisma.profileReadonly.findFirstOrThrow({
+                    where: { user_id: user?.id },
+                })
+                organizationId = ro.organization_id
+                setOrgIdCookie(res, organizationId)
+            }
+
+            if (!organizationId || !user) {
                 res.status(401).json({
                     error: 'not_authenticated',
                     description: 'The user does not have an active session or is not authenticated',
@@ -72,7 +80,18 @@ const withAdminAccess = (arg: Args) => {
                 }
 
                 const user: SafeUser | null = await getSessionUser(context.req)
-                const organizationId = getActiveOrganization(context)
+                let organizationId = getActiveOrganization(context)
+
+                // This is a hack to get around the fact that the organizationId cookie is not set
+                // This should never happen, but there was a production bug, so this is preferable
+                // to a 500 error
+                if (!organizationId) {
+                    const ro = await prisma.profileReadonly.findFirstOrThrow({
+                        where: { user_id: user?.id },
+                    })
+                    organizationId = ro.organization_id
+                    setOrgIdCookie(context.res as NextApiResponse, organizationId)
+                }
 
                 if (!user) {
                     return {
