@@ -2,7 +2,8 @@ import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { getQuestionTopics, updateQuestionTopics } from '../lib/api'
-import { createTopic, deleteTopic, getTopics } from '../lib/api/topics'
+import { createTopic, createTopicGroup, deleteTopic, getTopics } from '../lib/api/topics'
+import { GetTopicsResponse } from '../pages/api/topics'
 import Button from './Button'
 import Input from './Input'
 import Modal from './Modal'
@@ -48,7 +49,7 @@ const Chip: React.FC<ChipProps> = ({ handleSelect, handleDelete, selected, label
 
 export default function Topics({ questionId, organizationId }: TopicsProps) {
     const [selectedTopics, setSelectedTopics] = useState<string[]>([])
-    const [allTopics, setAllTopics] = useState<{ label: string; id: number }[] | []>([])
+    const [allTopics, setAllTopics] = useState<GetTopicsResponse[] | []>([])
     const [modalOpen, setModalOpen] = useState(false)
     const [creatingTopic, setCreatingTopic] = useState(false)
 
@@ -76,10 +77,14 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         return data || []
     }
 
-    const handleNewTopic = async ({ topic }: { topic: string }) => {
+    const handleNewTopic = async ({ topic, topicGroup }: { topic: string; topicGroup: string }) => {
         setCreatingTopic(true)
-
-        await createTopic(topic)
+        let topicGroupId
+        if (topicGroup) {
+            const topicGroupRes = await createTopicGroup(topicGroup)
+            topicGroupId = topicGroupRes?.body?.id
+        }
+        await createTopic(topic, topicGroupId)
         getAllTopics().then((allTopics) => {
             setAllTopics(allTopics)
             setCreatingTopic(false)
@@ -101,7 +106,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <Formik
-                    initialValues={{ topic: '' }}
+                    initialValues={{ topic: '', topicGroup: '' }}
                     validateOnMount
                     validate={(values) => {
                         const errors: {
@@ -118,6 +123,12 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                     {() => {
                         return (
                             <Form>
+                                <Input
+                                    label="Topic group"
+                                    id="topic-group"
+                                    name="topicGroup"
+                                    placeholder="Topic group"
+                                />
                                 <Input label="New topic" id="topic" name="topic" placeholder="New topic" />
 
                                 <div className="flex items-center mt-4 space-x-6">
