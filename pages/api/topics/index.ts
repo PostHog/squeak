@@ -5,6 +5,7 @@ import prisma from '../../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../../lib/middleware'
 import nextConnect from 'next-connect'
 import getActiveOrganization from '../../../util/getActiveOrganization'
+import { Prisma } from '@prisma/client'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
@@ -12,7 +13,11 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .post(handleGetTopics)
     .get(handleGetTopics)
 
-export type GetTopicsResponse = { id: number; label: string }[] | []
+const topicsWithTopicGroups = Prisma.validator<Prisma.TopicArgs>()({
+    select: { id: true, label: true, topic_group: true },
+})
+
+export type GetTopicsResponse = Prisma.TopicGroupGetPayload<typeof topicsWithTopicGroups>
 
 // POST /api/topics
 // Public API to retrieve a list of topics for the org
@@ -25,6 +30,7 @@ async function handleGetTopics(req: NextApiRequest, res: NextApiResponse) {
         select: {
             label: true,
             id: true,
+            topic_group: true,
         },
     })
 

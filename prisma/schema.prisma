@@ -111,8 +111,20 @@ model Topic {
   organization_id      String       @db.Uuid
   label                String
   squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
+  topic_group          TopicGroup?  @relation(fields: [topicGroupId], references: [id])
+  topicGroupId         BigInt?
 
   @@map("squeak_topics")
+}
+
+model TopicGroup {
+  id              BigInt   @id @default(autoincrement())
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  label           String
+  organization_id String   @db.Uuid
+  Topic           Topic[]
+
+  @@map("squeak_topic_groups")
 }
 
 model WebhookConfig {

@@ -8,6 +8,7 @@ import { logout } from '../lib/api/auth'
 
 const navigation = [
     { name: 'Questions', href: '/questions' },
+    { name: 'Topics', href: '/topics' },
     { name: 'Profiles', href: '/profiles' },
     { name: 'Import Slack threads', href: '/slack' },
     { name: 'Settings', href: '/settings' },

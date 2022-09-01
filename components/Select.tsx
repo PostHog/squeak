@@ -12,7 +12,7 @@ export default function Select({
     helperText?: string
     id: string
     name: string
-    options: { name: string; id: string }[]
+    options: { name: string; id?: string; value?: string | number }[]
 }) {
     return (
         <div className="mb-6">
@@ -20,9 +20,9 @@ export default function Select({
                 {label}
             </label>
             <Field as="select" {...other} id={id} name={name}>
-                {options.map(({ name, id }) => {
+                {options.map(({ name, id, value }) => {
                     return (
-                        <option key={id} value={id}>
+                        <option key={id} value={value || id}>
                             {name}
                         </option>
                     )
