@@ -61,7 +61,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     await prisma.topic.updateMany({
         where: { id: parseInt(id), organization_id: organizationId },
         data: {
-            topicGroupId: parseInt(topicGroupId),
+            topicGroupId: topicGroupId && parseInt(topicGroupId),
         },
     })
 
