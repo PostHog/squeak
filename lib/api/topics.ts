@@ -23,7 +23,7 @@ export function patchTopic({
 }: {
     organizationId: string
     id: ID
-    topicGroupId: string
+    topicGroupId: string | null
 }) {
     return doPatch<GetTopicGroupsResponse[]>(`/api/topics/${id}`, { organizationId, id, topicGroupId })
 }

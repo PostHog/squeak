@@ -49,6 +49,12 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
         setLoading(false)
     }
 
+    const handleRemoveTopicGroup = async () => {
+        await patchTopic({ organizationId, id, topicGroupId: null })
+        setModalOpen(false)
+        handleSubmit()
+    }
+
     return (
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
@@ -70,7 +76,11 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
                     {() => {
                         return (
                             <Form>
-                                <TopicGroupForm topicGroups={topicGroups} loading={loading} />
+                                <TopicGroupForm
+                                    handleRemoveTopicGroup={handleRemoveTopicGroup}
+                                    topicGroups={topicGroups}
+                                    loading={loading}
+                                />
                             </Form>
                         )
                     }}
@@ -90,7 +100,7 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
     )
 }
 
-const TopicGroupForm = ({ loading, topicGroups }) => {
+const TopicGroupForm = ({ loading, topicGroups, handleRemoveTopicGroup }) => {
     const [createNewGroup, setCreateNewGroup] = useState(false)
 
     return (
@@ -109,6 +119,7 @@ const TopicGroupForm = ({ loading, topicGroups }) => {
             )}
             {createNewGroup ? (
                 <button
+                    type="button"
                     className="text-red font-semibold -mt-4 block"
                     onClick={(e) => {
                         e.preventDefault()
@@ -119,6 +130,7 @@ const TopicGroupForm = ({ loading, topicGroups }) => {
                 </button>
             ) : (
                 <button
+                    type="button"
                     className="text-red font-semibold -mt-4 block"
                     onClick={(e) => {
                         e.preventDefault()
@@ -130,8 +142,11 @@ const TopicGroupForm = ({ loading, topicGroups }) => {
             )}
 
             <div className="flex items-center mt-4 space-x-6">
-                <Button loading={loading} disabled={loading}>
+                <Button type="submit" loading={loading} disabled={loading}>
                     Add
+                </Button>
+                <Button type="button" onClick={handleRemoveTopicGroup} loading={loading} disabled={loading}>
+                    Remove
                 </Button>
             </div>
         </>
