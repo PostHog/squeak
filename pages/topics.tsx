@@ -23,9 +23,10 @@ interface RowProps {
     id: ID
     handleSubmit: () => void
     topic_group?: TopicGroup
+    topicGroups: TopicGroup[]
 }
 
-const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps) => {
+const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups }: RowProps) => {
     const [modalOpen, setModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -33,7 +34,7 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps)
         topicGroup,
         newTopicGroup,
     }: {
-        topicGroup: string
+        topicGroup: string | bigint
         newTopicGroup: string
     }) => {
         setLoading(true)
@@ -52,7 +53,7 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps)
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <Formik
-                    initialValues={{ topicGroup: '', newTopicGroup: '' }}
+                    initialValues={{ topicGroup: topicGroups[0]?.id, newTopicGroup: '' }}
                     validateOnMount
                     validate={(values) => {
                         const errors: {
@@ -69,7 +70,7 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps)
                     {() => {
                         return (
                             <Form>
-                                <TopicGroupForm loading={loading} organizationId={organizationId} />
+                                <TopicGroupForm topicGroups={topicGroups} loading={loading} />
                             </Form>
                         )
                     }}
@@ -89,15 +90,8 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps)
     )
 }
 
-const TopicGroupForm = ({ organizationId, loading }) => {
-    const [topicGroups, setTopicGroups] = useState<TopicGroup[]>([])
+const TopicGroupForm = ({ loading, topicGroups }) => {
     const [createNewGroup, setCreateNewGroup] = useState(false)
-
-    useEffect(() => {
-        getTopicGroups(organizationId).then(({ data }) => {
-            setTopicGroups(data || [])
-        })
-    }, [])
 
     return (
         <>
@@ -108,7 +102,6 @@ const TopicGroupForm = ({ organizationId, loading }) => {
                     label="Topic groups"
                     id="topic-group"
                     name="topicGroup"
-                    // @ts-expect-error: BigInt hackery
                     options={topicGroups.map(({ label, id }) => {
                         return { name: label, value: id }
                     })}
@@ -147,9 +140,13 @@ const TopicGroupForm = ({ organizationId, loading }) => {
 
 const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) => {
     const [topics, setTopics] = useState<GetTopicsResponse[]>([])
+    const [topicGroups, setTopicGroups] = useState<TopicGroup[]>([])
 
     useEffect(() => {
         getTopics(organizationId).then(({ data }) => setTopics(data || []))
+        getTopicGroups(organizationId).then(({ data }) => {
+            setTopicGroups(data || [])
+        })
     }, [])
 
     return (
@@ -178,8 +175,12 @@ const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) =>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {topics.map((topic) => (
                                         <Row
+                                            topicGroups={topicGroups}
                                             handleSubmit={() => {
                                                 getTopics(organizationId).then(({ data }) => setTopics(data || []))
+                                                getTopicGroups(organizationId).then(({ data }) => {
+                                                    setTopicGroups(data || [])
+                                                })
                                             }}
                                             key={topic.id + ''}
                                             organizationId={organizationId}
