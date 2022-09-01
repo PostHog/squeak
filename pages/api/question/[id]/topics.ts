@@ -1,7 +1,7 @@
 import NextCors from 'nextjs-cors'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { methodNotAllowed } from '../../../../lib/api/apiUtils'
+import { methodNotAllowed, requireOrgAdmin } from '../../../../lib/api/apiUtils'
 import checkAllowedOrigins from '../../../../util/checkAllowedOrigins'
 import prisma from '../../../../lib/db'
 
@@ -32,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     const question = await findQuestion(req, res)
     if (!question) return
+    if (!(await requireOrgAdmin(req, res))) return
 
     const { topics } = req.body
 

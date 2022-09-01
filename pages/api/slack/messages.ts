@@ -3,7 +3,7 @@ import type { ConversationsHistoryResponse } from '@slack/web-api/dist/response/
 import type { ConversationsRepliesResponse } from '@slack/web-api/dist/response/ConversationsRepliesResponse'
 import { NextApiRequest, NextApiResponse } from 'next'
 import xss from 'xss'
-import { safeJson } from '../../../lib/api/apiUtils'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import formatSlackMessage from '../../../util/formatSlackMessage'
 
@@ -37,6 +37,7 @@ export interface Message {
 }
 
 const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message> | { error: string }>) => {
+    if (!(await requireOrgAdmin(req, res))) return
     const { token, organizationId, channel } = req.body
 
     if (!token || !organizationId || !channel) {
