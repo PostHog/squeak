@@ -34,7 +34,7 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
         topicGroup,
         newTopicGroup,
     }: {
-        topicGroup: string
+        topicGroup: string | bigint
         newTopicGroup: string
     }) => {
         setLoading(true)
