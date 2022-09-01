@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
-import { methodNotAllowed, orgIdNotFound } from '../../../lib/api/apiUtils'
+import { methodNotAllowed, orgIdNotFound, requireOrgAdmin } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 import getActiveOrganization from '../../../util/getActiveOrganization'
@@ -31,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // DELETE /api/topics/[id]
 async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
+    if (!(await requireOrgAdmin(req, res))) return
     const organizationId = getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 
@@ -50,6 +51,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
+    if (!(await requireOrgAdmin(req, res))) return
     const organizationId = getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 

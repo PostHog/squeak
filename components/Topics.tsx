@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { getQuestionTopics, updateQuestionTopics } from '../lib/api'
-import { createTopic, createTopicGroup, deleteTopic, getTopics } from '../lib/api/topics'
+import { createTopic, deleteTopic, getTopics } from '../lib/api/topics'
 import { GetTopicsResponse } from '../pages/api/topics'
 import Button from './Button'
 import Input from './Input'
@@ -77,14 +77,9 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         return data || []
     }
 
-    const handleNewTopic = async ({ topic, topicGroup }: { topic: string; topicGroup: string }) => {
+    const handleNewTopic = async ({ topic }: { topic: string }) => {
         setCreatingTopic(true)
-        let topicGroupId
-        if (topicGroup) {
-            const topicGroupRes = await createTopicGroup(topicGroup)
-            topicGroupId = topicGroupRes?.body?.id
-        }
-        await createTopic(topic, topicGroupId)
+        await createTopic(topic)
         getAllTopics().then((allTopics) => {
             setAllTopics(allTopics)
             setCreatingTopic(false)
@@ -106,7 +101,7 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <Formik
-                    initialValues={{ topic: '', topicGroup: '' }}
+                    initialValues={{ topic: '' }}
                     validateOnMount
                     validate={(values) => {
                         const errors: {
@@ -123,12 +118,6 @@ export default function Topics({ questionId, organizationId }: TopicsProps) {
                     {() => {
                         return (
                             <Form>
-                                <Input
-                                    label="Topic group"
-                                    id="topic-group"
-                                    name="topicGroup"
-                                    placeholder="Topic group"
-                                />
                                 <Input label="New topic" id="topic" name="topic" placeholder="New topic" />
 
                                 <div className="flex items-center mt-4 space-x-6">

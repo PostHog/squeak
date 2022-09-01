@@ -8,7 +8,7 @@ export function getTopics(organizationId: string) {
     return doPost<GetTopicsResponse[]>('/api/topics', { organizationId })
 }
 
-export function createTopic(label: string, topicGroupId: Pick<Topic, 'topicGroupId'>) {
+export function createTopic(label: string, topicGroupId?: Pick<Topic, 'topicGroupId'>) {
     return doPost<Topic>('/api/topics/create', { label, topicGroupId })
 }
 
