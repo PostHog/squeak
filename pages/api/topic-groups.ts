@@ -43,7 +43,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = getActiveOrganization({ req, res })
+    const organizationId = req.body.organizationId || req.query.organizationId || getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 
     const topicGroups: TopicGroup[] = await prisma.topicGroup.findMany({
