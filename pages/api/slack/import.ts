@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { findOrCreateProfileFromSlackUser } from '../../../db/'
-import { safeJson } from '../../../lib/api/apiUtils'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import nextConnect from 'next-connect'
 import { Message as MessageResponse } from './messages'
@@ -23,6 +23,8 @@ interface ImportBodyPayload {
 
 // POST /api/slack/import
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
+    if (!(await requireOrgAdmin(req, res))) return
+
     const {
         message: messageAttrs,
         organizationId,
