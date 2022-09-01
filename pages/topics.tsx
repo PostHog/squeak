@@ -1,4 +1,4 @@
-import { Topic, TopicGroup } from '@prisma/client'
+import { TopicGroup } from '@prisma/client'
 import type { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import AdminLayout from '../layout/AdminLayout'
@@ -11,6 +11,7 @@ import Input from '../components/Input'
 import { createTopicGroup, getTopicGroups, getTopics, patchTopic } from '../lib/api/topics'
 import Select from '../components/Select'
 import { ID } from '../lib/types'
+import { GetTopicsResponse } from './api/topics'
 
 interface Props {
     organizationId: string
@@ -21,6 +22,7 @@ interface RowProps {
     label: string
     id: ID
     handleSubmit: () => void
+    topic_group?: TopicGroup
 }
 
 const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps) => {
@@ -35,12 +37,12 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit }: RowProps)
         newTopicGroup: string
     }) => {
         setLoading(true)
-        let topicGroupId = topicGroup
+        let topicGroupId: bigint | string = topicGroup
         if (newTopicGroup) {
             const topicGroupRes = await createTopicGroup(newTopicGroup.trim())
-            topicGroupId = topicGroupRes?.body?.id
+            if (topicGroupRes?.body?.id) topicGroupId = topicGroupRes?.body?.id
         }
-        await patchTopic({ organizationId, id, topicGroupId })
+        await patchTopic({ organizationId, id, topicGroupId: topicGroupId as string })
         setModalOpen(false)
         handleSubmit()
         setLoading(false)
@@ -93,7 +95,7 @@ const TopicGroupForm = ({ organizationId, loading }) => {
 
     useEffect(() => {
         getTopicGroups(organizationId).then(({ data }) => {
-            setTopicGroups(data)
+            setTopicGroups(data || [])
         })
     }, [])
 
@@ -106,6 +108,7 @@ const TopicGroupForm = ({ organizationId, loading }) => {
                     label="Topic groups"
                     id="topic-group"
                     name="topicGroup"
+                    // @ts-expect-error: BigInt hackery
                     options={topicGroups.map(({ label, id }) => {
                         return { name: label, value: id }
                     })}
@@ -143,10 +146,10 @@ const TopicGroupForm = ({ organizationId, loading }) => {
 }
 
 const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) => {
-    const [topics, setTopics] = useState<Topic[]>([])
+    const [topics, setTopics] = useState<GetTopicsResponse[]>([])
 
     useEffect(() => {
-        getTopics(organizationId).then(({ data }) => setTopics(data))
+        getTopics(organizationId).then(({ data }) => setTopics(data || []))
     }, [])
 
     return (
@@ -176,7 +179,7 @@ const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) =>
                                     {topics.map((topic) => (
                                         <Row
                                             handleSubmit={() => {
-                                                getTopics(organizationId).then(({ data }) => setTopics(data))
+                                                getTopics(organizationId).then(({ data }) => setTopics(data || []))
                                             }}
                                             key={topic.id + ''}
                                             organizationId={organizationId}
