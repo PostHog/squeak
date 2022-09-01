@@ -22,6 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (req.method) {
         case 'DELETE':
             return handleDelete(req, res)
+        case 'PATCH':
+            return handlePatch(req, res)
         default:
             return methodNotAllowed(res)
     }
@@ -43,6 +45,22 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
     //     res.status(500).json({ error: error.message })
     //     return
     // }
+
+    res.status(200).json({})
+}
+
+async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
+    const organizationId = getActiveOrganization({ req, res })
+    if (!organizationId) return orgIdNotFound(res)
+
+    const { id, topicGroupId } = req.body
+
+    await prisma.topic.updateMany({
+        where: { id: parseInt(id), organization_id: organizationId },
+        data: {
+            topicGroupId: parseInt(topicGroupId),
+        },
+    })
 
     res.status(200).json({})
 }
