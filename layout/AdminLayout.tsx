@@ -10,6 +10,7 @@ const navigation = [
     { name: 'Questions', href: '/questions' },
     { name: 'Topics', href: '/topics' },
     { name: 'Profiles', href: '/profiles' },
+    { name: 'Teams', href: '/teams' },
     { name: 'Import Slack threads', href: '/slack' },
     { name: 'Settings', href: '/settings' },
 ]

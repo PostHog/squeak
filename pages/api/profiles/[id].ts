@@ -12,7 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 export interface UpdateProfilePayload {
-    role: string
+    role?: string
+    teamId?: string
 }
 
 // PATCH /api/profiles/[id]
@@ -21,14 +22,17 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     const profileId = parseInt(req.query.id as string)
 
     const params: UpdateProfilePayload = req.body
-    if (!params.role) {
-        res.status(400).json({ error: 'Missing role' })
+    if (!params.role && !params.teamId) {
+        res.status(400).json({ error: 'Missing params' })
         return
     }
 
     const profile = await prisma.profileReadonly.update({
         where: { id: profileId },
-        data: { role: params.role },
+        data: {
+            ...(params.role ? { role: params?.role } : {}),
+            ...(params.teamId ? { teamId: params?.teamId === 'None' ? null : parseInt(params.teamId) } : {}),
+        },
     })
 
     safeJson(res, profile)

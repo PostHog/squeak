@@ -4,14 +4,16 @@ import { useToasts } from 'react-toast-notifications'
 import Avatar from './Avatar'
 import { updateProfile } from '../lib/api'
 import { ApiResponseError } from '../lib/api/client'
-import { GetProfilesProfile, GetProfilesResponse } from '../pages/api/profiles'
+import { GetProfilesResponse } from '../pages/api/profiles'
 import { useUser } from '../contexts/user'
+import { Team } from '@prisma/client'
 
 interface TableProps {
-    profiles: GetProfilesResponse
+    profiles: GetProfilesResponse[]
+    teams: Team[]
 }
 
-const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => {
+const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams }) => {
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -30,13 +32,19 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => 
                                         scope="col"
                                         className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                     >
+                                        Team
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                    >
                                         Role
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {profiles.map((profile) => (
-                                    <ProfileRow key={String(profile.id)} profile={profile} />
+                                    <ProfileRow teams={teams} key={String(profile.id)} profile={profile} />
                                 ))}
                             </tbody>
                         </table>
@@ -48,13 +56,16 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles }) => 
 }
 
 interface RowProps {
-    profile: GetProfilesProfile
+    profile: GetProfilesResponse
+    teams: Team[]
 }
 
-const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
+const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) => {
     const { addToast } = useToasts()
     const { user } = useUser()
     const [role, setRole] = useState(profile.role)
+    // @ts-expect-error: bigint weirdness
+    const [team, setTeam] = useState<string | undefined>(profile?.Team?.id)
 
     const handleRoleChange = async (role: string) => {
         if (!profile.id) {
@@ -71,7 +82,24 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
         }
     }
 
+    const handleTeamChange = async (teamId: string) => {
+        if (!profile.id) {
+            return
+        }
+        try {
+            await updateProfile(profile.id, { teamId })
+            setTeam(teamId)
+        } catch (err) {
+            if (err instanceof ApiResponseError) {
+                addToast(err.message, { appearance: 'error' })
+                return
+            }
+        }
+    }
+
     const { first_name, last_name, avatar } = profile?.profile
+
+    const allTeams = teams.map(({ name, id }) => ({ name, id, value: id }))
 
     return (
         <tr>
@@ -85,6 +113,19 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile }) => {
                             {first_name || last_name ? `${first_name ?? ''} ${last_name ?? ''}` : 'Anonymous'}
                         </div>
                         {/* <div className="text-sm text-gray-500">{person.email}</div> */}
+                    </div>
+                </div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                    <div className="text-sm font-medium text-primary-light">
+                        <select value={team} onChange={(event) => handleTeamChange(event.target.value)}>
+                            <option>None</option>
+                            {teams.map(({ name, id }) => (
+                                // @ts-expect-error: bigint weirdness
+                                <option value={id}>{name}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </td>
