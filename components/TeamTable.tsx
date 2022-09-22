@@ -1,5 +1,6 @@
 import React from 'react'
 import { Team } from '@prisma/client'
+import Link from 'next/link'
 
 const TeamTable = ({ teams }: { teams: Team[] }) => {
     return (
@@ -38,13 +39,13 @@ const TeamTable = ({ teams }: { teams: Team[] }) => {
 }
 
 const TeamRow = ({ team }: { team: Team }) => {
-    const { name, profiles } = team
+    const { name, profiles, id } = team
 
     return (
         <tr>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
-                    <div className="text-sm font-medium text-primary-light">{name}</div>
+                    <Link href={`/team/${id}`}>{name}</Link>
                 </div>
             </td>
             <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{profiles?.length || 0}</td>

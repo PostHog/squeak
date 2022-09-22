@@ -10,7 +10,7 @@ import { Team } from '@prisma/client'
 
 interface TableProps {
     profiles: GetProfilesResponse[]
-    teams: Team[]
+    teams: Team[] | null
 }
 
 const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams }) => {
@@ -28,12 +28,14 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams
                                     >
                                         Name
                                     </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                                    >
-                                        Team
-                                    </th>
+                                    {teams && (
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                        >
+                                            Team
+                                        </th>
+                                    )}
                                     <th
                                         scope="col"
                                         className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
@@ -99,8 +101,6 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) =
 
     const { first_name, last_name, avatar } = profile?.profile
 
-    const allTeams = teams.map(({ name, id }) => ({ name, id, value: id }))
-
     return (
         <tr>
             <td className="px-6 py-4 whitespace-nowrap">
@@ -116,19 +116,21 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) =
                     </div>
                 </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                    <div className="text-sm font-medium text-primary-light">
-                        <select value={team} onChange={(event) => handleTeamChange(event.target.value)}>
-                            <option>None</option>
-                            {teams.map(({ name, id }) => (
-                                // @ts-expect-error: bigint weirdness
-                                <option value={id}>{name}</option>
-                            ))}
-                        </select>
+            {teams && (
+                <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                        <div className="text-sm font-medium text-primary-light">
+                            <select value={team} onChange={(event) => handleTeamChange(event.target.value)}>
+                                <option>None</option>
+                                {teams.map(({ name, id }) => (
+                                    // @ts-expect-error: bigint weirdness
+                                    <option value={id}>{name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </td>
+                </td>
+            )}
             <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                 {user?.id !== profile.user_id ? (
                     <select value={role} onChange={(event) => handleRoleChange(event.target.value)}>
