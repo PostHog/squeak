@@ -11,9 +11,10 @@ import { Team } from '@prisma/client'
 interface TableProps {
     profiles: GetProfilesResponse[]
     teams: Team[] | null
+    onUpdate: () => void
 }
 
-const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams }) => {
+const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams, onUpdate }) => {
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -46,7 +47,12 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {profiles.map((profile) => (
-                                    <ProfileRow teams={teams} key={String(profile.id)} profile={profile} />
+                                    <ProfileRow
+                                        onUpdate={onUpdate}
+                                        teams={teams}
+                                        key={String(profile.id)}
+                                        profile={profile}
+                                    />
                                 ))}
                             </tbody>
                         </table>
@@ -60,9 +66,10 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams
 interface RowProps {
     profile: GetProfilesResponse
     teams: Team[]
+    onUpdate: () => void
 }
 
-const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) => {
+const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onUpdate }) => {
     const { addToast } = useToasts()
     const { user } = useUser()
     const [role, setRole] = useState(profile.role)
@@ -76,6 +83,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) =
         try {
             await updateProfile(profile.id, { role })
             setRole(role)
+            onUpdate && onUpdate()
         } catch (err) {
             if (err instanceof ApiResponseError) {
                 addToast(err.message, { appearance: 'error' })
@@ -91,6 +99,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams }) =
         try {
             await updateProfile(profile.id, { teamId })
             setTeam(teamId)
+            onUpdate && onUpdate()
         } catch (err) {
             if (err instanceof ApiResponseError) {
                 addToast(err.message, { appearance: 'error' })

@@ -8,3 +8,7 @@ export function getTeams() {
 export function createTeam(name: string) {
     return doPost<Team>('/api/teams', { name })
 }
+
+export function getTeam(id) {
+    return doGet<Team>(`/api/team/${id}`)
+}
