@@ -110,9 +110,9 @@ model Topic {
   created_at           DateTime     @default(now()) @db.Timestamptz(6)
   organization_id      String       @db.Uuid
   label                String
-  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
-  topic_group          TopicGroup?  @relation(fields: [topicGroupId], references: [id])
   topicGroupId         BigInt?
+  topic_group          TopicGroup?  @relation(fields: [topicGroupId], references: [id])
+  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
 
   @@map("squeak_topics")
 }
