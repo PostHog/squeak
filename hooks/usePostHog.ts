@@ -18,12 +18,11 @@ const usePostHog = () => {
 
         if (trackingEnabled && process.env.NEXT_PUBLIC_POSTHOG_API_KEY && !userLoading) {
             posthog.init(process.env.NEXT_PUBLIC_POSTHOG_API_KEY, {
-                api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
                 persistence: 'localStorage+cookie',
                 capture_pageview: false,
                 loaded: function (ph) {
                     if (user && user.email) {
-                        ph.identify(user.id)
+                        ph.identify(user.email)
                     }
 
                     if (organizationId) {

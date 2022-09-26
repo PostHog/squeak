@@ -40,7 +40,7 @@
         "next-absolute-url": "^1.2.2",
         "next-connect": "^0.12.2",
         "nextjs-cors": "^2.1.0",
-        "node-pg-migrate": "^6.2.2",
+        "node-pg-migrate": "^6.2.1",
         "nookies": "^2.5.2",
         "passport": "^0.6.0",
         "passport-jwt": "^4.0.0",

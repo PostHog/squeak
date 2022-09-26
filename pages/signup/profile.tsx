@@ -35,17 +35,16 @@ const Profile: NextPageWithLayout<Props> = () => {
                 lastName,
                 organizationName,
                 url,
+                distinctId: posthog?.get_distinct_id(),
             })
             if (!body) return
 
             const { userId, organizationId } = body
 
-            if (!posthog.has_opted_out_capturing()) {
-                posthog.identify(userId)
-                posthog.group('organization', `id:${organizationId}`)
-            }
-
             await setActiveOrganization(userId, organizationId)
+
+            posthog.identify(userId)
+            posthog.group('organization', `id:${organizationId}`)
 
             Router.push('/questions')
         } catch (error) {
@@ -53,8 +52,6 @@ const Profile: NextPageWithLayout<Props> = () => {
                 setError(error.message)
                 return
             }
-        } finally {
-            setLoading(false)
         }
     }
 

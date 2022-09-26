@@ -18,6 +18,7 @@ export interface SetupUserRequestPayload {
     lastName: string
     organizationName: string
     url: string
+    distinctId: string
 }
 
 export interface SetupUserResponse {
@@ -40,7 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return
     }
 
-    const { firstName, lastName, organizationName, url }: SetupUserRequestPayload = req.body
+    const { firstName, lastName, organizationName, url, distinctId }: SetupUserRequestPayload = req.body
 
     if (!firstName || !lastName || !organizationName || !url) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -136,7 +137,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const redirectUrl = `${origin}/profile`
     const confirmationUrl = `${origin}/api/user/confirm?token=${confirmationToken}&redirect=${redirectUrl}`
 
-    await trackUserSignup(user, { firstName, lastName, role: 'admin' })
+    await trackUserSignup(user, distinctId, { firstName, lastName, role: 'admin' })
     await trackOrganizationSignup(user, organization, {})
     await sendUserConfirmation(organization.id, user, confirmationUrl)
 }
