@@ -8,7 +8,10 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "migrate": "node-pg-migrate"
+        "types:check": "tsc --noEmit",
+        "migrate": "prisma migrate deploy",
+        "migrate:dev": "prisma migrate dev",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@fontsource/nunito": "^4.5.8",
@@ -69,15 +72,19 @@
         "@types/node": "^18.6.5",
         "@types/react": "17.0.39",
         "@types/react-syntax-highlighter": "^13.5.2",
-        "@typescript-eslint/eslint-plugin": "^5.13.0",
         "autoprefixer": "^10.4.2",
         "eslint": "8.10.0",
         "eslint-config-next": "12.1.0",
-        "eslint-config-prettier": "^8.5.0",
+        "husky": "^8.0.1",
+        "lint-staged": "^13.0.3",
         "postcss": "^8.4.8",
         "prettier": "^2.5.1",
         "prisma": "^4.2.0",
         "tailwindcss": "^3.0.23",
         "typescript": "4.6.2"
+    },
+    "lint-staged": {
+        "*.{js,jsx,mjs,ts,tsx,json,yaml,yml,css,scss}": "prettier --write",
+        ".{js,jsx,mjs,ts,tsx}": "yarn lint"
     }
 }

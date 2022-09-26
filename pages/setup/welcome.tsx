@@ -10,7 +10,7 @@ interface Props {}
 const Welcome: NextPageWithLayout<Props> = () => {
     return (
         <div>
-            <p className="font-bold opacity-70 mb-4">Accounts you'll need:</p>
+            <p className="font-bold opacity-70 mb-4">Accounts you&apos;ll need:</p>
 
             <table>
                 <tr>
@@ -31,12 +31,18 @@ const Welcome: NextPageWithLayout<Props> = () => {
                 Continue
             </Button>
 
-            <p className="opacity-70">This should take about 10 mins if you’re already signed up with these services.</p>
+            <p className="opacity-70">
+                This should take about 10 mins if you’re already signed up with these services.
+            </p>
 
             <hr className="my-8" />
 
-            <p className="opacity-70"><strong>Want to get set up even faster?</strong> <a href="https://app.squeak.posthog.com" className="text-semibold">Try Squeak! Cloud</a></p>
-
+            <p className="opacity-70">
+                <strong>Want to get set up even faster?</strong>{' '}
+                <a href="https://app.squeak.posthog.com" className="text-semibold">
+                    Try Squeak! Cloud
+                </a>
+            </p>
         </div>
     )
 }

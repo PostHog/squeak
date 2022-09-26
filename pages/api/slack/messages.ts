@@ -7,9 +7,7 @@ import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import formatSlackMessage from '../../../util/formatSlackMessage'
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { WebClient } = require('@slack/web-api')
-/* eslint-enable @typescript-eslint/no-var-requires */
+import { WebClient } from '@slack/web-api'
 
 export interface Message {
     ts?: string
@@ -76,7 +74,7 @@ const messages = async (req: NextApiRequest, res: NextApiResponse<Array<Message>
             select: { slack_timestamp: true },
         })
 
-        if (data) continue
+        if (data || !ts) continue
 
         const replies =
             reply_count && reply_count >= 1

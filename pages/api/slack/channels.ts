@@ -1,8 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { WebClient } = require('@slack/web-api')
-/* eslint-enable @typescript-eslint/no-var-requires */
+import { WebClient } from '@slack/web-api'
 
 const channels = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = req.body
