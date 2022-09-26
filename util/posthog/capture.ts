@@ -11,7 +11,7 @@ const capture = async (
         return
     }
 
-    await withPostHog((client) => client.capture({ distinctId: user.id, event, properties, groups }))
+    await withPostHog(async (client) => client.capture({ distinctId: user.id, event, properties, groups }))
 }
 
 export default capture
