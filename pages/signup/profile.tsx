@@ -92,6 +92,8 @@ export const getServerSideProps = withMultiTenantCheck({
             }
         }
 
+        // TODO: Check if user is already part of an organization
+
         return {
             props: {},
         }

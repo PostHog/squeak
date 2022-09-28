@@ -6,17 +6,12 @@ import * as Sentry from '@sentry/nextjs'
 
 import { NextApiRequestCookies } from 'next/dist/server/api-utils'
 
-// export interface RequestWithCookies {
-//     cookies: NextApiRequestCookies
-// }
-
 export type RequestWithCookies =
     | (NextApiRequest & { cookies: NextApiRequestCookies })
     | (IncomingMessage & { cookies: NextApiRequestCookies })
 
 import prisma from '../db'
 
-// import { User } from '@prisma/client'
 import { MAX_AGE, setTokenCookie, getTokenCookie } from './cookies'
 import { JWT_SECRET } from './jwt'
 

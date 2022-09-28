@@ -1,4 +1,5 @@
-import { GetStaticPropsResult } from 'next'
+import { getSessionUser } from 'lib/auth'
+import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
 import { ReactElement, useState } from 'react'
@@ -71,7 +72,9 @@ Signup.getLayout = function getLayout(page: ReactElement<Props>) {
     )
 }
 
-export const getServerSideProps = (): GetStaticPropsResult<Props> => {
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+    // TODO: Check whether user is part of an org and redirect if so
+
     return {
         props: {
             isMultiTenancy: process.env.MULTI_TENANCY ?? false,

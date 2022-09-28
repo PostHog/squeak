@@ -1,19 +1,14 @@
 import passport from 'passport'
 import Local from 'passport-local'
 import { Strategy as JWTStrategy, ExtractJwt, VerifiedCallback } from 'passport-jwt'
+import { Strategy as GitHubStrategy } from 'passport-github2'
 
 import { JWT_SECRET } from './auth/jwt'
-import { verifyUserCredentials } from '../db'
+import { UserRoles, verifyUserCredentials } from '../db'
 import prisma from './db'
+import { randomUUID } from 'crypto'
+import { AuthProvider } from '@prisma/client'
 
-// This file defines the two strategies used by passport to authenticate users:
-// 1. LocalStrategy: Authenticates users using a username and password. This allows the user to sign in with
-//    email and password. This strategy is used by the login page and POST /api/login endpoint.
-// 2. JWTStrategy: Authenticates users using a JWT. This strategy is used by all other API endpoints.
-//
-// Note: We do not use traditional cookie sessions, only JWTs.
-
-// 1. Configure the local strategy
 passport.use(
     new Local.Strategy({ usernameField: 'email', session: false }, async (email: string, password: string, done) => {
         const user = await verifyUserCredentials(email, password)
@@ -21,7 +16,6 @@ passport.use(
     })
 )
 
-// 2. Configure the JWT strategy
 passport.use(
     new JWTStrategy(
         {
@@ -35,9 +29,58 @@ passport.use(
             const user = await prisma.user.findUnique({
                 where: { id: jwtPayload.sub },
             })
+
             done(null, user)
         }
     )
 )
+
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+    passport.use(
+        new GitHubStrategy(
+            {
+                clientID: process.env.GITHUB_CLIENT_ID,
+                clientSecret: process.env.GITHUB_CLIENT_SECRET,
+                callbackURL: 'http://localhost:3000/api/auth/github/callback',
+            },
+            async (accessToken: string, refreshToken: string, profile: any, done: VerifiedCallback) => {
+                const provider = await prisma.userSocialAuthProvider.findFirst({
+                    where: {
+                        provider_id: profile.id,
+                        provider: AuthProvider.GITHUB,
+                    },
+                    include: {
+                        user: true,
+                    },
+                })
+
+                if (provider === null) {
+                    const user = await prisma.user.create({
+                        data: {
+                            id: randomUUID(),
+                            role: UserRoles.admin,
+                            confirmation_token: randomUUID(),
+                            confirmation_sent_at: new Date(),
+                            auth_providers: {
+                                create: {
+                                    provider: AuthProvider.GITHUB,
+                                    token: {
+                                        accessToken,
+                                        refreshToken,
+                                    },
+                                    provider_id: profile.id,
+                                },
+                            },
+                        },
+                    })
+
+                    done(null, user)
+                } else {
+                    done(null, provider.user)
+                }
+            }
+        )
+    )
+}
 
 export default passport

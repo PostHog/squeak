@@ -172,10 +172,28 @@ model User {
   reauthentication_token      String?           @default("") @db.VarChar(255)
   reauthentication_sent_at    DateTime?         @db.Timestamptz(6)
   squeak_profiles_readonly    ProfileReadonly[] @relation("squeak_profiles_readonlyTousers")
+  auth_providers              UserSocialAuthProvider[]
 
   @@index([instance_id], map: "users_instance_id_email_idx")
   @@index([instance_id])
   @@map("users")
+}
+
+model UserSocialAuthProvider {
+  id            Int             @id @default(autoincrement())
+  user          User            @relation(fields: [user_id], references: [id])
+  user_id       String          @db.Uuid
+  provider      AuthProvider
+  provider_id   String
+  token         Json
+
+  @@index([provider, provider_id])
+}
+
+enum AuthProvider {
+  GITHUB
+  GITLAB
+  GOOGLE
 }
 
 model Profile {
