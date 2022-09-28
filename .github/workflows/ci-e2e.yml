@@ -16,11 +16,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Stop/Start stack with Docker Compose
-              run: |
-                  docker-compose -f docker-compose.yml down
-                  docker-compose -f docker-compose.yml up -d
-
             - name: Setup env
               run: |
                   cat <<EOT >> .env
@@ -28,15 +23,14 @@ jobs:
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                   EOT
 
-            - name: Build Squeak
-              run: |
-                  yarn
-                  yarn build
-
             - name: Cypress run
               uses: cypress-io/github-action@v4
               with:
-                  start: yarn start
+                  build: yarn build
+                  start: |
+                      docker-compose -f docker-compose.yml up -d
+                      yarn migrate
+                      yarn start
                   command: yarn test:e2e
 
             - name: Archive test screenshots
