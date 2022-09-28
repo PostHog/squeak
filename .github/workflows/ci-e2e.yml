@@ -23,6 +23,7 @@ jobs:
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                   MULTI_TENANCY=true
                   NEXT_PUBLIC_OPT_OUT_TRACKING=true
+                  API_DOMAIN=http://localhost:3000
                   EOT
 
             - name: Start stack with Docker Compose
