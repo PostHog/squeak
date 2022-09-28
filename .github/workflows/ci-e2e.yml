@@ -23,12 +23,16 @@ jobs:
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                   EOT
 
+            - name: Start stack with Docker Compose
+            - run: |
+                  docker-compose -f docker-compose.yml down
+                  docker-compose -f docker-compose.yml up -d
+
             - name: Cypress run
               uses: cypress-io/github-action@v4
               with:
                   build: yarn build
                   start: |
-                      docker-compose -f docker-compose.yml up -d
                       yarn migrate
                       yarn start
                   command: yarn test:e2e
