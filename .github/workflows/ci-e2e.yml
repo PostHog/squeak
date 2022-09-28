@@ -33,13 +33,10 @@ jobs:
                   yarn
                   yarn build
 
-            - name: Start Squeak
-              run: |
-                  yarn start
-
             - name: Cypress run
               uses: cypress-io/github-action@v4
               with:
+                  start: yarn start
                   command: yarn test:e2e
 
             - name: Archive test screenshots
