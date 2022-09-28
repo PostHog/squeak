@@ -21,6 +21,7 @@ jobs:
                   cat <<EOT >> .env
                   DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                  MULTI_TENANCY=true
                   EOT
 
             - name: Start stack with Docker Compose
