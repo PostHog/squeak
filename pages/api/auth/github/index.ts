@@ -16,7 +16,10 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
             res.end()
         }
 
-        console.log(`serving ${req.method} request`)
+        if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+            res.redirect(302, '/login?error_code=improperly_configured_sso')
+        }
+
         next()
     })
     .use(passport.initialize())
