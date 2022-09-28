@@ -117,6 +117,13 @@ describe('Account creation and login', () => {
             cy.getCookie('squeak_session').should('be.null')
             cy.getCookie('squeak_organization_id').should('be.null')
         })
+
+        it('redirects /login to /questions when user is already logged in', () => {
+            cy.login()
+            cy.visit('/login')
+
+            cy.location('pathname').should('eq', '/questions')
+        })
     })
 
     describe('Forgot password', () => {

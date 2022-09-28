@@ -21,13 +21,6 @@ const Login: NextPageWithLayout<Props> = ({ user }) => {
     const [password, setPassword] = useState('')
     const router = useRouter()
 
-    // Redirect if user is already logged in
-    useEffect(() => {
-        if (user) {
-            router.push(router.query?.redirect ? router.query?.redirect + '' : '/')
-        }
-    }, [])
-
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setError(null)
