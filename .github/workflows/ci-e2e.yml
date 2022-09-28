@@ -25,6 +25,7 @@ jobs:
               run: |
                   cat <<EOT >> .env
                   DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
+                  SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                   EOT
 
             - name: Build Squeak
