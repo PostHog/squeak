@@ -8,10 +8,18 @@ import { clearOrganization } from '../../util/getActiveOrganization'
 const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).post(doLogout).get(doLogout)
 
 // POST /api/logout
-async function doLogout(req: NextApiRequest, res: NextApiResponse) {
-    await removeTokenCookie(res)
-    clearOrganization(res)
-    res.status(200).json({ success: true })
+async function doLogout(_: NextApiRequest, res: NextApiResponse) {
+    try {
+        removeTokenCookie(res)
+        clearOrganization(res)
+
+        res.status(200).send({ success: true })
+    } catch (error) {
+        // TODO: Log in Sentry
+        console.error(error)
+
+        res.status(500).send({ error: "Something went wrong and we couldn't log you out" })
+    }
 }
 
 export default handler
