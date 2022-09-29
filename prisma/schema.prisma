@@ -253,4 +253,6 @@ model Roadmap {
   projected_completion_date DateTime? @db.Timestamptz(6)
   category                  String
   milestone                 Boolean   @default(false)
+
+  @@map("squeak_roadmaps")
 }
