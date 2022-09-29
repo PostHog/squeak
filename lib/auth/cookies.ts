@@ -8,14 +8,17 @@ export const TOKEN_NAME = 'squeak_session'
 
 export const MAX_AGE = 86400 * 30 // 30 days
 
+// TODO: Should find a better way to disable in CI
+const secure = process.env.NODE_ENV === 'production' && process.env.API_DOMAIN !== 'http://localhost:3000'
+
 export function setTokenCookie(res: NextApiResponse, token: string) {
     const cookie = serialize(TOKEN_NAME, token, {
         maxAge: MAX_AGE,
         expires: new Date(Date.now() + MAX_AGE * 1000),
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure,
         path: '/',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: secure ? 'none' : 'lax',
     })
 
     res.setHeader('Set-Cookie', cookie)
@@ -26,8 +29,8 @@ export function removeTokenCookie(res: NextApiResponse) {
         maxAge: -1,
         path: '/',
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure,
+        sameSite: secure ? 'none' : 'lax',
     })
 
     res.setHeader('Set-Cookie', cookie)

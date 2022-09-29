@@ -28,7 +28,7 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { firstName, lastName, organizationName, url, distinctId } = req.body
+    const { firstName, lastName, organizationName, url } = req.body
 
     if (!firstName || !lastName || !organizationName) {
         res.status(400).json({ error: 'Missing required fields' })
@@ -103,6 +103,6 @@ export default withPreflightCheck(async (req, res) => {
 
     res.status(200).json({ userId: user.id, firstName, lastName, organizationId: organization.id, organizationName })
 
-    trackUserSignup(user, distinctId, { firstName, lastName, role: 'admin' })
+    trackUserSignup(user, { firstName, lastName, role: 'admin' })
     trackOrganizationSignup(user, organization, {})
 })

@@ -15,6 +15,7 @@ interface Props {
 }
 
 const Login: NextPageWithLayout<Props> = ({ user }) => {
+    // FIXME: Remember me has no effect
     const [error, setError] = useState<string | null>(null)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -114,6 +115,7 @@ const Login: NextPageWithLayout<Props> = ({ user }) => {
             <div>
                 <button
                     type="submit"
+                    disabled={!password || !email}
                     className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
                     Sign in

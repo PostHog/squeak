@@ -61,5 +61,5 @@ export default withAdminAccess(async (req, res) => {
     await sendUserInvite(organizationId, invitedUser, confirmationUrl)
 
     res.status(201).json({ success: true })
-    trackUserSignup(invitedUser, undefined, { firstName, role })
+    trackUserSignup(invitedUser, { firstName, role })
 })

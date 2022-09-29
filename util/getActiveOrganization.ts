@@ -15,7 +15,9 @@ const getActiveOrganization = (context: Context): string => {
 }
 
 export function clearOrganization(res: NextApiResponse) {
-    nookies.destroy({ res }, 'squeak_organization_id')
+    nookies.destroy({ res }, 'squeak_organization_id', {
+        path: '/',
+    })
 }
 
 export default getActiveOrganization
