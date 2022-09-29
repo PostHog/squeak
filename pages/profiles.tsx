@@ -1,3 +1,4 @@
+import { Team } from '@prisma/client'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
@@ -6,7 +7,7 @@ import { NextPageWithLayout } from '../@types/types'
 import InviteUser from '../components/InviteUser'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
-import { getProfiles, ApiResponseError } from '../lib/api'
+import { getProfiles, ApiResponseError, getTeams } from '../lib/api'
 import withAdminAccess from '../util/withAdminAccess'
 import { GetProfilesResponse } from './api/profiles'
 
@@ -14,7 +15,8 @@ interface Props {}
 
 const Users: NextPageWithLayout<Props> = () => {
     const { addToast } = useToasts()
-    const [profiles, setProfiles] = useState<GetProfilesResponse>([])
+    const [profiles, setProfiles] = useState<GetProfilesResponse[]>([])
+    const [teams, setTeams] = useState<Team[]>([])
 
     const fetchProfiles = useCallback(async () => {
         try {
@@ -35,6 +37,14 @@ const Users: NextPageWithLayout<Props> = () => {
         fetchProfiles()
     }, [fetchProfiles])
 
+    useEffect(() => {
+        getTeams().then(({ data }) => {
+            if (data) {
+                setTeams(data)
+            }
+        })
+    }, [])
+
     return (
         <>
             <div className="flex items-center space-between">
@@ -47,7 +57,7 @@ const Users: NextPageWithLayout<Props> = () => {
                 />
             </div>
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <ProfileTable profiles={profiles} />
+                <ProfileTable teams={teams} profiles={profiles} />
             </div>
         </>
     )

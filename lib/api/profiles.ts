@@ -9,5 +9,5 @@ export function updateProfile(id: ID, params: UpdateProfilePayload) {
 }
 
 export function getProfiles() {
-    return doGet<GetProfilesResponse>('/api/profiles')
+    return doGet<GetProfilesResponse[]>('/api/profiles')
 }
