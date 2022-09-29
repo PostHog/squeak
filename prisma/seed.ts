@@ -53,6 +53,13 @@ async function main() {
             profile_id: profile.id,
         },
     })
+
+    await prisma.team.create({
+        data: {
+            name: 'Website',
+            organization_id: organization.id,
+        },
+    })
 }
 
 main()

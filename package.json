@@ -9,9 +9,8 @@
         "start": "next start",
         "lint": "next lint",
         "types:check": "tsc --noEmit",
-        "test:e2e": "prisma db seed && yarn cypress:run",
-        "cypress": "cypress open",
-        "cypress:run": "cypress run",
+        "test:e2e": "prisma migrate reset --force && cypress run",
+        "cypress": "prisma migrate reset && cypress open",
         "migrate": "prisma migrate deploy",
         "migrate:dev": "prisma migrate dev",
         "prepare": "husky install"
