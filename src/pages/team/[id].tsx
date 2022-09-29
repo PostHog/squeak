@@ -16,8 +16,7 @@ import uniqBy from 'lodash.groupby'
 import { ChevronDownIcon } from '@heroicons/react/outline'
 import { GetProfilesResponse } from '../api/profiles'
 import _ from 'lodash'
-import { ID } from 'lib/types'
-import { GetTeamResponse } from 'pages/api/teams'
+import { GetTeamResponse } from '../../pages/api/teams'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
     const [profiles, setProfiles] = useState<GetProfilesResponse[] | null | undefined>(null)
@@ -233,7 +232,7 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
     )
 }
 
-const Team = ({ id, organizationId }) => {
+const Team = ({ id }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
     const [team, setTeam] = useState<GetTeamResponse | null | undefined>(null)
     const [addTeamMemberOpen, setAddTeamMemberOpen] = useState(false)
@@ -343,7 +342,7 @@ Team.getLayout = function getLayout(page) {
 export const getServerSideProps = withAdminAccess({
     redirectTo: (url) => `/login?redirect=${url}`,
     async getServerSideProps(context) {
-        const organizationId = await getActiveOrganization(context)
+        const organizationId = getActiveOrganization(context)
         const { id } = context.query
         return {
             props: { organizationId, id },
