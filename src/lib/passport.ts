@@ -61,12 +61,13 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                             role: UserRoles.admin,
                             confirmation_token: randomUUID(),
                             confirmation_sent_at: new Date(),
+                            confirmed_at: new Date(),
                             auth_providers: {
                                 create: {
                                     provider: AuthProvider.GITHUB,
                                     token: {
-                                        accessToken,
-                                        refreshToken,
+                                        accessToken: accessToken,
+                                        refreshToken: refreshToken,
                                     },
                                     provider_id: profile.id,
                                 },

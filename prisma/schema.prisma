@@ -188,6 +188,7 @@ model UserSocialAuthProvider {
   token         Json
 
   @@index([provider, provider_id])
+  @@map("user_social_auth_provider")
 }
 
 enum AuthProvider {
