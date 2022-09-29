@@ -1,4 +1,3 @@
-import { Team } from '@prisma/client'
 import { Form, Formik } from 'formik'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -12,12 +11,13 @@ import AdminLayout from '../layout/AdminLayout'
 import { ApiResponseError } from '../lib/api'
 import { createTeam, getTeams } from '../lib/api/teams'
 import withAdminAccess from '../util/withAdminAccess'
+import { GetTeamResponse } from './api/teams'
 
 interface Props {}
 
 const Teams: NextPageWithLayout<Props> = () => {
     const { addToast } = useToasts()
-    const [teams, setTeams] = useState<Team[]>([])
+    const [teams, setTeams] = useState<GetTeamResponse[]>([])
     const [modalOpen, setModalOpen] = useState(false)
 
     const fetchTeams = useCallback(async () => {

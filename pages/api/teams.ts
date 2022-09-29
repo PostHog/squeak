@@ -1,9 +1,15 @@
-import { Team } from '@prisma/client'
+import { Prisma, Team } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { methodNotAllowed, orgIdNotFound, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
+
+const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
+    include: { profiles: true },
+})
+
+export type GetTeamResponse = Prisma.TeamGetPayload<typeof teamWithProfiles>
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {

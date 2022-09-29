@@ -5,7 +5,7 @@ import { requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
-import { Prisma, ProfileReadonly } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
 const profilesReadOnlyWithTopics = Prisma.validator<Prisma.ProfileReadonlyArgs>()({
     select: { Team: true, id: true, role: true, user_id: true, profile: true, teamId: true },

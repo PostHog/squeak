@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { Team } from '@prisma/client'
 import Link from 'next/link'
 import Modal from './Modal'
 import { Form, Formik } from 'formik'
 import Button from './Button'
 import Input from './Input'
 import { deleteTeam, updateTeam } from '../lib/api'
+import { GetTeamResponse } from '../pages/api/teams'
 
-const TeamTable = ({ teams, onUpdate }: { teams: Team[]; onUpdate: () => void }) => {
+const TeamTable = ({ teams, onUpdate }: { teams: GetTeamResponse[]; onUpdate: () => void }) => {
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -49,7 +49,7 @@ const TeamTable = ({ teams, onUpdate }: { teams: Team[]; onUpdate: () => void })
     )
 }
 
-const TeamRow = ({ team, onUpdate }: { team: Team; onUpdate: () => void }) => {
+const TeamRow = ({ team, onUpdate }: { team: GetTeamResponse; onUpdate: () => void }) => {
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const { name, profiles, id } = team
@@ -76,7 +76,7 @@ const TeamRow = ({ team, onUpdate }: { team: Team; onUpdate: () => void }) => {
                     }}
                     onSubmit={handleSubmit}
                 >
-                    {({ isValid }) => {
+                    {() => {
                         return (
                             <Form>
                                 <Input label="Name" id="name" name="name" placeholder="Name" />

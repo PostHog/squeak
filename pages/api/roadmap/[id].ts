@@ -1,13 +1,9 @@
-import { TopicGroup, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import getActiveOrganization from '../../../util/getActiveOrganization'
-
-interface CreateTopicGroupRequestBody {
-    label: string
-}
 
 const topicGroupsWithTopics = Prisma.validator<Prisma.TopicGroupArgs>()({
     select: { Topic: true, id: true, label: true, organization_id: true, created_at: true },
@@ -33,7 +29,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
     const id = parseInt(req.query.id as string)
 
-    const { organizationId: _orgId, teamId, date_completed, projected_completion_date, ...other } = req.body
+    const { date_completed, projected_completion_date, ...other } = req.body
 
     const roadmap = await prisma.roadmap
         .update({

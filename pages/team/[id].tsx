@@ -1,25 +1,25 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import AdminLayout from '../../layout/AdminLayout'
 import withAdminAccess from '../../util/withAdminAccess'
-import prisma from '../../lib/db'
-import ProfileTable from '../../components/ProfileTable'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import { useEffect, useState } from 'react'
 import { Field, Form, Formik } from 'formik'
 import Input from '../../components/Input'
-import Select from '../../components/Select'
-import { createRoadmap, deleteRoadmap } from '../../lib/api/roadmap'
+import { createRoadmap } from '../../lib/api/roadmap'
 import getActiveOrganization from '../../util/getActiveOrganization'
 import RoadmapTable from '../../components/RoadmapTable'
-import { getProfiles, getTeam, getTeams, updateProfile } from '../../lib/api'
+import { getProfiles, getTeam, updateProfile } from '../../lib/api'
 import { XIcon } from '@heroicons/react/solid'
 import Avatar from '../../components/Avatar'
 import { Combobox } from '@headlessui/react'
 import uniqBy from 'lodash.groupby'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
+import { ChevronDownIcon } from '@heroicons/react/outline'
+import { GetProfilesResponse } from '../api/profiles'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
-    const [profiles, setProfiles] = useState(null)
+    const [profiles, setProfiles] = useState<GetProfilesResponse>(null)
     const [profileId, setProfileId] = useState('')
     useEffect(() => {
         getProfiles().then(({ data }) => {
@@ -53,7 +53,6 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
 
 export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal', categories }) => {
     const [confirmDelete, setConfirmDelete] = useState(false)
-    const [showCategories, setShowCategories] = useState(false)
     const [query, setQuery] = useState('')
     const filteredCategories =
         query === ''
@@ -138,7 +137,7 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
 
                         {values.github_urls.map((issue, index) => {
                             return (
-                                <div className="flex items-center space-x-2">
+                                <div key={index} className="flex items-center space-x-2">
                                     <div className="flex-grow">
                                         <Input
                                             value={values.github_urls[index]}
@@ -199,12 +198,12 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
     )
 }
 
-const Team = ({ id, organizationId, ...other }) => {
+const Team = ({ id, organizationId }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
     const [team, setTeam] = useState(null)
     const [addTeamMemberOpen, setAddTeamMemberOpen] = useState(false)
     const handleNewRoadmap = async (values) => {
-        const data = await createRoadmap({ ...values, teamId: team.id.toString(), organizationId })
+        await createRoadmap({ ...values, teamId: team.id.toString(), organizationId })
         handleUpdate()
         setCreateModalOpen(false)
     }
@@ -252,7 +251,7 @@ const Team = ({ id, organizationId, ...other }) => {
                             {team?.profiles?.length > 0 &&
                                 team.profiles.map((profile) => {
                                     return (
-                                        <li className="flex items-center group">
+                                        <li key={profile.id} className="flex items-center group">
                                             <div className="flex-shrink-0 w-10 h-10">
                                                 <Avatar image={profile.avatar} />
                                             </div>

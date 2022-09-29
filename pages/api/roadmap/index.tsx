@@ -1,13 +1,9 @@
-import { TopicGroup, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import getActiveOrganization from '../../../util/getActiveOrganization'
-
-interface CreateTopicGroupRequestBody {
-    label: string
-}
 
 const topicGroupsWithTopics = Prisma.validator<Prisma.TopicGroupArgs>()({
     select: { Topic: true, id: true, label: true, organization_id: true, created_at: true },
@@ -29,7 +25,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const organizationId = getActiveOrganization({ req, res })
     if (!organizationId) return orgIdNotFound(res)
 
-    const { organizationId: _orgId, teamId, date_completed, projected_completion_date, ...other } = req.body
+    const { teamId, date_completed, projected_completion_date, ...other } = req.body
 
     const roadmap = await prisma.roadmap
         .create({

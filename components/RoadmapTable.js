@@ -80,7 +80,7 @@ const RoadmapRow = ({ roadmapItem, onUpdate, categories }) => {
     const [modalOpen, setModalOpen] = useState(false)
 
     const handleSubmit = async (values) => {
-        const { data: roadmap } = await updateRoadmap(id, values)
+        await updateRoadmap(id, values)
         onUpdate()
         setModalOpen(false)
     }

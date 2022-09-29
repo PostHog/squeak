@@ -11,7 +11,7 @@ import { Team } from '@prisma/client'
 interface TableProps {
     profiles: GetProfilesResponse[]
     teams: Team[] | null
-    onUpdate: () => void
+    onUpdate?: () => void
 }
 
 const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams, onUpdate }) => {
@@ -65,8 +65,8 @@ const ProfileTable: React.VoidFunctionComponent<TableProps> = ({ profiles, teams
 
 interface RowProps {
     profile: GetProfilesResponse
-    teams: Team[]
-    onUpdate: () => void
+    teams: Team[] | null
+    onUpdate?: () => void
 }
 
 const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onUpdate }) => {
@@ -133,7 +133,9 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onU
                                 <option>None</option>
                                 {teams.map(({ name, id }) => (
                                     // @ts-expect-error: bigint weirdness
-                                    <option value={id}>{name}</option>
+                                    <option key={id} value={id}>
+                                        {name}
+                                    </option>
                                 ))}
                             </select>
                         </div>
