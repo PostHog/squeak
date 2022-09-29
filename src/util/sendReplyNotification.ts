@@ -1,10 +1,7 @@
-/* eslint-enable @typescript-eslint/no-var-requires */
 import prisma from '../lib/db'
-
-/* eslint-disable @typescript-eslint/no-var-requires */
-const Mailgun = require('mailgun.js')
-const formData = require('form-data')
-const { URL } = require('url')
+import Mailgun from 'mailgun.js'
+import formData from 'form-data'
+import { URL } from 'url'
 
 const sendReplyNotification = async (organizationId: string, messageId: number, body: string) => {
     const config = await prisma.squeakConfig.findFirst({

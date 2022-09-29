@@ -1,4 +1,3 @@
-import { getSessionUser } from 'lib/auth'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'

@@ -1,6 +1,6 @@
 import prisma from '../../../../lib/db'
-import { setLoginSession, setOrgIdCookie } from 'lib/auth'
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
+import { setLoginSession, setOrgIdCookie } from '../../../../lib/auth'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 import passport from '../../../../lib/passport'
 
@@ -18,7 +18,6 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
             res.end()
         }
 
-        console.log(`serving ${req.method} request`)
         next()
     })
     .use(passport.initialize())

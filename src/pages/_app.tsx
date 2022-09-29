@@ -11,7 +11,7 @@ import { UserProvider } from '../contexts/user'
 import ErrorLayout from '../layout/ErrorLayout'
 import '../styles/globals.css'
 
-type AppPropsWithLayout = AppProps & {
+type AppPropsWithLayout = AppProps<any> & {
     Component: NextPageWithLayout
 }
 

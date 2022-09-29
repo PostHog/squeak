@@ -3,9 +3,7 @@ const { withSentryConfig } = require('@sentry/nextjs')
 /** @type {import('next').NextConfig} */
 const moduleExports = {
     reactStrictMode: true,
-    experimental: {
-        outputStandalone: true,
-    },
+    output: 'standalone',
     async redirects() {
         return [
             {
