@@ -116,16 +116,19 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                                     <Combobox.Input
                                         id="category"
                                         className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
-                                        onChange={(event) => setQuery(event.target.value)}
+                                        onChange={(event) => {
+                                            setFieldValue('category', event.target.value)
+                                            setQuery(event.target.value)
+                                        }}
                                     />
                                     <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                                     </Combobox.Button>
                                 </div>
-                                <Combobox.Options>
+                                <Combobox.Options className="shadow-md rounded-md">
                                     {filteredCategories.map((category) => (
                                         <Combobox.Option
-                                            className="cursor-pointer m-0 py-3 px-2 shadow-md rounded-md"
+                                            className="cursor-pointer m-0 py-3 px-2 "
                                             key={category}
                                             value={category}
                                         >
@@ -205,7 +208,7 @@ const Team = ({ id, organizationId }) => {
     const [team, setTeam] = useState<GetTeamResponse | null | undefined>(null)
     const [addTeamMemberOpen, setAddTeamMemberOpen] = useState(false)
     const handleNewRoadmap = async (values) => {
-        await createRoadmap({ ...values, teamId: team?.id.toString(), organizationId })
+        await createRoadmap({ ...values, teamId: team?.id.toString() })
         handleUpdate()
         setCreateModalOpen(false)
     }
