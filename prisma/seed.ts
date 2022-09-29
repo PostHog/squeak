@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { UserRoles } from '../db/user'
+import { UserRoles } from '../src/db/user'
 import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 

@@ -26,7 +26,7 @@ const Login: NextPageWithLayout<Props> = ({ user }) => {
         if (user) {
             router.push(router.query?.redirect ? router.query?.redirect + '' : '/')
         }
-    }, [])
+    }, [router])
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
