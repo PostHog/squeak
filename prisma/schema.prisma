@@ -246,7 +246,7 @@ model Roadmap {
   team                      Team      @relation(fields: [teamId], references: [id])
   teamId                    BigInt
   complete                  Boolean   @default(false)
-  github_issues             String[]
+  github_urls               String[]
   description               String?
   title                     String
   date_completed            DateTime? @db.Timestamptz(6)

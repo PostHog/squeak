@@ -14,6 +14,9 @@ import RoadmapTable from '../../components/RoadmapTable'
 import { getProfiles, getTeam, getTeams, updateProfile } from '../../lib/api'
 import { XIcon } from '@heroicons/react/solid'
 import Avatar from '../../components/Avatar'
+import { Combobox } from '@headlessui/react'
+import uniqBy from 'lodash.groupby'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
     const [profiles, setProfiles] = useState(null)
@@ -21,6 +24,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
     useEffect(() => {
         getProfiles().then(({ data }) => {
             setProfiles(data)
+            setProfileId(data[0]?.id)
         })
     }, [])
 
@@ -35,7 +39,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
                 <select onChange={(e) => setProfileId(e.target.value)} value={profileId}>
                     {profiles.map((profile) => {
                         return (
-                            <option value={profile.id}>
+                            <option key={profile.id} value={profile.id}>
                                 {profile.profile.first_name} {profile.profile.last_name}
                             </option>
                         )
@@ -47,7 +51,16 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
     )
 }
 
-export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal' }) => {
+export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal', categories }) => {
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [showCategories, setShowCategories] = useState(false)
+    const [query, setQuery] = useState('')
+    const filteredCategories =
+        query === ''
+            ? categories
+            : categories.filter((category) => {
+                  return category.toLowerCase().includes(query.toLowerCase())
+              })
     return (
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
             {({ values, setFieldValue }) => {
@@ -91,30 +104,55 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                                 type="date"
                             />
                         )}
-                        <Input
-                            value={values.category}
-                            label="Category"
-                            id="category"
-                            placeholder="Feature request"
-                            name="category"
-                        />
-                        {values.github_issues.map((issue, index) => {
+                        <div className="mb-6">
+                            <label className="text-[16px] font-semibold opacity-75 my-2" htmlFor={'category'}>
+                                Category
+                            </label>
+                            <Combobox
+                                value={values.category}
+                                onChange={(category) => setFieldValue('category', category)}
+                            >
+                                <div className="relative">
+                                    <Combobox.Input
+                                        id="category"
+                                        className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
+                                        onChange={(event) => setQuery(event.target.value)}
+                                    />
+                                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                        <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                    </Combobox.Button>
+                                </div>
+                                <Combobox.Options>
+                                    {filteredCategories.map((category) => (
+                                        <Combobox.Option
+                                            className="cursor-pointer m-0 py-3 px-2 shadow-md rounded-md"
+                                            key={category}
+                                            value={category}
+                                        >
+                                            {category}
+                                        </Combobox.Option>
+                                    ))}
+                                </Combobox.Options>
+                            </Combobox>
+                        </div>
+
+                        {values.github_urls.map((issue, index) => {
                             return (
                                 <div className="flex items-center space-x-2">
                                     <div className="flex-grow">
                                         <Input
-                                            value={values.github_issues[index]}
-                                            label="GitHub issue number"
-                                            name={`github_issues[${index}]`}
-                                            placeholder="1234"
+                                            value={values.github_urls[index]}
+                                            label="GitHub URL"
+                                            name={`github_urls[${index}]`}
+                                            placeholder="GitHub URL"
                                         />
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            const issues = [...values.github_issues]
+                                            const issues = [...values.github_urls]
                                             issues.splice(index, 1)
-                                            setFieldValue('github_issues', issues)
+                                            setFieldValue('github_urls', issues)
                                         }}
                                     >
                                         <XIcon className="w-4 text-[red]" />
@@ -124,16 +162,22 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                         })}
                         <button
                             type="button"
-                            onClick={() => setFieldValue('github_issues', [...values.github_issues, ''])}
+                            onClick={() => setFieldValue('github_urls', [...values.github_urls, ''])}
                             className="text-red font-bold mb-6"
                         >
-                            Add GitHub issue
+                            Add GitHub URL
                         </button>
 
                         <div className="flex items-center mt-4 space-x-2 justify-between">
                             {handleDelete && (
-                                <Button onClick={handleDelete} type="button">
-                                    Delete
+                                <Button
+                                    onClick={() => {
+                                        if (!confirmDelete) return setConfirmDelete(true)
+                                        handleDelete()
+                                    }}
+                                    type="button"
+                                >
+                                    {confirmDelete ? 'Click to confirm' : 'Delete'}
                                 </Button>
                             )}
                             <Button>{submitText}</Button>
@@ -163,15 +207,17 @@ const Team = ({ id, organizationId, ...other }) => {
         const { data } = await getTeam(id)
         setTeam(data)
     }
+    const categories = Object.keys(uniqBy(team?.Roadmap, 'category'))
 
     return (
         team && (
             <>
                 <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
                     <RoadmapForm
+                        categories={categories}
                         initialValues={{
                             complete: false,
-                            github_issues: [],
+                            github_urls: [],
                             description: '',
                             date_completed: '',
                             projected_completion_date: '',
@@ -190,7 +236,7 @@ const Team = ({ id, organizationId, ...other }) => {
                         {team?.Roadmap?.length > 0 && <RoadmapTable onUpdate={handleUpdate} roadmap={team.Roadmap} />}
                     </section>
                     <aside className="max-w-[300px] w-full mt-6">
-                        <h3 className="font-bold text-xl">Members</h3>
+                        <h3 className="font-bold text-xl">{team.name}</h3>
                         <ul className="list-none m-0 p-0">
                             {team?.profiles?.length > 0 &&
                                 team.profiles.map((profile) => {

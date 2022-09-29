@@ -78,7 +78,7 @@ const Teams: NextPageWithLayout<Props> = () => {
                 <Button onClick={() => setModalOpen(true)}>New</Button>
             </div>
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <TeamTable teams={teams} />
+                <TeamTable onUpdate={() => fetchTeams()} teams={teams} />
             </div>
         </>
     )

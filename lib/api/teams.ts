@@ -1,5 +1,5 @@
 import { Team } from '@prisma/client'
-import { doGet, doPost } from './client'
+import { doDelete, doGet, doPatch, doPost } from './client'
 
 export function getTeams() {
     return doGet<Team[]>('/api/teams')
@@ -11,4 +11,12 @@ export function createTeam(name: string) {
 
 export function getTeam(id) {
     return doGet<Team>(`/api/team/${id}`)
+}
+
+export function updateTeam(id, params) {
+    return doPatch<Team>(`/api/team/${id}`, params)
+}
+
+export function deleteTeam(id) {
+    return doDelete<Team>(`/api/team/${id}`)
 }

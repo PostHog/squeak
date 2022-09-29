@@ -2,10 +2,11 @@ import { CheckIcon } from '@heroicons/react/outline'
 import React, { useState } from 'react'
 import { deleteRoadmap, updateRoadmap } from '../lib/api/roadmap'
 import { RoadmapForm } from '../pages/team/[id]'
-import { Check } from './Icons'
 import Modal from './Modal'
+import uniqBy from 'lodash.groupby'
 
 const RoadmapTable = ({ roadmap, onUpdate }) => {
+    const categories = Object.keys(uniqBy(roadmap, 'category'))
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -49,6 +50,7 @@ const RoadmapTable = ({ roadmap, onUpdate }) => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {roadmap.map((roadmapItem) => (
                                     <RoadmapRow
+                                        categories={categories}
                                         onUpdate={onUpdate}
                                         key={String(roadmapItem.id)}
                                         roadmapItem={roadmapItem}
@@ -63,8 +65,8 @@ const RoadmapTable = ({ roadmap, onUpdate }) => {
     )
 }
 
-const RoadmapRow = ({ roadmapItem, onUpdate }) => {
-    const { title, description, complete, category, id, github_issues, date_completed, projected_completion_date } =
+const RoadmapRow = ({ roadmapItem, onUpdate, categories }) => {
+    const { title, description, complete, category, id, github_urls, date_completed, projected_completion_date } =
         roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
 
@@ -85,9 +87,10 @@ const RoadmapRow = ({ roadmapItem, onUpdate }) => {
                 <RoadmapForm
                     onSubmit={handleSubmit}
                     submitText="Update goal"
+                    categories={categories}
                     initialValues={{
                         complete,
-                        github_issues,
+                        github_urls,
                         description,
                         date_completed: date_completed ? new Date(date_completed).toISOString().slice(0, 10) : '',
                         projected_completion_date: projected_completion_date
