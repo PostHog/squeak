@@ -252,4 +252,5 @@ model Roadmap {
   date_completed            DateTime? @db.Timestamptz(6)
   projected_completion_date DateTime? @db.Timestamptz(6)
   category                  String
+  milestone                 Boolean   @default(false)
 }

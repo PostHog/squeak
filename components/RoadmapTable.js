@@ -66,8 +66,17 @@ const RoadmapTable = ({ roadmap, onUpdate }) => {
 }
 
 const RoadmapRow = ({ roadmapItem, onUpdate, categories }) => {
-    const { title, description, complete, category, id, github_urls, date_completed, projected_completion_date } =
-        roadmapItem
+    const {
+        title,
+        description,
+        complete,
+        category,
+        id,
+        github_urls,
+        date_completed,
+        projected_completion_date,
+        milestone,
+    } = roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
 
     const handleSubmit = async (values) => {
@@ -98,6 +107,7 @@ const RoadmapRow = ({ roadmapItem, onUpdate, categories }) => {
                             : '',
                         title,
                         category,
+                        milestone,
                     }}
                     handleDelete={handleDelete}
                 />

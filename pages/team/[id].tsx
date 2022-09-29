@@ -168,6 +168,16 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                             Add GitHub URL
                         </button>
 
+                        <div className="flex items-center space-x-2 mb-6">
+                            <label
+                                className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                htmlFor="milestone"
+                            >
+                                Milestone
+                            </label>
+                            <Field type="checkbox" name="milestone" id="milestone" />
+                        </div>
+
                         <div className="flex items-center mt-4 space-x-2 justify-between">
                             {handleDelete && (
                                 <Button
@@ -223,6 +233,7 @@ const Team = ({ id, organizationId, ...other }) => {
                             projected_completion_date: '',
                             title: '',
                             category: '',
+                            milestone: false,
                         }}
                         onSubmit={handleNewRoadmap}
                     />
