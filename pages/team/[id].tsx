@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import AdminLayout from '../../layout/AdminLayout'
 import withAdminAccess from '../../util/withAdminAccess'
 import Button from '../../components/Button'
@@ -17,14 +15,18 @@ import { Combobox } from '@headlessui/react'
 import uniqBy from 'lodash.groupby'
 import { ChevronDownIcon } from '@heroicons/react/outline'
 import { GetProfilesResponse } from '../api/profiles'
+import _ from 'lodash'
+import { ID } from 'lib/types'
+import { GetTeamResponse } from 'pages/api/teams'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
-    const [profiles, setProfiles] = useState<GetProfilesResponse>(null)
-    const [profileId, setProfileId] = useState('')
+    const [profiles, setProfiles] = useState<GetProfilesResponse[] | null | undefined>(null)
+    const [profileId, setProfileId] = useState<ID>('')
     useEffect(() => {
         getProfiles().then(({ data }) => {
             setProfiles(data)
-            setProfileId(data[0]?.id)
+            const id = data && data[0]?.id
+            id && setProfileId(id.toString())
         })
     }, [])
 
@@ -33,22 +35,20 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
         await updateProfile(profileId, { teamId })
         onSubmit && onSubmit()
     }
-    return (
-        profiles && (
-            <form onSubmit={handleSubmit}>
-                <select onChange={(e) => setProfileId(e.target.value)} value={profileId}>
-                    {profiles.map((profile) => {
-                        return (
-                            <option key={profile.id} value={profile.id}>
-                                {profile.profile.first_name} {profile.profile.last_name}
-                            </option>
-                        )
-                    })}
-                </select>
-                <Button className="mt-3">Add</Button>
-            </form>
-        )
-    )
+    return profiles ? (
+        <form onSubmit={handleSubmit}>
+            <select onChange={(e) => setProfileId(e.target.value)} value={profileId as string}>
+                {profiles.map((profile) => {
+                    return (
+                        <option key={profile.id.toString()} value={profile.id.toString()}>
+                            {profile.profile.first_name} {profile.profile.last_name}
+                        </option>
+                    )
+                })}
+            </select>
+            <Button className="mt-3">Add</Button>
+        </form>
+    ) : null
 }
 
 export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal', categories }) => {
@@ -67,6 +67,7 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                     <Form>
                         <Input value={values.title} label="Title" id="title" name="title" placeholder="Title" />
                         <Input
+                            id="description"
                             value={values.description}
                             as={'textarea'}
                             label="Description"
@@ -140,6 +141,7 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                                 <div key={index} className="flex items-center space-x-2">
                                     <div className="flex-grow">
                                         <Input
+                                            id="github-url"
                                             value={values.github_urls[index]}
                                             label="GitHub URL"
                                             name={`github_urls[${index}]`}
@@ -200,10 +202,10 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
 
 const Team = ({ id, organizationId }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
-    const [team, setTeam] = useState(null)
+    const [team, setTeam] = useState<GetTeamResponse | null | undefined>(null)
     const [addTeamMemberOpen, setAddTeamMemberOpen] = useState(false)
     const handleNewRoadmap = async (values) => {
-        await createRoadmap({ ...values, teamId: team.id.toString(), organizationId })
+        await createRoadmap({ ...values, teamId: team?.id.toString(), organizationId })
         handleUpdate()
         setCreateModalOpen(false)
     }
@@ -223,6 +225,7 @@ const Team = ({ id, organizationId }) => {
             <>
                 <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
                     <RoadmapForm
+                        handleDelete={null}
                         categories={categories}
                         initialValues={{
                             complete: false,
@@ -251,9 +254,9 @@ const Team = ({ id, organizationId }) => {
                             {team?.profiles?.length > 0 &&
                                 team.profiles.map((profile) => {
                                     return (
-                                        <li key={profile.id} className="flex items-center group">
+                                        <li key={profile.id.toString()} className="flex items-center group">
                                             <div className="flex-shrink-0 w-10 h-10">
-                                                <Avatar image={profile.avatar} />
+                                                <Avatar image={profile.profile.avatar} />
                                             </div>
                                             <div className="ml-2 flex items-center justify-between flex-grow">
                                                 <div className="text-sm font-semibold text-primary-light">

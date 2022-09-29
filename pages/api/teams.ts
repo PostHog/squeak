@@ -6,7 +6,14 @@ import prisma from '../../lib/db'
 import getActiveOrganization from '../../util/getActiveOrganization'
 
 const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
-    include: { profiles: true },
+    include: {
+        profiles: {
+            include: {
+                profile: true,
+            },
+        },
+        Roadmap: true,
+    },
 })
 
 export type GetTeamResponse = Prisma.TeamGetPayload<typeof teamWithProfiles>
