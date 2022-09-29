@@ -21,31 +21,61 @@ import { GetTeamResponse } from 'pages/api/teams'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
     const [profiles, setProfiles] = useState<GetProfilesResponse[] | null | undefined>(null)
-    const [profileId, setProfileId] = useState<ID>('')
+    const [profile, setProfile] = useState<GetProfilesResponse>()
+    const [query, setQuery] = useState('')
     useEffect(() => {
         getProfiles().then(({ data }) => {
             setProfiles(data)
-            const id = data && data[0]?.id
-            id && setProfileId(id.toString())
+            const profile = data && data[0]
+            profile && setProfile(profile)
         })
     }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await updateProfile(profileId, { teamId })
+        profile && (await updateProfile(profile.id, { teamId }))
         onSubmit && onSubmit()
     }
+
+    const filteredProfiles =
+        query === ''
+            ? profiles
+            : profiles?.filter((profile) => {
+                  const name = `${profile.profile.first_name} ${profile.profile.last_name}`
+                  return name.toLowerCase().includes(query.toLowerCase())
+              })
+
     return profiles ? (
         <form onSubmit={handleSubmit}>
-            <select onChange={(e) => setProfileId(e.target.value)} value={profileId as string}>
-                {profiles.map((profile) => {
-                    return (
-                        <option key={profile.id.toString()} value={profile.id.toString()}>
-                            {profile.profile.first_name} {profile.profile.last_name}
-                        </option>
-                    )
-                })}
-            </select>
+            <Combobox value={profile} onChange={(value) => setProfile(value)}>
+                <div className="relative">
+                    <Combobox.Input
+                        displayValue={(profile: GetProfilesResponse) =>
+                            profile && `${profile.profile.first_name} ${profile.profile.last_name || ''}`
+                        }
+                        id="category"
+                        className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
+                        onChange={(event) => {
+                            setQuery(event.target.value)
+                        }}
+                    />
+                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                        <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </Combobox.Button>
+                </div>
+                <Combobox.Options className="shadow-md rounded-md bg-white">
+                    {filteredProfiles?.map((profile) => (
+                        <Combobox.Option
+                            className="cursor-pointer m-0 py-3 px-2 "
+                            key={profile.id.toString()}
+                            value={profile}
+                        >
+                            {profile.profile.first_name} {profile.profile.last_name || ''}
+                        </Combobox.Option>
+                    ))}
+                </Combobox.Options>
+            </Combobox>
+
             <Button className="mt-3">Add</Button>
         </form>
     ) : null
