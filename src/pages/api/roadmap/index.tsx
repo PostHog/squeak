@@ -55,7 +55,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
             data: {
                 ...other,
                 organization_id: organizationId,
-                teamId: parseInt(teamId),
+                ...(teamId ? { teamId: parseInt(teamId) } : {}),
                 date_completed: date_completed ? new Date(date_completed) : null,
                 projected_completion_date: projected_completion_date ? new Date(projected_completion_date) : null,
             },
