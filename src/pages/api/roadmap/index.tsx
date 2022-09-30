@@ -5,19 +5,42 @@ import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../.
 import prisma from '../../../lib/db'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
-const topicGroupsWithTopics = Prisma.validator<Prisma.TopicGroupArgs>()({
-    select: { Topic: true, id: true, label: true, organization_id: true, created_at: true },
+const roadmap = Prisma.validator<Prisma.RoadmapArgs>()({
+    include: {
+        team: true,
+    },
 })
 
-export type GetTopicGroupsResponse = Prisma.TopicGroupGetPayload<typeof topicGroupsWithTopics>
+export type GetRoadmapResponse = Prisma.RoadmapGetPayload<typeof roadmap>
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
+        case 'GET':
+            return handleGet(req, res)
         case 'POST':
             return handlePost(req, res)
         default:
             return methodNotAllowed(res)
     }
+}
+
+async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+    const organizationId = getActiveOrganization({ req, res })
+    if (!organizationId) return orgIdNotFound(res)
+
+    const roadmap = await prisma.roadmap.findMany({
+        where: {
+            organization_id: organizationId,
+        },
+        include: {
+            team: true,
+        },
+        orderBy: {
+            date_completed: 'desc',
+        },
+    })
+
+    safeJson(res, roadmap, 201)
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
