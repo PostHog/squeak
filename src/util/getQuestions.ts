@@ -14,7 +14,7 @@ export interface GetQuestionsParams {
     slug?: string
     start?: number
     perPage?: number
-    topicId?: bigint
+    topic?: string
 }
 
 interface GetQuestionsPayload {
@@ -37,7 +37,7 @@ interface GetQuestionsPayload {
  * @returns
  */
 const getQuestions = async (context: Context, params: GetQuestionsParams): Promise<GetQuestionsPayload> => {
-    const { organizationId, start = 0, perPage = 20, published, slug, topicId } = params
+    const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
     // const end = start + (perPage - 1)
 
     const queryConditions: Prisma.QuestionWhereInput = {
@@ -46,12 +46,13 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
 
     if (published) queryConditions.published = published
     if (slug && slug !== '') queryConditions.slug = { has: slug }
-    if (topicId)
+    if (topic) {
         queryConditions.topics = {
             some: {
-                topic_id: topicId,
+                topic_id: BigInt(topic),
             },
         }
+    }
 
     const messages = await prisma.question.findMany({
         where: queryConditions,
