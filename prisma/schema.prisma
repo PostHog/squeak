@@ -48,12 +48,12 @@ model Question {
   profile_id           String?      @db.Uuid
   resolved             Boolean      @default(false)
   resolved_reply_id    BigInt?
-  topics               String[]
   permalink            String?
   squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_organizations_id_fkey")
   squeak_profiles      Profile?     @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_profile_id_fkey")
   resolved_replies     Reply?       @relation("squeak_messages_resolved_reply_idTosqueak_replies", fields: [resolved_reply_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_resolved_reply_replies_id_fkey")
   replies              Reply[]      @relation("squeak_messagesTosqueak_replies_message_id")
+  topics               QuestionTopic[]
 
   @@map("squeak_messages")
 }
@@ -105,24 +105,43 @@ model ReplyFeedback {
   @@map("squeak_replies_feedback")
 }
 
+model QuestionTopic {
+  question_id          BigInt
+  question             Question     @relation(fields: [question_id], references: [id])
+
+  topic_id             BigInt
+  topic                Topic        @relation(fields: [topic_id], references: [id])
+
+  created_at           DateTime     @default(now()) @db.Timestamptz
+
+  @@id([question_id, topic_id])
+  @@map("squeak_question_topics")
+}
+
 model Topic {
-  id                   BigInt       @id @default(autoincrement())
-  created_at           DateTime     @default(now()) @db.Timestamptz(6)
-  organization_id      String       @db.Uuid
+  id                   BigInt         @id @default(autoincrement())
   label                String
-  topicGroupId         BigInt?
-  topic_group          TopicGroup?  @relation(fields: [topicGroupId], references: [id])
-  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
+
+  topic_group_id       BigInt?
+  topic_group          TopicGroup?    @relation(fields: [topic_group_id], references: [id])
+
+  organization_id      String         @db.Uuid
+  organization         Organization   @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "topics_organization_id_fkey")
+
+  questions            QuestionTopic[]
+
+  created_at           DateTime       @default(now()) @db.Timestamptz(6)
 
   @@map("squeak_topics")
 }
 
 model TopicGroup {
-  id              BigInt   @id @default(autoincrement())
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  label           String
-  organization_id String   @db.Uuid
-  Topic           Topic[]
+  id                BigInt   @id @default(autoincrement())
+  label             String
+  organization_id   String   @db.Uuid
+  topic             Topic[]
+
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
 
   @@map("squeak_topic_groups")
 }

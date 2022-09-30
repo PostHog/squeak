@@ -176,7 +176,7 @@ Questions.getLayout = function getLayout(page) {
 export const getServerSideProps = withAdminAccess({
     redirectTo: () => '/login',
     async getServerSideProps(context) {
-        const organizationId = await getActiveOrganization(context)
+        const organizationId = getActiveOrganization(context)
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
         const config = await prisma.squeakConfig.findFirst({
             where: { organization_id: organizationId },

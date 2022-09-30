@@ -23,7 +23,6 @@ const withAdminAccess = (arg: Args) => {
         return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             let organizationId = getActiveOrganization({ req, res })
             const user: SafeUser | null = await getSessionUser(req)
-            // console.log('session=', session)
 
             if (!organizationId) {
                 const ro = await prisma.profileReadonly.findFirstOrThrow({

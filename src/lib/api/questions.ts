@@ -1,7 +1,6 @@
 import { doPatch, doDelete, doGet, QueryParams, doPost } from './client'
 import { ID } from '../types'
 import { Question, Reply } from '@prisma/client'
-import { GetQuestionTopicsResponse } from '../../pages/api/question/[id]/topics'
 import { CreateQuestionRequestPayload } from '../../pages/api/question'
 import { UpdateQuestionRequestPayload } from '../../pages/api/question/[id]'
 
@@ -27,7 +26,7 @@ export function updateQuestion(id: ID, params: UpdateQuestionRequestPayload) {
 }
 
 export function getQuestionTopics(id: ID) {
-    return doGet<GetQuestionTopicsResponse>(`/api/question/${id}/topics`)
+    return doGet<any>(`/api/question/${id}/topics`)
 }
 
 export function updateQuestionTopics(id: ID, topics: string[]) {

@@ -38,6 +38,11 @@ export async function getQuestion(id: number, params: { fields?: string } = {}) 
                 slack_timestamp: true,
                 resolved: true,
                 resolved_reply_id: true,
+                topics: {
+                    select: {
+                        topic: true,
+                    },
+                },
                 replies: {
                     orderBy: { created_at: 'asc' },
                     select: {

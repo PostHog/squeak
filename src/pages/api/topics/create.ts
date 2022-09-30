@@ -26,8 +26,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const topic: Topic = await prisma.topic.create({
         data: {
             label: body.label,
-            organization_id: organizationId,
-            topicGroupId: topicGroupId,
+            organization: {
+                connect: {
+                    id: organizationId,
+                },
+            },
         },
     })
 
