@@ -37,7 +37,6 @@ jobs:
                   browser: chrome
                   build: yarn build
                   start: |
-                      yarn migrate
                       yarn start
                   command: yarn test:e2e
 
