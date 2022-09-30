@@ -38,11 +38,12 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
             },
             data: {
                 ...other,
-                date_completed: date_completed ? new Date(date_completed) : null,
-                projected_completion_date: projected_completion_date ? new Date(projected_completion_date) : null,
+                ...(date_completed ? { date_completed: new Date(date_completed) } : {}),
+                ...(projected_completion_date
+                    ? { projected_completion_date: new Date(projected_completion_date) }
+                    : {}),
             },
         })
-
         .catch((err) => console.log(err))
 
     safeJson(res, roadmap, 201)

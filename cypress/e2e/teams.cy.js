@@ -27,6 +27,8 @@ describe('Teams and Roadmaps', () => {
         })
 
         it('can create a team', () => {
+            const teamName = randomString()
+
             cy.get('button').contains('New').should('have.length', 1).click()
 
             cy.get('[role="dialog"]').as('dialog')
@@ -35,11 +37,15 @@ describe('Teams and Roadmaps', () => {
 
             cy.get('@dialog').get('#team-name').should('have.length', 1).should('have.focus').as('input')
 
-            cy.get('@input').type('Test Team')
+            cy.get('@input').type(teamName)
+
+            cy.intercept('GET', '/api/teams').as('refresh')
 
             cy.get('@dialog').get('button[type="submit"]').click()
 
-            cy.get('tr').contains('Test Team')
+            cy.wait('@refresh')
+
+            cy.get('tr').contains(teamName).should('have.length', 1)
         })
 
         it('can delete a team', () => {

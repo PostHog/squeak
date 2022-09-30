@@ -12,7 +12,11 @@ const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
                 profile: true,
             },
         },
-        Roadmap: true,
+        Roadmap: {
+            include: {
+                team: true,
+            },
+        },
     },
 })
 
