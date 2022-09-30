@@ -45,14 +45,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Admin privileges needed to add and delete
         if (!(await requireOrgAdmin(req, res))) return
 
-        const { topics: topicIds }: { topics: bigint[] } = req.body
+        const { topics: topicIds }: { topics: string[] } = req.body
 
-        if (req.method === 'PUT') {
+        if (req.method === 'POST') {
             const topics = await prisma.questionTopic.createMany({
                 data: topicIds.map((topicId) => {
                     return {
                         question_id: question.id,
-                        topic_id: topicId,
+                        topic_id: BigInt(topicId),
                     }
                 }),
                 skipDuplicates: true,
@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const topics = await prisma.questionTopic.deleteMany({
                 where: {
                     topic_id: {
-                        in: topicIds,
+                        in: topicIds.map((id) => BigInt(id)),
                     },
                 },
             })
