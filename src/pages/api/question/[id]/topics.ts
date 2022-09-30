@@ -18,56 +18,64 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return
     }
 
-    switch (req.method) {
-        case 'GET':
-            return handleGet(req, res)
-        case 'PATCH':
-            return handlePatch(req, res)
-        default:
+    try {
+        const question = await prisma.question.findUnique({
+            where: { id: parseInt(req.query.id as string) },
+            select: {
+                id: true,
+                topics: {
+                    select: {
+                        topic: true,
+                    },
+                },
+            },
+        })
+
+        if (!question) {
+            res.status(404).json({ error: 'Question not found' })
+            return
+        }
+
+        if (req.method === 'GET') {
+            return {
+                topics: question.topics.map(({ topic }) => topic),
+            }
+        }
+
+        // Admin privileges needed to add and delete
+        if (!(await requireOrgAdmin(req, res))) return
+
+        const { topics: topicIds }: { topics: bigint[] } = req.body
+
+        if (req.method === 'PUT') {
+            const topics = await prisma.questionTopic.createMany({
+                data: topicIds.map((topicId) => {
+                    return {
+                        question_id: question.id,
+                        topic_id: topicId,
+                    }
+                }),
+                skipDuplicates: true,
+            })
+
+            res.status(200).json({ count: topics.count })
+        } else if (req.method === 'DELETE') {
+            const topics = await prisma.questionTopic.deleteMany({
+                where: {
+                    topic_id: {
+                        in: topicIds,
+                    },
+                },
+            })
+
+            res.status(200).json({ count: topics.count })
+        } else {
             return methodNotAllowed(res)
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).send({
+            message: 'Something went wrong',
+        })
     }
-}
-
-// PATCH /api/question/[id]/topics
-async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
-    const question = await findQuestion(req, res)
-    if (!question) return
-    if (!(await requireOrgAdmin(req, res))) return
-
-    const { topics } = req.body
-
-    await prisma.question.update({
-        where: { id: parseInt(req.query.id as string) },
-        data: { topics },
-    })
-
-    return res.status(200).json(topics)
-}
-
-export type GetQuestionTopicsResponse = string[] | [] | null
-
-// GET /api/question/[id]/topics
-async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const question = await findQuestion(req, res)
-    if (!question) return
-
-    const topics: GetQuestionTopicsResponse = question.topics
-
-    return res.status(200).json(topics)
-}
-
-async function findQuestion(req: NextApiRequest, res: NextApiResponse): Promise<{ topics: string[] } | undefined> {
-    const question = await prisma.question.findUnique({
-        where: { id: parseInt(req.query.id as string) },
-        select: {
-            topics: true,
-        },
-    })
-
-    if (!question) {
-        res.status(404).json({ error: 'Question not found' })
-        return
-    }
-
-    return question
 }

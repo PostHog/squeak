@@ -6,7 +6,7 @@ import prisma from '../../../lib/db'
 import getActiveOrganization from '../../../util/getActiveOrganization'
 
 const topicGroupsWithTopics = Prisma.validator<Prisma.TopicGroupArgs>()({
-    select: { Topic: true, id: true, label: true, organization_id: true, created_at: true },
+    select: { topic: true, id: true, label: true, organization_id: true, created_at: true },
 })
 
 export type GetTopicGroupsResponse = Prisma.TopicGroupGetPayload<typeof topicGroupsWithTopics>

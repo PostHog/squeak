@@ -27,7 +27,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         data: {
             label: body.label,
             organization_id: organizationId,
-            topicGroupId: topicGroupId,
+            topic_group_id: topicGroupId,
         },
     })
 

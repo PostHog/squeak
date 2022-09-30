@@ -10,7 +10,7 @@ interface CreateTopicGroupRequestBody {
 }
 
 const topicGroupsWithTopics = Prisma.validator<Prisma.TopicGroupArgs>()({
-    select: { Topic: true, id: true, label: true, organization_id: true, created_at: true },
+    select: { topic: true, id: true, label: true, organization_id: true, created_at: true },
 })
 
 export type GetTopicGroupsResponse = Prisma.TopicGroupGetPayload<typeof topicGroupsWithTopics>
@@ -55,7 +55,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             organization_id: true,
             label: true,
             id: true,
-            Topic: true,
+            topic: true,
         },
     })
 
