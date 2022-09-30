@@ -45,7 +45,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
     }
 
     if (published) queryConditions.published = published
-    if (slug && slug !== '') queryConditions.slug = { has: slug }
+    if (slug) queryConditions.slug = { has: slug }
     if (topic) {
         queryConditions.topics = {
             some: {
@@ -77,10 +77,6 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
         take: perPage, // limit
     })
 
-    const count: number = await prisma.question.count({
-        where: queryConditions,
-    })
-
     const config = await prisma.squeakConfig.findFirst({
         where: { organization_id: organizationId },
         select: { show_slack_user_profiles: true },
@@ -104,7 +100,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
 
                 return { question: message, replies }
             }),
-            count: count ?? 0,
+            count: messages.length ?? 0,
         },
     }
 }
