@@ -1,6 +1,5 @@
 import withPreflightCheck from '../../util/withPreflightCheck'
 import createUserProfile from '../../util/createUserProfile'
-import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
 import { getSessionUser } from '../../lib/auth'
@@ -64,6 +63,9 @@ export default withPreflightCheck(async (req, res) => {
     const { data: userProfile, error: userProfileError } = await createUserProfile({
         first_name: firstName,
         last_name: lastName,
+        user_id: user.id,
+        organization_id: organization.id,
+        role: 'admin',
     })
 
     if (!userProfile || userProfileError) {
@@ -75,27 +77,6 @@ export default withPreflightCheck(async (req, res) => {
             console.error(`[🧵 Setup] ${userProfileError.message}`)
 
             res.json({ error: userProfileError.message })
-        }
-
-        return
-    }
-
-    const { data: userProfileReadonly, error: userProfileReadonlyError } = await createUserProfileReadonly(
-        user.id,
-        organization.id,
-        userProfile.id,
-        'admin'
-    )
-
-    if (!userProfileReadonly || userProfileReadonlyError) {
-        console.error(`[🧵 Setup] Error creating user readonly profile`)
-
-        res.status(500)
-
-        if (userProfileReadonlyError) {
-            console.error(`[🧵 Setup] ${userProfileReadonlyError.message}`)
-
-            res.json({ error: userProfileReadonlyError.message })
         }
 
         return

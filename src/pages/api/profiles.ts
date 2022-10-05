@@ -7,11 +7,20 @@ import getActiveOrganization from '../../util/getActiveOrganization'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 import { Prisma } from '@prisma/client'
 
-const profilesReadOnlyWithTopics = Prisma.validator<Prisma.ProfileReadonlyArgs>()({
-    select: { Team: true, id: true, role: true, user_id: true, profile: true, teamId: true },
+const profilesReadOnlyWithTopics = Prisma.validator<Prisma.ProfileArgs>()({
+    select: {
+        team: true,
+        id: true,
+        role: true,
+        user_id: true,
+        team_id: true,
+        first_name: true,
+        last_name: true,
+        avatar: true,
+    },
 })
 
-export type GetProfilesReadOnlyResponse = Prisma.ProfileReadonlyGetPayload<typeof profilesReadOnlyWithTopics>
+export type GetProfilesReadOnlyResponse = Prisma.ProfileGetPayload<typeof profilesReadOnlyWithTopics>
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await NextCors(req, res, {
@@ -40,21 +49,18 @@ export type GetProfilesResponse = GetProfilesReadOnlyResponse
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
     const organizationId = getActiveOrganization({ req, res })
-    const profiles = await prisma.profileReadonly.findMany({
+
+    const profiles = await prisma.profile.findMany({
         where: { organization_id: organizationId },
         select: {
             id: true,
             role: true,
             user_id: true,
-            profile: {
-                select: {
-                    first_name: true,
-                    last_name: true,
-                    avatar: true,
-                },
-            },
-            Team: true,
-            teamId: true,
+            first_name: true,
+            last_name: true,
+            avatar: true,
+            team: true,
+            team_id: true,
         },
     })
     safeJson(res, profiles)

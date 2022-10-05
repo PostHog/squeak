@@ -25,10 +25,11 @@ const withAdminAccess = (arg: Args) => {
             const user: SafeUser | null = await getSessionUser(req)
 
             if (!organizationId) {
-                const ro = await prisma.profileReadonly.findFirstOrThrow({
+                const profile = await prisma.profile.findFirstOrThrow({
                     where: { user_id: user?.id },
                 })
-                organizationId = ro.organization_id
+
+                organizationId = profile.organization_id as string
                 setOrgIdCookie(res, organizationId)
             }
 
@@ -85,10 +86,11 @@ const withAdminAccess = (arg: Args) => {
                 // This should never happen, but there was a production bug, so this is preferable
                 // to a 500 error
                 if (!organizationId) {
-                    const ro = await prisma.profileReadonly.findFirstOrThrow({
+                    const profile = await prisma.profile.findFirstOrThrow({
                         where: { user_id: user?.id },
                     })
-                    organizationId = ro.organization_id
+
+                    organizationId = profile.organization_id as string
                     setOrgIdCookie(context.res as NextApiResponse, organizationId)
                 }
 

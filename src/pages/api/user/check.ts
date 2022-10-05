@@ -23,7 +23,7 @@ async function doCheck(req: NextApiRequest, res: NextApiResponse) {
         return
     }
 
-    const profile = await prisma.profileReadonly.findFirst({
+    const profile = await prisma.profile.findFirst({
         where: { organization_id: organizationId },
         select: { id: true },
     })

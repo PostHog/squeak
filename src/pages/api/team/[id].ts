@@ -36,8 +36,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             },
             profiles: {
                 include: {
-                    profile: true,
-                    Team: true,
+                    team: true,
                 },
             },
         },

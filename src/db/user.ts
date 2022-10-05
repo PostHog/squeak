@@ -1,4 +1,4 @@
-import { ProfileReadonly, User } from '@prisma/client'
+import { Profile, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 import { SafeUser } from '../lib/auth'
@@ -28,8 +28,8 @@ export function findUserByEmail(email: string): Promise<User | null> {
     })
 }
 
-export function getReadonlyProfileForUser(userId: string, organizationId: string): Promise<ProfileReadonly | null> {
-    return prisma.profileReadonly.findFirst({
+export function getReadonlyProfileForUser(userId: string, organizationId: string): Promise<Profile | null> {
+    return prisma.profile.findFirst({
         where: { user_id: userId, organization_id: organizationId },
     })
 }

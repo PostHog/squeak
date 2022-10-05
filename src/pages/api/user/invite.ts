@@ -1,6 +1,5 @@
 import withAdminAccess from '../../../util/withAdminAccess'
 import absoluteUrl from 'next-absolute-url'
-import createUserProfileReadonly from '../../../util/createUserProfileReadonly'
 import createUserProfile from '../../../util/createUserProfile'
 import trackUserSignup from '../../../util/posthog/trackUserSignup'
 import { sendUserInvite } from '../../../lib/email'
@@ -27,6 +26,9 @@ export default withAdminAccess(async (req, res) => {
 
     const { data: userProfile, error: userProfileError } = await createUserProfile({
         first_name: firstName,
+        user_id: invitedUser.id,
+        organization_id: organizationId,
+        role,
     })
 
     if (!userProfile || userProfileError) {
@@ -39,19 +41,6 @@ export default withAdminAccess(async (req, res) => {
             res.json({ error: userProfileError.message })
         }
 
-        return
-    }
-
-    const { error: userProfileReadonlyError } = await createUserProfileReadonly(
-        invitedUser.id,
-        organizationId,
-        userProfile.id,
-        role
-    )
-
-    if (userProfileReadonlyError) {
-        console.error(`[🧵 Invite] ${userProfileReadonlyError.message}`)
-        res.status(500).json({ error: userProfileReadonlyError.message })
         return
     }
 

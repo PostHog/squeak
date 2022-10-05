@@ -24,7 +24,7 @@ export async function createOrganization(name: string, url: string): Promise<Org
     return organization
 }
 
-export async function getOrganizationIdFromUser(id: string): Promise<string | undefined> {
-    const profile = await prisma.profileReadonly.findFirst({ where: { user_id: id } })
+export async function getOrganizationIdFromUser(id: string): Promise<string | undefined | null> {
+    const profile = await prisma.profile.findFirst({ where: { user_id: id } })
     return profile?.organization_id
 }

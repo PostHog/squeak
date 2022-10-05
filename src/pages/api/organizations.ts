@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 export interface GetOrganizationsResponse {
-    organization_id: string
+    organization_id: string | null
 }
 
 // GET /api/organizations
@@ -24,7 +24,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         return notAuthenticated(res)
     }
 
-    const orgIds: GetOrganizationsResponse[] = await prisma.profileReadonly.findMany({
+    const orgIds: GetOrganizationsResponse[] = await prisma.profile.findMany({
         where: { user_id: user.id },
         select: { organization_id: true },
     })

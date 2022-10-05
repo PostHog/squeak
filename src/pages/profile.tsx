@@ -128,11 +128,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext): Pr
         }
     }
 
-    const profilero = await prisma.profileReadonly.findFirst({
+    const profile = await prisma.profile.findFirst({
         where: { user_id: user.id },
-    })
-    const profile = await prisma.profile.findUnique({
-        where: { id: profilero?.profile_id },
     })
 
     if (!user || !profile) {

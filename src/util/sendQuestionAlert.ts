@@ -23,19 +23,16 @@ const sendQuestionAlert = async (
                 case 'webhook':
                     return fetch(url, { method: 'POST', body: JSON.stringify({ subject, slug, body }) })
                 case 'slack':
-                    const readonlyProfile = await prisma.profileReadonly.findFirst({
+                    const profile = await prisma.profile.findFirst({
                         where: {
-                            profile_id: profileId,
+                            id: profileId,
                             organization_id: organizationId,
-                        },
-                        include: {
-                            profile: true,
                         },
                     })
 
-                    if (!readonlyProfile) return
+                    if (!profile) return
 
-                    const { first_name, avatar } = readonlyProfile?.profile
+                    const { first_name, avatar } = profile
                     return fetch(url, {
                         method: 'POST',
                         body: JSON.stringify({
@@ -81,7 +78,6 @@ const sendQuestionAlert = async (
                             ],
                         }),
                     })
-                // })
             }
         })
     )

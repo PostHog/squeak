@@ -73,8 +73,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onU
     const { addToast } = useToasts()
     const { user } = useUser()
     const [role, setRole] = useState(profile.role)
-    // @ts-expect-error: bigint weirdness
-    const [team, setTeam] = useState<string | undefined>(profile?.Team?.id)
+    const [team, setTeam] = useState<string | undefined>(profile?.team?.id?.toString())
 
     const handleRoleChange = async (role: string) => {
         if (!profile.id) {
@@ -108,7 +107,7 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onU
         }
     }
 
-    const { first_name, last_name, avatar } = profile?.profile
+    const { first_name, last_name, avatar } = profile
 
     return (
         <tr>

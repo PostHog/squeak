@@ -1,9 +1,8 @@
 import prisma from '../lib/db'
 import createUserProfile from '../util/createUserProfile'
-import createUserProfileReadonly from '../util/createUserProfileReadonly'
 
 export function getUserRole(organizationId: string, userId: string) {
-    return prisma.profileReadonly.findFirst({
+    return prisma.profile.findFirst({
         where: {
             organization_id: organizationId,
             user_id: userId,
@@ -26,19 +25,24 @@ export interface CreateProfileParams {
  */
 export async function findOrCreateProfileFromSlackUser(params: CreateProfileParams) {
     const { slack_user_id, first_name, last_name, avatar, organization_id } = params
-    const data = await prisma.profileReadonly.findFirst({
+    const data = await prisma.profile.findFirst({
         where: { slack_user_id },
-        select: { profile_id: true },
+        select: { id: true },
     })
 
-    if (data?.profile_id) {
-        return data.profile_id
+    if (data?.id) {
+        return data.id
     }
 
     // Create a new profile for the slack user
-    const { data: profile } = await createUserProfile({ first_name, last_name, avatar })
-
-    await createUserProfileReadonly(null, organization_id, profile?.id || '', 'user', slack_user_id)
+    const { data: profile } = await createUserProfile({
+        first_name,
+        last_name,
+        avatar,
+        organization_id,
+        slack_user_id,
+        role: 'user',
+    })
 
     return profile?.id
 }
