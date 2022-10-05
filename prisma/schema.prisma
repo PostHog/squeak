@@ -219,8 +219,8 @@ model Profile {
 
   squeak_messages         Question[]
 
-  organization            Organization?     @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organization_id         String?           @db.Uuid
+  organization            Organization      @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organization_id         String            @db.Uuid
 
   user                    User?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_id                 String?           @db.Uuid

@@ -38,19 +38,13 @@ async function main() {
         },
     })
 
-    const profile = await prisma.profile.create({
+    await prisma.profile.create({
         data: {
             first_name: 'First',
             last_name: 'Last',
-        },
-    })
-
-    await prisma.profileReadonly.create({
-        data: {
             role: UserRoles.admin,
             user_id: user.id,
             organization_id: organization.id,
-            profile_id: profile.id,
         },
     })
 

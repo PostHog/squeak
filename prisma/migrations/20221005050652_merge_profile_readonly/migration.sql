@@ -22,9 +22,12 @@ FROM (
         readonly.slack_user_id,
         readonly."teamId" team_id
     FROM squeak_profiles_readonly readonly
-        FULL OUTER JOIN squeak_profiles on squeak_profiles.id = readonly.profile_id
+        INNER JOIN squeak_profiles on squeak_profiles.id = readonly.profile_id
+    WHERE readonly.organization_id IS NOT NULL
 ) AS merged_profile
-WHERE merged_profile.id = profile.id;
+WHERE merged_profile.id = profile.id AND merged_profile.organization_id IS NOT NULL;
+
+ALTER TABLE "squeak_profiles" ALTER COLUMN "organization_id" SET NOT NULL;
 
 -- Add foreign key constraints
 ALTER TABLE "squeak_profiles" ADD CONSTRAINT "squeak_profiles_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "squeak_organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
