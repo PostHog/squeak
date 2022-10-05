@@ -56,11 +56,7 @@ export async function getQuestion(id: number, params: { fields?: string } = {}) 
                                 first_name: true,
                                 last_name: true,
                                 avatar: true,
-                                profiles_readonly: {
-                                    select: {
-                                        role: true,
-                                    },
-                                },
+                                role: true,
                             },
                         },
                     },
