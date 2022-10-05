@@ -45,12 +45,14 @@ model Question {
   published            Boolean      @default(false)
   slack_timestamp      String?
   organization_id      String       @db.Uuid
-  profile_id           String?      @db.Uuid
   resolved             Boolean      @default(false)
   resolved_reply_id    BigInt?
   permalink            String?
   squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_organizations_id_fkey")
-  squeak_profiles      Profile?     @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_profile_id_fkey")
+
+  profile_id           String?      @db.Uuid
+  profiles             Profile?     @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_profile_id_fkey")
+
   resolved_replies     Reply?       @relation("squeak_messages_resolved_reply_idTosqueak_replies", fields: [resolved_reply_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_resolved_reply_replies_id_fkey")
   replies              Reply[]      @relation("squeak_messagesTosqueak_replies_message_id")
   topics               QuestionTopic[]
@@ -59,16 +61,20 @@ model Question {
 }
 
 model Organization {
-  name                     String?
   id                       String            @id(map: "organizations_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at               DateTime          @default(now()) @db.Timestamptz(6)
+
+  name                     String?
   squeak_config            SqueakConfig[]
   squeak_messages          Question[]
-  squeak_profiles_readonly ProfileReadonly[] @relation("squeak_organizationsTosqueak_profiles_readonly")
+
+  profiles                 Profile[]
+
   squeak_replies           Reply[]
   squeak_replies_feedback  ReplyFeedback[]
   squeak_topics            Topic[]
   squeak_webhook_config    WebhookConfig[]
+
+  created_at               DateTime          @default(now()) @db.Timestamptz(6)
 
   @@map("squeak_organizations")
 }
@@ -79,11 +85,13 @@ model Reply {
   body                                                              String?
   message_id                                                        BigInt
   organization_id                                                   String          @db.Uuid
-  profile_id                                                        String?         @db.Uuid
   published                                                         Boolean         @default(false)
   squeak_messages_squeak_messagesTosqueak_replies_message_id        Question        @relation("squeak_messagesTosqueak_replies_message_id", fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_message_id_fkey")
   squeak_organizations                                              Organization    @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_organizations_id_fkey")
+
   profile                                                           Profile?        @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_profile_id_fkey")
+  profile_id                                                        String?         @db.Uuid
+
   squeak_messages_squeak_messages_resolved_reply_idTosqueak_replies Question[]      @relation("squeak_messages_resolved_reply_idTosqueak_replies")
   squeak_replies_feedback                                           ReplyFeedback[]
 
@@ -158,8 +166,9 @@ model WebhookConfig {
 }
 
 model User {
-  instance_id                 String?           @db.Uuid
   id                          String            @id @db.Uuid
+
+  instance_id                 String?           @db.Uuid
   aud                         String?           @db.VarChar(255)
   role                        String?           @db.VarChar(255)
   email                       String?           @unique @db.VarChar(255)
@@ -177,8 +186,6 @@ model User {
   raw_app_meta_data           Json?
   raw_user_meta_data          Json?
   is_super_admin              Boolean?
-  created_at                  DateTime?         @db.Timestamptz(6)
-  updated_at                  DateTime?         @db.Timestamptz(6)
   phone                       String?           @unique @db.VarChar(15)
   phone_confirmed_at          DateTime?         @db.Timestamptz(6)
   phone_change                String?           @default("") @db.VarChar(15)
@@ -190,7 +197,11 @@ model User {
   banned_until                DateTime?         @db.Timestamptz(6)
   reauthentication_token      String?           @default("") @db.VarChar(255)
   reauthentication_sent_at    DateTime?         @db.Timestamptz(6)
-  squeak_profiles_readonly    ProfileReadonly[] @relation("squeak_profiles_readonlyTousers")
+
+  profiles                    Profile[]
+
+  updated_at                  DateTime?         @db.Timestamptz(6)
+  created_at                  DateTime?         @db.Timestamptz(6)
 
   @@index([instance_id], map: "users_instance_id_email_idx")
   @@index([instance_id])
@@ -198,34 +209,31 @@ model User {
 }
 
 model Profile {
+  id                      String            @id(map: "profiles_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role                    String            @default("user")
+  slack_user_id           String?
+
+  avatar                  String?
   first_name              String?
   last_name               String?
-  avatar                  String?
-  id                      String            @id(map: "profiles_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at              DateTime          @default(now()) @db.Timestamptz(6)
+
   squeak_messages         Question[]
-  profiles_readonly       ProfileReadonly[] @relation("squeak_profilesTosqueak_profiles_readonly")
-  squeak_replies          Reply[]
-  squeak_replies_feedback ReplyFeedback[]
+
+  organization            Organization?     @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organization_id         String?           @db.Uuid
+
+  user                    User?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_id                 String?           @db.Uuid
+
+  team                    Team?             @relation(fields: [team_id], references: [id])
+  team_id                 BigInt?
+
+  replies                 Reply[]
+  replies_feedback        ReplyFeedback[]
+
+  created_at              DateTime          @default(now()) @db.Timestamptz(6)
 
   @@map("squeak_profiles")
-}
-
-model ProfileReadonly {
-  role                 String       @default("user")
-  user_id              String?      @db.Uuid
-  id                   BigInt       @id @default(autoincrement())
-  organization_id      String       @db.Uuid
-  profile_id           String       @db.Uuid
-  created_at           DateTime     @default(now()) @db.Timestamptz(6)
-  slack_user_id        String?
-  squeak_organizations Organization @relation("squeak_organizationsTosqueak_profiles_readonly", fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_organizations_id_fkey")
-  profile              Profile      @relation("squeak_profilesTosqueak_profiles_readonly", fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_profile_id_fkey")
-  user                 User?        @relation("squeak_profiles_readonlyTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_readonly_user_id_fkey")
-  Team                 Team?        @relation(fields: [teamId], references: [id])
-  teamId               BigInt?
-
-  @@map("squeak_profiles_readonly")
 }
 
 model RefreshToken {
@@ -252,7 +260,7 @@ model Team {
   created_at      DateTime          @default(now()) @db.Timestamptz(6)
   name            String
   organization_id String            @db.Uuid
-  profiles        ProfileReadonly[]
+  profiles        Profile[]
   Roadmap         Roadmap[]
 
   @@map("squeak_teams")
