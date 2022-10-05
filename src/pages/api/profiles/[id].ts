@@ -31,7 +31,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         where: { id: profileId },
         data: {
             ...(params.role ? { role: params?.role } : {}),
-            ...(params.teamId ? { teamId: params?.teamId === 'None' ? null : parseInt(params.teamId) } : {}),
+            ...(params.teamId ? { team_id: params?.teamId === 'None' ? null : parseInt(params.teamId) } : {}),
         },
     })
 
