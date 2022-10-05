@@ -36,15 +36,17 @@ async function handleLogin(req: NextApiRequest & { user: User }, res: NextApiRes
         orgId = req.body.organizationId
         if (!orgId) return res.status(400).json({ error: 'Missing required field organizationId' })
     } else {
+        // TODO: Allow the user to log in to any organization
+
         // Log the user into the first org they have access to
-        const readOnly = await prisma.profileReadonly.findFirst({
+        const profile = await prisma.profile.findFirst({
             where: { user_id: req.user.id },
         })
 
-        if (!readOnly || !readOnly.organization_id) return res.status(500).json({ error: 'User has no orgs' })
+        if (!profile || !profile.organization_id) return res.status(500).json({ error: 'User has no orgs' })
 
         // set the active organization
-        orgId = readOnly.organization_id
+        orgId = profile.organization_id
     }
 
     setOrgIdCookie(res, orgId)

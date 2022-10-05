@@ -4,7 +4,6 @@ import nextConnect from 'next-connect'
 import { Prisma } from '@prisma/client'
 
 import createUserProfile from '../../util/createUserProfile'
-import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 import { sendUserConfirmation } from '../../lib/email'
 import { createUser, UserRoles } from '../../db'
 import { allowedOrigin, corsMiddleware } from '../../lib/middleware'
@@ -43,6 +42,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
             first_name: firstName,
             last_name: lastName,
             avatar,
+            user_id: user.id,
+            organization_id: organizationId,
+            role: 'user',
         })
 
         if (!userProfile || userProfileError) {
@@ -54,27 +56,6 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
                 console.error(`[🧵 Register] ${userProfileError.message}`)
 
                 res.json({ error: userProfileError.message })
-            }
-
-            return
-        }
-
-        const { data: userProfileReadonly, error: userProfileReadonlyError } = await createUserProfileReadonly(
-            user.id,
-            organizationId,
-            userProfile.id,
-            'user'
-        )
-
-        if (!userProfileReadonly || userProfileReadonlyError) {
-            console.error(`[🧵 Register] Error creating user readonly profile`)
-
-            res.status(500).json({ error: 'Error creating user readonly profile' })
-
-            if (userProfileReadonlyError) {
-                console.error(`[🧵 Register] ${userProfileReadonlyError.message}`)
-
-                res.json({ error: userProfileReadonlyError.message })
             }
 
             return

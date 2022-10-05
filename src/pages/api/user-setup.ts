@@ -4,7 +4,6 @@ import absoluteUrl from 'next-absolute-url'
 import prisma from '../../lib/db'
 // import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import createUserProfile from '../../util/createUserProfile'
-import createUserProfileReadonly from '../../util/createUserProfileReadonly'
 import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
 import { SqueakConfig } from '@prisma/client'
@@ -81,6 +80,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { data: userProfile, error: userProfileError } = await createUserProfile({
         first_name: firstName,
         last_name: lastName,
+        user_id: user.id,
+        organization_id: organization.id,
+        role: 'admin',
     })
 
     if (!userProfile || userProfileError) {
@@ -92,27 +94,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             console.error(`[🧵 Signup] ${userProfileError.message}`)
 
             res.json({ error: userProfileError.message })
-        }
-
-        return
-    }
-
-    const { data: userProfileReadonly, error: userProfileReadonlyError } = await createUserProfileReadonly(
-        user.id,
-        organization.id,
-        userProfile.id,
-        'admin'
-    )
-
-    if (!userProfileReadonly || userProfileReadonlyError) {
-        console.error(`[🧵 Signup] Error creating user readonly profile`)
-
-        res.status(500)
-
-        if (userProfileReadonlyError) {
-            console.error(`[🧵 Signup] ${userProfileReadonlyError.message}`)
-
-            res.json({ error: userProfileReadonlyError.message })
         }
 
         return

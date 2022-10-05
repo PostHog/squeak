@@ -19,7 +19,7 @@ export interface UpdateProfilePayload {
 // PATCH /api/profiles/[id]
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const profileId = parseInt(req.query.id as string)
+    const profileId = req.query.id as string
 
     const params: UpdateProfilePayload = req.body
     if (!params.role && !params.teamId) {
@@ -27,7 +27,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         return
     }
 
-    const profile = await prisma.profileReadonly.update({
+    const profile = await prisma.profile.update({
         where: { id: profileId },
         data: {
             ...(params.role ? { role: params?.role } : {}),

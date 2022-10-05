@@ -28,12 +28,8 @@ async function doPatch(req: NextApiRequest, res: NextApiResponse) {
 
     const { first_name, last_name, password } = req.body
 
-    const profilero = await prisma.profileReadonly.findFirst({
+    const profile = await prisma.profile.findFirst({
         where: { user_id: user.id },
-    })
-
-    const profile = await prisma.profile.findUnique({
-        where: { id: profilero?.profile_id },
     })
 
     await prisma.profile.update({

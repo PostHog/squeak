@@ -40,7 +40,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
         query === ''
             ? profiles
             : profiles?.filter((profile) => {
-                  const name = `${profile.profile.first_name} ${profile.profile.last_name}`
+                  const name = `${profile.first_name} ${profile.last_name}`
                   return name.toLowerCase().includes(query.toLowerCase())
               })
 
@@ -50,7 +50,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
                 <div className="relative">
                     <Combobox.Input
                         displayValue={(profile: GetProfilesResponse) =>
-                            profile && `${profile.profile.first_name} ${profile.profile.last_name || ''}`
+                            profile && `${profile.first_name} ${profile.last_name || ''}`
                         }
                         id="category"
                         className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
@@ -69,7 +69,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
                             key={profile.id.toString()}
                             value={profile}
                         >
-                            {profile.profile.first_name} {profile.profile.last_name || ''}
+                            {profile.first_name} {profile.last_name || ''}
                         </Combobox.Option>
                     ))}
                 </Combobox.Options>
@@ -288,11 +288,11 @@ const Team = ({ id }) => {
                                     return (
                                         <li key={profile.id.toString()} className="flex items-center group">
                                             <div className="flex-shrink-0 w-10 h-10">
-                                                <Avatar image={profile.profile.avatar} />
+                                                <Avatar image={profile.avatar} />
                                             </div>
                                             <div className="ml-2 flex items-center justify-between flex-grow">
                                                 <div className="text-sm font-semibold text-primary-light">
-                                                    {profile.profile.first_name} {profile.profile.last_name}
+                                                    {profile.first_name} {profile.last_name}
                                                 </div>
                                                 <button
                                                     onClick={async () => {

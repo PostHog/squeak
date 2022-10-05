@@ -7,11 +7,7 @@ import getActiveOrganization from '../../util/getActiveOrganization'
 
 const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
     include: {
-        profiles: {
-            include: {
-                profile: true,
-            },
-        },
+        profiles: true,
         Roadmap: {
             include: {
                 team: true,

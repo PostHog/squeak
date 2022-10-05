@@ -225,11 +225,7 @@ async function getQuestion(organizationId: string, permalink: string) {
                     first_name: true,
                     last_name: true,
                     avatar: true,
-                    profiles_readonly: {
-                        select: {
-                            role: true,
-                        },
-                    },
+                    role: true,
                 },
             },
         },
@@ -242,7 +238,7 @@ async function getQuestion(organizationId: string, permalink: string) {
         const replyWithMetadata: any = {
             ...reply,
             metadata: {
-                role: reply.profile?.profiles_readonly?.[0]?.role,
+                role: reply.profile?.role,
             },
         }
 
