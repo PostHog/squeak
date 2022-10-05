@@ -43,4 +43,4 @@ ALTER TABLE "squeak_profiles_readonly" DROP CONSTRAINT "profiles_readonly_profil
 ALTER TABLE "squeak_profiles_readonly" DROP CONSTRAINT "profiles_readonly_user_id_fkey";
 ALTER TABLE "squeak_profiles_readonly" DROP CONSTRAINT "squeak_profiles_readonly_teamId_fkey";
 
-DROP TABLE "squeak_profiles_readonly";
+DROP TABLE "squeak_profiles_readonly" CASCADE;
