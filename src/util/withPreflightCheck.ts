@@ -78,7 +78,7 @@ const withPreflightCheck = <P>(arg: Args<P>) => {
                         }
                     }
 
-                    const userReadonlyProfile = await prisma.profileReadonly.findFirst({
+                    const userReadonlyProfile = await prisma.profile.findFirst({
                         where: { user_id: user.id },
                         select: { role: true },
                     })

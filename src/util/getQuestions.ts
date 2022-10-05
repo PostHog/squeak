@@ -60,13 +60,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
             replies: {
                 orderBy: { created_at: 'asc' },
                 include: {
-                    profile: {
-                        include: {
-                            profiles_readonly: {
-                                where: { organization_id: organizationId },
-                            },
-                        },
-                    },
+                    profile: true,
                 },
             },
         },
@@ -92,9 +86,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
                 // if we're not showing slack user profiles, filter them out in reply profiles
                 if (!show_slack_user_profiles) {
                     replies = message.replies.map((reply) => {
-                        return reply.profile?.profiles_readonly?.[0]?.slack_user_id
-                            ? { ...reply, profile: null }
-                            : reply
+                        return reply.profile?.[0]?.slack_user_id ? { ...reply, profile: null } : reply
                     })
                 }
 
