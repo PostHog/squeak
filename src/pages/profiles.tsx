@@ -65,7 +65,7 @@ const Users: NextPageWithLayout<Props> = () => {
 
 Users.getLayout = function getLayout(page: ReactElement) {
     return (
-        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Profiles">
+        <AdminLayout title="Profiles">
             {page}
 
             <p className="pt-4">
