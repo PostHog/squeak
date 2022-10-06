@@ -71,11 +71,10 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
                 },
             },
             replies: {
-                select: {
+                include: {
                     profile: true,
                 },
                 orderBy: { created_at: 'asc' },
-                take: 1,
             },
         },
         orderBy: {

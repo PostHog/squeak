@@ -197,6 +197,7 @@ async function getQuestion(organizationId: string, permalink: string) {
             slug: true,
             created_at: true,
             published: true,
+            replies: true,
             slack_timestamp: true,
             resolved: true,
             resolved_reply_id: true,
