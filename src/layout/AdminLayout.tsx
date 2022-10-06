@@ -45,42 +45,56 @@ const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 <link rel="icon" href="/favicon.png" />
             </Head>
-            <div className="flex items-start" style={navStyle}>
-                {/* Static sidebar for desktop */}
-                <div className="sticky top-0 w-full grow-0 shrink-0 basis-[300px] md:mr-8">
-                    {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="pt-8 pb-4 overflow-y-auto">
-                        <Logo />
-                        <nav className="px-7 space-y-[1px]">
-                            {navigation.map((item) => (
-                                <Link key={item.name} href={item.href} passHref>
-                                    <a
-                                        className={classNames(
-                                            router.pathname === item.href
-                                                ? 'bg-gray-light bg-opacity-20 !text-red font-bold'
-                                                : 'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black',
-                                            'group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
-                                        )}
-                                    >
-                                        {item.name}
-                                    </a>
-                                </Link>
-                            ))}
-                            <button
-                                onClick={handleLogout}
-                                className={classNames(
-                                    'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black group rounded-md flex w-full items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
-                                )}
-                            >
-                                Logout
-                            </button>
-                        </nav>
+            <div>
+                <div className="fixed inset-y-0 flex w-64 flex-col">
+                    <div className="flex min-h-0 flex-1 flex-col">
+                        <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
+                            <div className="flex flex-shrink-0 items-center px-4">
+                                <div className="w-32">
+                                    <Logo />
+                                </div>
+                            </div>
+                            <nav className="mt-5 flex-1 space-y-1 px-2">
+                                {navigation.map((item) => (
+                                    <Link key={item.name} href={item.href} passHref>
+                                        <a
+                                            className={classNames(
+                                                router.pathname === item.href
+                                                    ? 'bg-gray-light bg-opacity-20 !text-red font-bold'
+                                                    : 'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black',
+                                                'group rounded-md flex items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                            )}
+                                        >
+                                            {item.name}
+                                        </a>
+                                    </Link>
+                                ))}
+                            </nav>
+                        </div>
+                        <div className="flex flex-shrink-0 p-4">
+                            <div className="flex items-center w-full">
+                                <button
+                                    onClick={handleLogout}
+                                    className={classNames(
+                                        'hover:text-gray-600 hover:bg-gray-light hover:bg-opacity-10 active:bg-opacity-20 hover:text-black group rounded-md flex w-full items-center px-4 py-3 text-sm font-medium text-black text-[17px]'
+                                    )}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <main style={contentStyle} className="flex flex-col flex-1 col-span-2 py-12 pr-4">
-                    {!hideTitle && <h1 className="pb-2">{title}</h1>}
-                    {children}
-                </main>
+                <div className="flex flex-1 flex-col md:pl-64">
+                    <main className="flex-1">
+                        <div className="py-6">
+                            <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+                                {!hideTitle && <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>}
+                            </div>
+                            <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">{children}</div>
+                        </div>
+                    </main>
+                </div>
             </div>
         </>
     )

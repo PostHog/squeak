@@ -1,4 +1,4 @@
-import { Prisma, Question, Reply } from '@prisma/client'
+import { Prisma, Profile, Question } from '@prisma/client'
 import { GetServerSidePropsContext, NextApiRequest } from 'next'
 import prisma from '../lib/db'
 
@@ -11,6 +11,7 @@ type Context =
 export interface GetQuestionsParams {
     organizationId: string
     published?: boolean
+    profileId?: string
     slug?: string
     start?: number
     perPage?: number
@@ -21,10 +22,12 @@ interface GetQuestionsPayload {
     data: {
         questions: {
             question: Question
-            replies: Reply[]
+            profile: Profile | null
+            numReplies: number
         }[]
         count: number
     }
+    totalCount: number
 }
 
 /**
@@ -37,8 +40,7 @@ interface GetQuestionsPayload {
  * @returns
  */
 const getQuestions = async (context: Context, params: GetQuestionsParams): Promise<GetQuestionsPayload> => {
-    const { organizationId, start = 0, perPage = 20, published, slug, topic } = params
-    // const end = start + (perPage - 1)
+    const { organizationId, start = 0, perPage = 20, published, slug, topic, profileId } = params
 
     const queryConditions: Prisma.QuestionWhereInput = {
         organization_id: organizationId,
@@ -46,6 +48,12 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
 
     if (published) queryConditions.published = published
     if (slug) queryConditions.slug = { has: slug }
+    if (profileId)
+        queryConditions.replies = {
+            some: {
+                profile_id: profileId,
+            },
+        }
     if (topic) {
         queryConditions.topics = {
             some: {
@@ -57,11 +65,17 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
     const messages = await prisma.question.findMany({
         where: queryConditions,
         include: {
+            _count: {
+                select: {
+                    replies: true,
+                },
+            },
             replies: {
-                orderBy: { created_at: 'asc' },
-                include: {
+                select: {
                     profile: true,
                 },
+                orderBy: { created_at: 'asc' },
+                take: 1,
             },
         },
         orderBy: {
@@ -71,29 +85,26 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
         take: perPage, // limit
     })
 
-    const config = await prisma.squeakConfig.findFirst({
-        where: { organization_id: organizationId },
-        select: { show_slack_user_profiles: true },
+    const totalCount = await prisma.question.count({
+        where: queryConditions,
     })
 
-    const show_slack_user_profiles = config?.show_slack_user_profiles
+    // const show_slack_user_profiles = config?.show_slack_user_profiles
 
     return {
         data: {
             questions: (messages || []).map((message) => {
-                let replies = message.replies || []
+                const profile = message.replies?.[0]?.profile
 
-                // if we're not showing slack user profiles, filter them out in reply profiles
-                if (!show_slack_user_profiles) {
-                    replies = message.replies.map((reply) => {
-                        return reply.profile?.[0]?.slack_user_id ? { ...reply, profile: null } : reply
-                    })
+                return {
+                    question: message,
+                    profile,
+                    numReplies: message._count.replies,
                 }
-
-                return { question: message, replies }
             }),
             count: messages.length ?? 0,
         },
+        totalCount,
     }
 }
 
