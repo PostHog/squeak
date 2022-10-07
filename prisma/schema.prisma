@@ -83,16 +83,18 @@ model Reply {
   id                                                                BigInt          @id @default(autoincrement())
   created_at                                                        DateTime        @default(now()) @db.Timestamptz(6)
   body                                                              String?
-  message_id                                                        BigInt
   organization_id                                                   String          @db.Uuid
   published                                                         Boolean         @default(false)
-  squeak_messages_squeak_messagesTosqueak_replies_message_id        Question        @relation("squeak_messagesTosqueak_replies_message_id", fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_message_id_fkey")
   squeak_organizations                                              Organization    @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_organizations_id_fkey")
 
   profile                                                           Profile?        @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_profile_id_fkey")
   profile_id                                                        String?         @db.Uuid
 
+  message_id                                                        BigInt
+  squeak_messages_squeak_messagesTosqueak_replies_message_id        Question        @relation("squeak_messagesTosqueak_replies_message_id", fields: [message_id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "replies_message_id_fkey")
+
   squeak_messages_squeak_messages_resolved_reply_idTosqueak_replies Question[]      @relation("squeak_messages_resolved_reply_idTosqueak_replies")
+
   squeak_replies_feedback                                           ReplyFeedback[]
 
   @@map("squeak_replies")
