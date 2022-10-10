@@ -70,7 +70,6 @@ model Organization {
   profiles                 Profile[]
 
   squeak_replies           Reply[]
-  squeak_replies_feedback  ReplyFeedback[]
   squeak_topics            Topic[]
   squeak_webhook_config    WebhookConfig[]
 
@@ -95,24 +94,7 @@ model Reply {
 
   squeak_messages_squeak_messages_resolved_reply_idTosqueak_replies Question[]      @relation("squeak_messages_resolved_reply_idTosqueak_replies")
 
-  squeak_replies_feedback                                           ReplyFeedback[]
-
   @@map("squeak_replies")
-}
-
-model ReplyFeedback {
-  id                   BigInt       @id @default(autoincrement())
-  reply_id             BigInt
-  type                 String
-  organization_id      String       @db.Uuid
-  profile_id           String       @db.Uuid
-  created_at           DateTime     @default(now()) @db.Timestamptz(6)
-  squeak_organizations Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_organization_id_fkey")
-  squeak_profiles      Profile      @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_profile_id_fkey")
-  squeak_replies       Reply        @relation(fields: [reply_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "replies_feedback_reply_id_fkey")
-
-  @@index([type], map: "squeak_profiles_feedback_type_idx")
-  @@map("squeak_replies_feedback")
 }
 
 model QuestionTopic {
@@ -231,7 +213,6 @@ model Profile {
   team_id                 BigInt?
 
   replies                 Reply[]
-  replies_feedback        ReplyFeedback[]
 
   created_at              DateTime          @default(now()) @db.Timestamptz(6)
 
