@@ -6,21 +6,13 @@ import * as Sentry from '@sentry/nextjs'
 
 import { NextApiRequestCookies } from 'next/dist/server/api-utils'
 
-// export interface RequestWithCookies {
-//     cookies: NextApiRequestCookies
-// }
-
 export type RequestWithCookies =
     | (NextApiRequest & { cookies: NextApiRequestCookies })
     | (IncomingMessage & { cookies: NextApiRequestCookies })
 
 import prisma from '../db'
 
-// import { User } from '@prisma/client'
 import { MAX_AGE, setTokenCookie, getTokenCookie } from './cookies'
-import { JWT_SECRET } from './jwt'
-
-const TOKEN_SECRET = JWT_SECRET
 
 export interface SessionData {
     user_id: string
@@ -29,12 +21,16 @@ export interface SessionData {
 }
 
 export async function setLoginSession(res: NextApiResponse, userId: string) {
+    if (!process.env.JWT_SECRET) {
+        throw 'No JWT_SECRET found in environment'
+    }
+
     const createdAt = Date.now()
 
     // Create a session object with a max age that we can validate later
     const obj = { user_id: userId, createdAt, maxAge: MAX_AGE }
     try {
-        const token = await Iron.seal(obj, TOKEN_SECRET, Iron.defaults)
+        const token = await Iron.seal(obj, process.env.JWT_SECRET, Iron.defaults)
 
         setTokenCookie(res, token)
     } catch (err) {
@@ -44,12 +40,16 @@ export async function setLoginSession(res: NextApiResponse, userId: string) {
 }
 
 export async function getLoginSession(req: RequestWithCookies): Promise<SessionData | undefined> {
+    if (!process.env.JWT_SECRET) {
+        throw 'No JWT_SECRET found in environment'
+    }
+
     const token = getTokenCookie(req)
 
     if (!token) return
 
     try {
-        const session: SessionData = await Iron.unseal(token, TOKEN_SECRET, Iron.defaults)
+        const session: SessionData = await Iron.unseal(token, process.env.JWT_SECRET, Iron.defaults)
         const expiresAt = session.createdAt + session.maxAge * 1000
         // Validate the expiration date of the session
         if (Date.now() > expiresAt) {
