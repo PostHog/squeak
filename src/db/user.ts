@@ -48,7 +48,6 @@ export async function createUser(email: string, password: string, role: UserRole
         data: {
             email: email.toLowerCase(),
             encrypted_password: encryptedPassword,
-            role,
             id: randomUUID(),
             confirmation_token: randomUUID(),
             confirmation_sent_at: new Date(),
