@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik'
 import { GetStaticPropsResult } from 'next'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
@@ -10,7 +10,7 @@ import TeamTable from '../components/TeamTable'
 import AdminLayout from '../layout/AdminLayout'
 import { ApiResponseError } from '../lib/api'
 import { createTeam, getTeams } from '../lib/api/teams'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import { GetTeamResponse } from './api/teams'
 
 interface Props {}
@@ -46,7 +46,7 @@ const Teams: NextPageWithLayout<Props> = () => {
     }, [fetchTeams])
 
     return (
-        <>
+        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Teams" hideTitle>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <Formik
                     initialValues={{ name: '' }}
@@ -80,19 +80,11 @@ const Teams: NextPageWithLayout<Props> = () => {
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <TeamTable onUpdate={() => fetchTeams()} teams={teams} />
             </div>
-        </>
-    )
-}
-
-Teams.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <AdminLayout contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Teams" hideTitle>
-            {page}
         </AdminLayout>
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         return {

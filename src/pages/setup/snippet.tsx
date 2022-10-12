@@ -6,7 +6,6 @@ import Button from '../../components/Button'
 import CodeSnippet from '../../components/CodeSnippet'
 import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import prisma from '../../lib/db'
 
 interface Props {}
@@ -47,11 +46,7 @@ export const getServerSideProps = withPreflightCheck({
     authCheck: true,
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        const organizationId = getActiveOrganization(context)
-
-        const config = await prisma.squeakConfig.findFirst({
-            where: { organization_id: organizationId },
-        })
+        const config = await prisma.squeakConfig.findFirst()
 
         if (!config) {
             throw new Error("Can't find Squeak config")

@@ -1,22 +1,12 @@
-import { CheckCircleIcon } from '@heroicons/react/outline'
-import { Question, Profile, Reply, Prisma } from '@prisma/client'
-import groupBy from 'lodash.groupby'
 import Link from 'next/link'
-import ReactMarkdown from 'react-markdown'
 
 import type { NextPageWithLayout } from '../@types/types'
-import Avatar from '../components/Avatar'
-import Button from '../components/Button'
 import Surface from '../components/Surface'
 import AdminLayout from '../layout/AdminLayout'
-import prisma from '../lib/db'
 import { useRouter } from 'next/router'
-import getActiveOrganization from '../util/getActiveOrganization'
 import getQuestions from '../util/getQuestions'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import QuestionsTable, { QuestionTableRow } from '../components/QuestionsTable'
-
-type ReplyWithProfile = Pick<Reply, 'body'> & { profile: Pick<Profile, 'first_name' | 'last_name' | 'avatar'> }
 
 interface Props {
     results: {
@@ -74,28 +64,24 @@ const Questions: NextPageWithLayout<Props> = ({ results, start, totalCount }) =>
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps<Props>({
     redirectTo: () => '/login',
-    async getServerSideProps(context) {
-        const organizationId = getActiveOrganization(context)
+    async getServerSideProps(context, user) {
         const start = context.query?.start ? parseInt(context.query?.start as string) : 0
         const profileId = context.query?.profile_id as string
 
-        try {
-            const { data, totalCount } = await getQuestions(context, { start, organizationId, profileId })
+        const { data, totalCount } = await getQuestions(context, {
+            start,
+            organizationId: user.organizationId,
+            profileId,
+        })
 
-            return {
-                props: {
-                    results: data,
-                    start,
-                    totalCount,
-                },
-            }
-        } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError) {
-                return { props: { error: error.message } }
-            }
-            return { props: { error } }
+        return {
+            props: {
+                results: data,
+                start,
+                totalCount,
+            },
         }
     },
 })

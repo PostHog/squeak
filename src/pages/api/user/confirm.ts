@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { confirmUser, findUserByConfirmationToken } from '../../../db'
 import { methodNotAllowed } from '../../../lib/api/apiUtils'
-import { setLoginSession } from '../../../lib/auth'
+// import { setLoginSession } from '../../../lib/auth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
@@ -25,7 +25,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
 
     await confirmUser(user)
-    await setLoginSession(res, user.id)
+    // await setLoginSession(res, user.id)
 
     res.redirect(redirect as string)
 }

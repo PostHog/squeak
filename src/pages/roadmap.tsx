@@ -5,7 +5,7 @@ import RoadmapTable from 'src/components/RoadmapTable'
 import { createRoadmap, getRoadmaps } from 'src/lib/api/roadmap'
 import { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import { GetRoadmapResponse } from './api/roadmap'
 import { RoadmapForm } from './team/[id]'
 
@@ -71,7 +71,7 @@ Roadmaps.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
     async getServerSideProps() {
         return {

@@ -3,7 +3,6 @@ import nc from 'next-connect'
 
 import { removeTokenCookie } from '../../lib/auth/cookies'
 import { corsMiddleware } from '../../lib/middleware'
-import { clearOrganization } from '../../util/getActiveOrganization'
 
 const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).post(doLogout).get(doLogout)
 
@@ -11,7 +10,6 @@ const handler = nc<NextApiRequest, NextApiResponse>().use(corsMiddleware).post(d
 async function doLogout(_: NextApiRequest, res: NextApiResponse) {
     try {
         removeTokenCookie(res)
-        clearOrganization(res)
 
         res.status(200).send({ success: true })
     } catch (error) {

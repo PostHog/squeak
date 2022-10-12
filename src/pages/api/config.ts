@@ -5,7 +5,6 @@ import nc from 'next-connect'
 
 import prisma from '../../lib/db'
 import { corsMiddleware, allowedOrigin } from '../../lib/middleware'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import { getUserRole } from '../../db'
 import { getSessionUser } from '../../lib/auth'
 
@@ -82,16 +81,19 @@ export type UpdateConfigPayload = Pick<
 
 // PATCH /api/config
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = await getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
-
     if (!(await requireOrgAdmin(req, res))) return
+
+    const user = await getSessionUser(req)
+
+    if (!user) {
+        throw 'User could not be found'
+    }
 
     const body: UpdateConfigPayload = req.body
 
     // find config object id
     let config = await prisma.squeakConfig.findFirst({
-        where: { organization_id: organizationId },
+        where: { organization_id: user.organizationId },
     })
 
     if (!config) return res.status(500).json({ error: 'No config found' })

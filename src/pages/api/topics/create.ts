@@ -1,9 +1,9 @@
 import { Topic } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getSessionUser } from 'src/lib/auth'
 
 import { methodNotAllowed, orgIdNotFound, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
@@ -15,10 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 // POST /api/topics/create
-// Retrieves a list of topics for the org
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const user = await getSessionUser(req)
+    if (!user) return orgIdNotFound(res)
 
     const body = req.body
     const topicGroupId = body.topicGroupId && parseInt(body.topicGroupId)
@@ -26,9 +25,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const topic: Topic = await prisma.topic.create({
         data: {
             label: body.label,
+            topic_group_id: topicGroupId,
             organization: {
                 connect: {
-                    id: organizationId,
+                    id: user.organizationId,
                 },
             },
         },

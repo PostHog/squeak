@@ -18,8 +18,7 @@ import WebhookTable from '../components/WebhookTable'
 import AdminLayout from '../layout/AdminLayout'
 import { updateSqueakConfig } from '../lib/api'
 import prisma from '../lib/db'
-import getActiveOrganization from '../util/getActiveOrganization'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 
 interface Props {
     mailgunApiKey: string
@@ -217,11 +216,9 @@ Settings.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
-    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        const organizationId = getActiveOrganization(context)
-
+    async getServerSideProps(context, user): Promise<GetStaticPropsResult<Props>> {
         const config = await prisma.squeakConfig.findFirst({
             select: {
                 mailgun_api_key: true,
@@ -238,7 +235,7 @@ export const getServerSideProps = withAdminAccess({
                 permalink_base: true,
                 permalinks_enabled: true,
             },
-            where: { organization_id: organizationId },
+            where: { organization_id: user.organizationId },
         })
 
         // TODO(JS): Handle errors here? I.e if config doesn't exist at all

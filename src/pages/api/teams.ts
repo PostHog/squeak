@@ -1,9 +1,9 @@
 import { Prisma, Team } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getSessionUser } from 'src/lib/auth'
 
 import { methodNotAllowed, orgIdNotFound, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
-import getActiveOrganization from '../../util/getActiveOrganization'
 
 const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
     include: {
@@ -30,14 +30,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const body = req.body
 
     const topicGroup: Team = await prisma.team.create({
         data: {
-            organization_id: organizationId,
+            organization_id: user.organizationId,
             name: body.name,
         },
     })
@@ -46,8 +47,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = req.body.organizationId || req.query.organizationId || getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
+
+    const organizationId = req.body.organizationId || user.organizationId
 
     const teams: Team[] = await prisma.team.findMany({
         where: {

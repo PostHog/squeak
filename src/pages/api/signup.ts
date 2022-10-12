@@ -1,6 +1,7 @@
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import { createUser, UserRoles } from '../../db'
 import { setLoginSession } from '../../lib/auth'
+import prisma from 'src/lib/db'
 
 interface SignupRequestPayload {
     email: string
@@ -22,7 +23,7 @@ export default withMultiTenantCheck(async (req, res) => {
             return
         }
 
-        const user = await createUser(email, password, UserRoles.admin)
+        const user = await createUser(email, password)
 
         if (!user) {
             console.error(`[🧵 Signup] Error creating user`)
@@ -32,7 +33,39 @@ export default withMultiTenantCheck(async (req, res) => {
             return
         }
 
-        await setLoginSession(res, user.id)
+        const organization = await prisma.organization.create({
+            data: {
+                profiles: {
+                    create: {
+                        role: UserRoles.admin,
+                        user: {
+                            connect: {
+                                id: user.id,
+                            },
+                        },
+                    },
+                },
+            },
+            include: {
+                profiles: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        })
+
+        if (!organization) {
+            console.error(`[🧵 Signup] Error creating organization`)
+
+            res.status(400).json({ error: 'Error creating organization' })
+
+            return
+        }
+
+        const [profile] = organization.profiles
+
+        await setLoginSession(res, user.id, organization.id, profile.id)
 
         res.status(201).json({ userId: user.id })
     } catch (error) {

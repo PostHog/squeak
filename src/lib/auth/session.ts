@@ -16,11 +16,13 @@ import { MAX_AGE, setTokenCookie, getTokenCookie } from './cookies'
 
 export interface SessionData {
     user_id: string
+    org_id: string
+    profile_id: string
     createdAt: number
     maxAge: number
 }
 
-export async function setLoginSession(res: NextApiResponse, userId: string) {
+export async function setLoginSession(res: NextApiResponse, userId: string, orgId: string, profileId: string) {
     if (!process.env.JWT_SECRET) {
         throw 'No JWT_SECRET found in environment'
     }
@@ -28,14 +30,21 @@ export async function setLoginSession(res: NextApiResponse, userId: string) {
     const createdAt = Date.now()
 
     // Create a session object with a max age that we can validate later
-    const obj = { user_id: userId, createdAt, maxAge: MAX_AGE }
+    const obj: SessionData = {
+        user_id: userId,
+        org_id: orgId,
+        profile_id: profileId,
+        createdAt,
+        maxAge: MAX_AGE,
+    }
+
     try {
         const token = await Iron.seal(obj, process.env.JWT_SECRET, Iron.defaults)
 
         setTokenCookie(res, token)
     } catch (err) {
+        console.error(err)
         Sentry.captureException(err)
-        return
     }
 }
 
@@ -51,7 +60,6 @@ export async function getLoginSession(req: RequestWithCookies): Promise<SessionD
     try {
         const session: SessionData = await Iron.unseal(token, process.env.JWT_SECRET, Iron.defaults)
         const expiresAt = session.createdAt + session.maxAge * 1000
-        // Validate the expiration date of the session
         if (Date.now() > expiresAt) {
             throw new Error('Session expired')
         }
@@ -63,11 +71,11 @@ export async function getLoginSession(req: RequestWithCookies): Promise<SessionD
     }
 }
 
-export type SafeUser = Pick<User, 'id' | 'email' | 'role'>
+export type SafeUser = Pick<User, 'id' | 'email'> & { organizationId: string; profileId: string }
 
 export async function getSessionUser(req: RequestWithCookies): Promise<SafeUser | null> {
     const session = await getLoginSession(req)
-    if (!session) return null
+    if (!session || !session?.org_id) return null
 
     const user = await prisma.user.findUnique({
         where: { id: session.user_id },
@@ -75,8 +83,24 @@ export async function getSessionUser(req: RequestWithCookies): Promise<SafeUser 
         select: {
             id: true,
             email: true,
-            role: true,
         },
     })
-    return user
+
+    if (!user) {
+        return null
+    }
+
+    const profile = await prisma.profile.findFirst({
+        where: { organization_id: session.org_id, user_id: user.id },
+    })
+
+    if (!profile) {
+        return null
+    }
+
+    return {
+        ...user,
+        organizationId: session.org_id,
+        profileId: profile.id,
+    }
 }

@@ -1,9 +1,9 @@
 import { TopicGroup, Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getSessionUser } from 'src/lib/auth'
 
 import { methodNotAllowed, orgIdNotFound, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
-import getActiveOrganization from '../../util/getActiveOrganization'
 
 interface CreateTopicGroupRequestBody {
     label: string
@@ -27,15 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const body: CreateTopicGroupRequestBody = req.body
 
     const topicGroup: TopicGroup = await prisma.topicGroup.create({
         data: {
             label: body.label,
-            organization_id: organizationId,
+            organization_id: user.organizationId,
         },
     })
 
@@ -43,8 +44,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = req.body.organizationId || req.query.organizationId || getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const organizationId = req.body.organizationId || req.query.organizationId
 
     const topicGroups: TopicGroup[] = await prisma.topicGroup.findMany({
         where: {

@@ -8,7 +8,7 @@ import InviteUser from '../components/InviteUser'
 import ProfileTable from '../components/ProfileTable'
 import AdminLayout from '../layout/AdminLayout'
 import { getProfiles, ApiResponseError, getTeams } from '../lib/api'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import { GetProfilesResponse } from './api/profiles'
 
 interface Props {}
@@ -77,7 +77,7 @@ Users.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
     async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         return {

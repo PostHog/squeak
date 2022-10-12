@@ -1,12 +1,11 @@
 import AdminLayout from '../../layout/AdminLayout'
-import withAdminAccess from '../../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../../util/withAdminAccess'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import { useEffect, useState } from 'react'
 import { Field, Form, Formik } from 'formik'
 import Input from '../../components/Input'
 import { createRoadmap } from '../../lib/api/roadmap'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import RoadmapTable from '../../components/RoadmapTable'
 import { getProfiles, getTeam, updateProfile } from '../../lib/api'
 import { XIcon } from '@heroicons/react/solid'
@@ -254,7 +253,7 @@ const Team = ({ id }) => {
 
     return (
         team && (
-            <>
+            <AdminLayout title={''} hideTitle>
                 <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
                     <RoadmapForm
                         handleDelete={null}
@@ -326,26 +325,18 @@ const Team = ({ id }) => {
                         </div>
                     </aside>
                 </div>
-            </>
+            </AdminLayout>
         )
     )
 }
 
-Team.getLayout = function getLayout(page) {
-    return (
-        <AdminLayout title={''} hideTitle>
-            {page}
-        </AdminLayout>
-    )
-}
-
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: (url) => `/login?redirect=${url}`,
-    async getServerSideProps(context) {
-        const organizationId = getActiveOrganization(context)
+    async getServerSideProps(context, user) {
         const { id } = context.query
+
         return {
-            props: { organizationId, id },
+            props: { organizationId: user.organizationId, id },
         }
     },
 })

@@ -8,7 +8,6 @@ import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import SlackForm from '../../components/SlackForm'
 import SlackManifestSnippet from '../../components/SlackManifestSnippet'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import prisma from '../../lib/db'
 
 interface Props {
@@ -63,11 +62,8 @@ export const getServerSideProps = withPreflightCheck({
     redirectTo: '/',
     authCheck: true,
     authRedirectTo: '/setup/administration',
-    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        const organizationId = getActiveOrganization(context)
-
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         const config = await prisma.squeakConfig.findFirst({
-            where: { organization_id: organizationId },
             select: {
                 slack_api_key: true,
                 slack_question_channel: true,

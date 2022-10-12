@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import superjson from 'superjson'
 
-import getActiveOrganization from '../../util/getActiveOrganization'
 import { getReadonlyProfileForUser } from '../../db'
 import { getSessionUser, SafeUser } from '../auth'
 
@@ -56,18 +55,13 @@ export function objectNotFound(res: NextApiResponse): void {
 // Determines whether the current user is an admin of the "current" organization, which is determined by the organization ID stored in the cookie
 export async function isAdmin(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
     const user = await getSessionUser(req)
-    const organizationId = getActiveOrganization({ req })
 
     if (!user) {
         notAuthenticated(res)
         return false
     }
 
-    if (!user || !organizationId) {
-        return false
-    }
-
-    const readonlyProfile = await getReadonlyProfileForUser(user.id, organizationId)
+    const readonlyProfile = await getReadonlyProfileForUser(user.id, user.organizationId)
     if (!readonlyProfile) return false
 
     return readonlyProfile.role === 'admin'

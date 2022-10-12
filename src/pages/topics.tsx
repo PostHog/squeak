@@ -2,8 +2,7 @@ import { TopicGroup } from '@prisma/client'
 import type { NextPageWithLayout } from '../@types/types'
 import Button from '../components/Button'
 import AdminLayout from '../layout/AdminLayout'
-import getActiveOrganization from '../util/getActiveOrganization'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import Modal from '../components/Modal'
 import { useEffect, useState } from 'react'
 import { Form, Formik } from 'formik'
@@ -213,20 +212,18 @@ const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) =>
 }
 
 const Topics: NextPageWithLayout<Props> = ({ organizationId }) => {
-    return <TopicsLayout organizationId={organizationId} />
+    return (
+        <AdminLayout title={'Topics'}>
+            <TopicsLayout organizationId={organizationId} />
+        </AdminLayout>
+    )
 }
 
-Topics.getLayout = function getLayout(page) {
-    return <AdminLayout title={'Topics'}>{page}</AdminLayout>
-}
-
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
-    async getServerSideProps(context) {
-        const organizationId = await getActiveOrganization(context)
-
+    async getServerSideProps(_, user) {
         return {
-            props: { organizationId },
+            props: { organizationId: user.organizationId },
         }
     },
 })

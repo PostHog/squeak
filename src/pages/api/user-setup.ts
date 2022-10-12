@@ -3,12 +3,10 @@ import absoluteUrl from 'next-absolute-url'
 
 import prisma from '../../lib/db'
 // import withMultiTenantCheck from '../../util/withMultiTenantCheck'
-import createUserProfile from '../../util/createUserProfile'
 import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
-import { SqueakConfig } from '@prisma/client'
 
-import { getSessionUser, setOrgIdCookie } from '../../lib/auth'
+import { getSessionUser } from '../../lib/auth'
 import { sendUserConfirmation } from '../../lib/email'
 import { getConfirmationToken } from '../../db'
 
@@ -45,56 +43,46 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(400).json({ error: 'Missing required fields' })
         return
     }
-
-    // Create the organization
-    const organization = await prisma.organization.create({
-        data: { name: organizationName },
+    // Create the squeak_config entry for the organization
+    const organization = await prisma.organization.update({
+        where: {
+            id: user.organizationId,
+        },
+        data: {
+            name: organizationName,
+        },
     })
 
-    if (!organization) {
-        console.error(`[🧵 Signup] Error creating organization`)
-
-        res.status(500)
-
-        return
-    }
-
     // Create the squeak_config entry for the organization
-    const config: SqueakConfig = await prisma.squeakConfig.create({
+    const config = await prisma.squeakConfig.create({
         data: {
-            organization_id: organization.id,
-            preflight_complete: true,
+            organization_id: user.organizationId,
             company_domain: url,
             company_name: organizationName,
+            preflight_complete: true,
         },
     })
 
     if (!config) {
         console.error(`[🧵 Signup] Error creating config`)
-
         res.status(500)
-
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await createUserProfile({
-        first_name: firstName,
-        last_name: lastName,
-        user_id: user.id,
-        organization_id: organization.id,
-        role: 'admin',
+    const userProfile = await prisma.profile.update({
+        where: {
+            id: user.profileId,
+        },
+        data: {
+            first_name: firstName,
+            last_name: lastName,
+        },
     })
 
-    if (!userProfile || userProfileError) {
+    if (!userProfile) {
         console.error(`[🧵 Signup] Error creating user profile`)
 
         res.status(500)
-
-        if (userProfileError) {
-            console.error(`[🧵 Signup] ${userProfileError.message}`)
-
-            res.json({ error: userProfileError.message })
-        }
 
         return
     }
@@ -103,12 +91,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         userId: user.id,
         firstName,
         lastName,
-        organizationId: organization.id,
+        organizationId: user.organizationId,
         organizationName,
     }
 
     // Set the org cookie in the session
-    setOrgIdCookie(res, organization.id)
     res.status(200).json(response)
 
     const confirmationToken = await getConfirmationToken(user)

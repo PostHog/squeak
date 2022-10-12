@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
+import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
@@ -19,8 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
 
     const id = parseInt(req.query.id as string)
 
@@ -47,8 +44,6 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
 
     const id = parseInt(req.query.id as string)
 
@@ -66,8 +61,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
 async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+
     const id = parseInt(req.query.id as string)
 
     await prisma.team.delete({

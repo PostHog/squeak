@@ -3,9 +3,9 @@ import NextCors from 'nextjs-cors'
 
 import { requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import checkAllowedOrigins from '../../util/checkAllowedOrigins'
 import { Prisma } from '@prisma/client'
+import { getSessionUser } from 'src/lib/auth'
 
 const profilesReadOnlyWithTopics = Prisma.validator<Prisma.ProfileArgs>()({
     select: {
@@ -48,10 +48,15 @@ export type GetProfilesResponse = GetProfilesReadOnlyResponse
 // GET /api/profiles
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
+
+    const user = await getSessionUser(req)
+
+    if (!user) {
+        return
+    }
 
     const profiles = await prisma.profile.findMany({
-        where: { organization_id: organizationId },
+        where: { organization_id: user.organizationId },
         select: {
             id: true,
             role: true,

@@ -1,9 +1,9 @@
 import { Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getSessionUser } from 'src/lib/auth'
 
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 
 const roadmap = Prisma.validator<Prisma.RoadmapArgs>()({
     include: {
@@ -25,12 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const roadmap = await prisma.roadmap.findMany({
         where: {
-            organization_id: organizationId,
+            organization_id: user.organizationId,
         },
         include: {
             team: true,
@@ -45,8 +46,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const { teamId, date_completed, projected_completion_date, ...other } = req.body
 
@@ -54,7 +57,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         .create({
             data: {
                 ...other,
-                organization_id: organizationId,
+                organization_id: user.organizationId,
                 ...(teamId ? { teamId: parseInt(teamId) } : {}),
                 date_completed: date_completed ? new Date(date_completed) : null,
                 projected_completion_date: projected_completion_date ? new Date(projected_completion_date) : null,
