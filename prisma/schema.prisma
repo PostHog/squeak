@@ -182,6 +182,7 @@ model User {
   reauthentication_sent_at    DateTime?         @db.Timestamptz(6)
 
   profiles                    Profile[]
+  auth_providers              AuthProvider[]
 
   updated_at                  DateTime?         @db.Timestamptz(6)
   created_at                  DateTime?         @db.Timestamptz(6)
@@ -189,6 +190,28 @@ model User {
   @@index([instance_id], map: "users_instance_id_email_idx")
   @@index([instance_id])
   @@map("users")
+}
+
+model AuthProvider {
+  id                    String            @id @db.Uuid
+  oid                   String
+
+  provider              Provider
+  token                 String
+  scopes                String[]
+
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_id               String            @db.Uuid
+
+
+  created_at            DateTime          @default(now())
+
+  @@map("squeak_auth_providers")
+}
+
+
+enum Provider {
+  GITHUB
 }
 
 model Profile {
@@ -216,25 +239,6 @@ model Profile {
   created_at              DateTime          @default(now()) @db.Timestamptz(6)
 
   @@map("squeak_profiles")
-}
-
-model RefreshToken {
-  instance_id          String?        @db.Uuid
-  id                   BigInt         @id @default(autoincrement())
-  token                String?        @unique(map: "refresh_tokens_token_unique") @db.VarChar(255)
-  user_id              String?        @db.VarChar(255)
-  revoked              Boolean?
-  created_at           DateTime?      @db.Timestamptz(6)
-  updated_at           DateTime?      @db.Timestamptz(6)
-  parent               String?        @db.VarChar(255)
-  refresh_tokens       RefreshToken?  @relation("refresh_tokensTorefresh_tokens_parent", fields: [parent], references: [token], onDelete: NoAction, onUpdate: NoAction)
-  other_refresh_tokens RefreshToken[] @relation("refresh_tokensTorefresh_tokens_parent")
-
-  @@index([instance_id])
-  @@index([instance_id, user_id])
-  @@index([parent])
-  @@index([token])
-  @@map("refresh_tokens")
 }
 
 model Team {
