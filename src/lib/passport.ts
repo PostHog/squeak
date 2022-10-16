@@ -75,6 +75,19 @@ if (process.env.GITHUB_CLIENT_SECRET && process.env.GITHUB_CLIENT_ID) {
                                 scopes: ['user:email'],
                             },
                         },
+                        profiles: {
+                            create: {
+                                id: randomUUID(),
+                                first_name: 'Paul',
+                                last_name: 'Hultgren',
+                                role: 'admin',
+                                organization: {
+                                    create: {
+                                        id: randomUUID(),
+                                    },
+                                },
+                            },
+                        },
                     },
                     include: {
                         auth_providers: false,

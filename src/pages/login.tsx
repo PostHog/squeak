@@ -121,6 +121,14 @@ const Login: NextPageWithLayout<Props> = ({ user }) => {
                     Sign in
                 </button>
             </div>
+
+            <div className="flex flex-col items-center space-y-4">
+                <span>Or login with</span>
+
+                <a href="/api/auth/github" className="bg-black text-white font-bold w-full text-center py-2 rounded">
+                    GitHub
+                </a>
+            </div>
         </form>
     )
 }
