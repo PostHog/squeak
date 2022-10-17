@@ -6,11 +6,9 @@ import EditQuestion from '../../components/question/EditQuestion'
 import SlugTable from '../../components/question/SlugTable'
 import QuestionTopics from '../../components/QuestionTopics'
 import AdminLayout from '../../layout/AdminLayout'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import { getQuestion } from '../../db/question'
-import withAdminAccess from '../../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../../util/withAdminAccess'
 import { getConfig } from '../../db'
-import { getSessionUser } from '../../lib/auth'
 import prisma from 'src/lib/db'
 
 const SingleQuestion: any = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
@@ -69,17 +67,15 @@ Question.getLayout = function getLayout(page) {
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps<any>({
     redirectTo: (url) => `/login?redirect=${url}`,
-    async getServerSideProps(context) {
+    async getServerSideProps(context, user) {
         const { id } = context.query
-        const user = await getSessionUser(context.req)
 
         if (!id) {
             return { props: { error: 'We require a question ID to lookup the replies, none provided' } }
         }
 
-        const organizationId = getActiveOrganization(context)
         const question = await getQuestion(parseInt(id as string))
 
         const topics = await prisma.topic.findMany()
@@ -87,7 +83,7 @@ export const getServerSideProps = withAdminAccess({
         // We need to do this to properly serialize BigInt's
         const { json: safeQuestion } = superjson.serialize(question)
 
-        const { permalink_base } = (await getConfig(organizationId, {
+        const { permalink_base } = (await getConfig(user?.organizationId, {
             permalink_base: true,
         })) as any
 
@@ -96,7 +92,7 @@ export const getServerSideProps = withAdminAccess({
                 // @ts-ignore
                 question: { question: safeQuestion, replies: safeQuestion?.replies },
                 topics,
-                organizationId,
+                organizationId: user.organizationId,
                 permalinkBase: permalink_base || '',
                 user,
             },

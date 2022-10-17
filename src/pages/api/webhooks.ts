@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { getSessionUser } from 'src/lib/auth'
 import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
-import getActiveOrganization from '../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
@@ -24,10 +24,13 @@ export interface FetchWebhooksPayload {
 // GET /api/webhooks
 async function doGet(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
+
+    const user = await getSessionUser(req)
+
+    if (!user) return
 
     const webhooks: FetchWebhooksPayload[] = await prisma.webhookConfig.findMany({
-        where: { organization_id: organizationId },
+        where: { organization_id: user.organizationId },
         select: { id: true, url: true, type: true },
     })
     safeJson(res, webhooks)
@@ -38,10 +41,13 @@ export type CreateWebhookPayload = Pick<Prisma.WebhookConfigUncheckedCreateInput
 // POST /api/webhooks
 async function doPost(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
+
+    const user = await getSessionUser(req)
+
+    if (!user) return
 
     const data: CreateWebhookPayload & { organization_id: string } = req.body
-    data.organization_id = organizationId
+    data.organization_id = user.organizationId
 
     const webhook = await prisma.webhookConfig.create({ data })
 

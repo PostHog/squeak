@@ -7,7 +7,6 @@ import Button from '../../components/Button'
 import NotificationForm from '../../components/NotificationForm'
 import SetupLayout from '../../layout/SetupLayout'
 import prisma from '../../lib/db'
-import getActiveOrganization from '../../util/getActiveOrganization'
 import withPreflightCheck from '../../util/withPreflightCheck'
 
 interface Props {
@@ -71,10 +70,7 @@ export const getServerSideProps = withPreflightCheck({
     authCheck: true,
     authRedirectTo: '/setup/administration',
     async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
-        const organizationId = getActiveOrganization(context)
-
         const config = await prisma.squeakConfig.findFirst({
-            where: { organization_id: organizationId },
             select: {
                 mailgun_api_key: true,
                 mailgun_domain: true,

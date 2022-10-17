@@ -17,7 +17,6 @@ async function main() {
             id: randomUUID(),
             email: 'test@posthog.com',
             encrypted_password: encryptedPassword,
-            role: UserRoles.admin,
             confirmation_token: randomUUID(),
             confirmation_sent_at: new Date(),
         },

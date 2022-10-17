@@ -7,7 +7,7 @@ import prisma from '../lib/db'
 
 export enum UserRoles {
     admin = 'admin',
-    authenticated = 'authenticated',
+    user = 'user',
 }
 
 /**
@@ -41,14 +41,13 @@ export function getReadonlyProfileForUser(userId: string, organizationId: string
  * @param  {string} password
  * @returns Promise
  */
-export async function createUser(email: string, password: string, role: UserRoles): Promise<User> {
+export async function createUser(email: string, password: string): Promise<User> {
     const encryptedPassword = await hashPassword(password)
 
     return prisma.user.create({
         data: {
             email: email.toLowerCase(),
             encrypted_password: encryptedPassword,
-            role,
             id: randomUUID(),
             confirmation_token: randomUUID(),
             confirmation_sent_at: new Date(),
@@ -66,7 +65,6 @@ export async function inviteUser(email: string) {
         data: {
             email: email.toLowerCase(),
             encrypted_password: '',
-            role: 'authenticated',
             confirmation_token: randomUUID(),
             confirmation_sent_at: new Date(),
             id: randomUUID(),

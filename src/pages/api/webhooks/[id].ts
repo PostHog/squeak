@@ -1,10 +1,10 @@
 import { Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import { getSessionUser } from 'src/lib/auth'
 import { methodNotAllowed, objectNotFound, requireOrgAdmin } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await NextCors(req, res, {
@@ -35,13 +35,16 @@ export type UpdateWebhookPayload = Pick<Prisma.WebhookConfigUncheckedUpdateInput
 async function doPatch(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
 
-    const organizationId = getActiveOrganization({ req, res })
+    const user = await getSessionUser(req)
+
+    if (!user) return
+
     const id = parseInt(req.query.id as string)
 
     const data = req.body
 
     let webhook = await prisma.webhookConfig.findFirst({
-        where: { id, organization_id: organizationId },
+        where: { id, organization_id: user.organizationId },
         select: { id: true },
     })
 
@@ -58,12 +61,15 @@ async function doPatch(req: NextApiRequest, res: NextApiResponse) {
 // DELETE /api/webhooks/[id]
 async function doDelete(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
+
+    const user = await getSessionUser(req)
+
+    if (!user) return
 
     const id = parseInt(req.query.id as string)
 
     const webhook = await prisma.webhookConfig.findFirst({
-        where: { id, organization_id: organizationId },
+        where: { id, organization_id: user.organizationId },
         select: { id: true },
     })
 

@@ -12,7 +12,7 @@ import { useUser } from '../contexts/user'
 import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
 import { doGet, doPost } from '../lib/api'
-import withAdminAccess from '../util/withAdminAccess'
+import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import { Message as MessageResponse } from './api/slack/messages'
 
 interface SlackData {
@@ -327,7 +327,7 @@ Slack.getLayout = function getLayout(page: ReactElement) {
     )
 }
 
-export const getServerSideProps = withAdminAccess({
+export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
     async getServerSideProps() {
         return {

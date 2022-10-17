@@ -1,9 +1,9 @@
 import withPreflightCheck from '../../util/withPreflightCheck'
-import createUserProfile from '../../util/createUserProfile'
 import trackUserSignup from '../../util/posthog/trackUserSignup'
 import trackOrganizationSignup from '../../util/posthog/trackOrganizationSignup'
 import { getSessionUser } from '../../lib/auth'
 import prisma from '../../lib/db'
+import { UserRoles } from 'src/db'
 
 // This API route is for user setup in the self-hosted preflight.
 export default withPreflightCheck(async (req, res) => {
@@ -60,24 +60,20 @@ export default withPreflightCheck(async (req, res) => {
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await createUserProfile({
-        first_name: firstName,
-        last_name: lastName,
-        user_id: user.id,
-        organization_id: organization.id,
-        role: 'admin',
+    const userProfile = await prisma.profile.create({
+        data: {
+            first_name: firstName,
+            last_name: lastName,
+            user_id: user.id,
+            organization_id: organization.id,
+            role: UserRoles.admin,
+        },
     })
 
-    if (!userProfile || userProfileError) {
+    if (!userProfile) {
         console.error(`[🧵 Setup] Error creating user profile`)
 
         res.status(500)
-
-        if (userProfileError) {
-            console.error(`[🧵 Setup] ${userProfileError.message}`)
-
-            res.json({ error: userProfileError.message })
-        }
 
         return
     }

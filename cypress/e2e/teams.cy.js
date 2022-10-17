@@ -44,6 +44,7 @@ describe('Teams and Roadmaps', () => {
             cy.get('@dialog').get('button[type="submit"]').click()
 
             cy.wait('@refresh')
+            cy.wait(1000)
 
             cy.get('tr').contains(teamName).should('have.length', 1)
         })

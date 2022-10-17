@@ -100,8 +100,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="c"
@@ -111,8 +111,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="d"
@@ -122,8 +122,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="e"
@@ -133,8 +133,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="f"
@@ -144,8 +144,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="g"
@@ -155,8 +155,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <linearGradient
                                     id="h"
@@ -166,8 +166,8 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     y2="78.049"
                                     gradientUnits="userSpaceOnUse"
                                 >
-                                    <stop stop-color="#F54E00" />
-                                    <stop offset="1" stop-color="#DC6726" />
+                                    <stop stopColor="#F54E00" />
+                                    <stop offset="1" stopColor="#DC6726" />
                                 </linearGradient>
                                 <filter
                                     id="a"
@@ -176,9 +176,9 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                                     width="231.389"
                                     height="101.197"
                                     filterUnits="userSpaceOnUse"
-                                    color-interpolation-filters="sRGB"
+                                    colorInterpolationFilters="sRGB"
                                 >
-                                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                    <feFlood floodOpacity="0" result="BackgroundImageFix" />
                                     <feColorMatrix
                                         in="SourceAlpha"
                                         values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"

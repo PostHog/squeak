@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import { getSessionUser } from 'src/lib/auth'
 
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
-import getActiveOrganization from '../../../util/getActiveOrganization'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await NextCors(req, res, {
@@ -32,14 +32,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 // DELETE /api/topics/[id]
 async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
-    if (!(await requireOrgAdmin(req, res))) return
+
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const id = parseInt(req.query.id as string)
 
     await prisma.topic.deleteMany({
-        where: { id, organization_id: organizationId },
+        where: { id, organization_id: user.organizationId },
     })
 
     // if (error) {
@@ -53,13 +54,15 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
 
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
-    if (!organizationId) return orgIdNotFound(res)
+
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
 
     const { id, topicGroupId } = req.body
 
     await prisma.topic.updateMany({
-        where: { id: parseInt(id), organization_id: organizationId },
+        where: { id: parseInt(id), organization_id: user.organizationId },
         data: {
             topic_group_id: topicGroupId && parseInt(topicGroupId),
         },

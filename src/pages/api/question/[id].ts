@@ -6,7 +6,7 @@ import { updateQuestion } from '../../../db/question'
 import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import { validateBody } from '../../../lib/middleware'
 import nextConnect from 'next-connect'
-import getActiveOrganization from '../../../util/getActiveOrganization'
+import { getSessionUser } from 'src/lib/auth'
 
 export interface UpdateQuestionRequestPayload {
     subject?: string | null
@@ -67,13 +67,16 @@ async function doDeleteQuestion(req: NextApiRequest, res: NextApiResponse) {
 // PATCH /api/question/[id]
 export async function doUpdateQuestion(req: NextApiRequest, res: NextApiResponse) {
     if (!(await requireOrgAdmin(req, res))) return
-    const organizationId = getActiveOrganization({ req, res })
+
+    const user = await getSessionUser(req)
+
+    if (!user) return
 
     const id = parseInt(req.query.id as string)
 
     const params: UpdateQuestionRequestPayload = req.body
     try {
-        const question = await updateQuestion(id, organizationId, params)
+        const question = await updateQuestion(id, user.organizationId, params)
         safeJson(res, question)
     } catch (err) {
         if (err instanceof Error) {

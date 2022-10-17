@@ -1,17 +1,17 @@
-import withAdminAccess from '../../../util/withAdminAccess'
+import { withAdminApiHandler } from '../../../util/withAdminAccess'
 import absoluteUrl from 'next-absolute-url'
-import createUserProfile from '../../../util/createUserProfile'
 import trackUserSignup from '../../../util/posthog/trackUserSignup'
 import { sendUserInvite } from '../../../lib/email'
 import { findUserByEmail, inviteUser } from '../../../db'
+import prisma from 'src/lib/db'
 
-export default withAdminAccess(async (req, res) => {
-    const { organizationId, email, role = 'admin', firstName } = req.body
+export default withAdminApiHandler(async (req, res, user) => {
+    const { email, role = 'user', firstName } = req.body
 
     const { origin } = absoluteUrl(req)
 
-    const user = await findUserByEmail(email)
-    if (user) {
+    const existingUser = await findUserByEmail(email)
+    if (existingUser) {
         return res.status(400).json({ error: 'User with this email already exists' })
     }
 
@@ -24,22 +24,19 @@ export default withAdminAccess(async (req, res) => {
         return
     }
 
-    const { data: userProfile, error: userProfileError } = await createUserProfile({
-        first_name: firstName,
-        user_id: invitedUser.id,
-        organization_id: organizationId,
-        role,
+    const userProfile = await prisma.profile.create({
+        data: {
+            first_name: firstName,
+            user_id: invitedUser.id,
+            organization_id: user.organizationId,
+            role,
+        },
     })
 
-    if (!userProfile || userProfileError) {
+    if (!userProfile) {
         console.error(`[🧵 Invite] Error inviting user`)
 
         res.status(500)
-
-        if (userProfileError) {
-            console.error(`[🧵 Invite] ${userProfileError.message}`)
-            res.json({ error: userProfileError.message })
-        }
 
         return
     }
@@ -47,7 +44,7 @@ export default withAdminAccess(async (req, res) => {
     const redirectUrl = `${origin}/profile`
 
     const confirmationUrl = `${origin}/api/user/confirm?token=${invitedUser.confirmation_token}&redirect=${redirectUrl}`
-    await sendUserInvite(organizationId, invitedUser, confirmationUrl)
+    await sendUserInvite(user.organizationId, invitedUser, confirmationUrl)
 
     res.status(201).json({ success: true })
     trackUserSignup(invitedUser, { firstName, role })

@@ -1,19 +1,18 @@
 import passport from 'passport'
 import Local from 'passport-local'
-import { Strategy as JWTStrategy, ExtractJwt, VerifiedCallback } from 'passport-jwt'
+import OAuth2Strategy, { VerifyCallback } from 'passport-oauth2'
+import { Octokit } from 'octokit'
 
-import { JWT_SECRET } from './auth/jwt'
-import { verifyUserCredentials } from '../db'
+import { UserRoles, verifyUserCredentials } from '../db'
 import prisma from './db'
+import { randomUUID } from 'crypto'
+import { Provider } from '@prisma/client'
+import { OAuthState } from './auth'
 
-// This file defines the two strategies used by passport to authenticate users:
-// 1. LocalStrategy: Authenticates users using a username and password. This allows the user to sign in with
-//    email and password. This strategy is used by the login page and POST /api/login endpoint.
-// 2. JWTStrategy: Authenticates users using a JWT. This strategy is used by all other API endpoints.
-//
-// Note: We do not use traditional cookie sessions, only JWTs.
+if (!process.env.JWT_SECRET) {
+    throw 'No JWT_SECRET found in environment'
+}
 
-// 1. Configure the local strategy
 passport.use(
     new Local.Strategy({ usernameField: 'email', session: false }, async (email: string, password: string, done) => {
         const user = await verifyUserCredentials(email, password)
@@ -21,28 +20,138 @@ passport.use(
     })
 )
 
-// 2. Configure the JWT strategy
-passport.use(
-    new JWTStrategy(
-        {
-            secretOrKey: JWT_SECRET,
-            jwtFromRequest: ExtractJwt.fromBodyField('token'),
-            issuer: 'squeak.cloud',
-            audience: 'authenticated',
-            algorithms: ['HS256'],
-        },
-        async (jwtPayload: Record<string, string>, done: VerifiedCallback) => {
-            const user = await prisma.user.findUnique({
-                where: { id: jwtPayload.sub },
-            })
+if (process.env.GITHUB_CLIENT_SECRET && process.env.GITHUB_CLIENT_ID) {
+    passport.use(
+        'github',
+        new OAuth2Strategy(
+            {
+                authorizationURL: 'https://github.com/login/oauth/authorize',
+                tokenURL: 'https://github.com/login/oauth/access_token',
+                clientID: process.env.GITHUB_CLIENT_ID,
+                clientSecret: process.env.GITHUB_CLIENT_SECRET,
+                callbackURL: 'http://localhost:3000/api/auth/github/callback',
+                passReqToCallback: true,
+            },
+            async (req, accessToken, _refreshToken, _profile, cb: VerifyCallback) => {
+                try {
+                    const { action, redirect, organizationId } = JSON.parse(req.query.state) as OAuthState
 
-            if (!user) {
-                done(new Error(`Could not find user with ${jwtPayload.sub}`), false)
-            } else {
-                done(null, user)
+                    const octokit = new Octokit({
+                        auth: accessToken,
+                    })
+
+                    const profile = await octokit.request('GET /user')
+                    const emails = await octokit.request('GET /user/emails')
+
+                    const primaryEmail = emails.data.find((email) => email.primary)
+
+                    if (!primaryEmail) {
+                        cb(new Error('User does not have a primary email address'), undefined)
+                        return
+                    }
+
+                    const [user] = await prisma.$transaction([
+                        prisma.user.upsert({
+                            where: {
+                                email: primaryEmail.email,
+                            },
+                            create: {
+                                id: randomUUID(),
+                                email: primaryEmail.email,
+                                email_confirmed_at: new Date(),
+                                auth_providers: {
+                                    connectOrCreate: {
+                                        where: {
+                                            id_provider: {
+                                                id: profile.data.id.toString(),
+                                                provider: Provider.GITHUB,
+                                            },
+                                        },
+                                        create: {
+                                            id: profile.data.id.toString(),
+                                            provider: Provider.GITHUB,
+                                            token: accessToken,
+                                            scopes: ['user:email'],
+                                        },
+                                    },
+                                },
+                            },
+                            update: {
+                                auth_providers: {
+                                    connectOrCreate: {
+                                        where: {
+                                            id_provider: {
+                                                id: profile.data.id.toString(),
+                                                provider: Provider.GITHUB,
+                                            },
+                                        },
+                                        create: {
+                                            id: profile.data.id.toString(),
+                                            provider: Provider.GITHUB,
+                                            token: accessToken,
+                                            scopes: ['user:email'],
+                                        },
+                                    },
+                                },
+                            },
+                            include: {
+                                auth_providers: true,
+                                profiles: true,
+                            },
+                        }),
+                    ])
+
+                    if (organizationId) {
+                        await prisma.profile.upsert({
+                            where: {
+                                user_id_organization_id: {
+                                    organization_id: organizationId,
+                                    user_id: user.id,
+                                },
+                            },
+                            create: {
+                                user_id: user.id,
+                                organization_id: organizationId,
+                                role: UserRoles.user,
+                            },
+                            update: {},
+                        })
+
+                        cb(null, user)
+                    } else {
+                        if (action === 'login' && user.profiles.length === 0) {
+                            cb(null, undefined, {
+                                message:
+                                    "There isn't an account associated with that email. Try logging in first from the Q&A widget.",
+                            })
+                        } else if (action === 'signup') {
+                            const org = await prisma.organization.create({
+                                data: {
+                                    id: randomUUID(),
+                                    profiles: {
+                                        create: {
+                                            role: UserRoles.admin,
+                                            user_id: user.id,
+                                        },
+                                    },
+                                },
+                            })
+
+                            cb(null, user, { redirect })
+                        } else if (user) {
+                            console.log('test')
+                            cb(null, user, { redirect })
+                        } else {
+                            throw 'Unsupported action'
+                        }
+                    }
+                } catch (error) {
+                    console.error(error)
+                    // cb(new Error('Something went wrong'), undefined)
+                }
             }
-        }
+        )
     )
-)
+}
 
 export default passport

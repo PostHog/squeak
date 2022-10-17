@@ -1,5 +1,5 @@
 import prisma from '../lib/db'
-import createUserProfile from '../util/createUserProfile'
+import { UserRoles } from './user'
 
 export function getUserRole(organizationId: string, userId: string) {
     return prisma.profile.findFirst({
@@ -35,13 +35,15 @@ export async function findOrCreateProfileFromSlackUser(params: CreateProfilePara
     }
 
     // Create a new profile for the slack user
-    const { data: profile } = await createUserProfile({
-        first_name,
-        last_name,
-        avatar,
-        organization_id,
-        slack_user_id,
-        role: 'user',
+    const profile = await prisma.profile.create({
+        data: {
+            first_name,
+            last_name,
+            avatar,
+            organization_id,
+            slack_user_id,
+            role: UserRoles.user,
+        },
     })
 
     return profile?.id
