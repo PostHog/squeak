@@ -22,7 +22,7 @@ jobs:
                   DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
                   MULTI_TENANCY=true
-                  JWT_SECRET=TEST_JWT_SECRET
+                  JWT_SECRET=NtDi6p47sZoi8oBUevWLyTSvl4K9SPVX
                   NEXT_PUBLIC_OPT_OUT_TRACKING=true
                   API_DOMAIN=http://localhost:3000
                   EOT
