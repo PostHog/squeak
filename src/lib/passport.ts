@@ -29,7 +29,7 @@ if (process.env.GITHUB_CLIENT_SECRET && process.env.GITHUB_CLIENT_ID) {
                 tokenURL: 'https://github.com/login/oauth/access_token',
                 clientID: process.env.GITHUB_CLIENT_ID,
                 clientSecret: process.env.GITHUB_CLIENT_SECRET,
-                callbackURL: 'http://localhost:3000/api/auth/github/callback',
+                callbackURL: `${process.env.API_DOMAIN}/api/auth/github/callback`,
                 passReqToCallback: true,
             },
             async (req, accessToken, _refreshToken, _profile, cb: VerifyCallback) => {
