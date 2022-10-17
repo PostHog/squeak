@@ -1,4 +1,4 @@
-import { GetStaticPropsResult } from 'next'
+import { GetServerSideProps, GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
 import { ReactElement, useState } from 'react'
@@ -8,10 +8,11 @@ import LoginLayout from '../../layout/LoginLayout'
 import { createUser } from '../../lib/api/'
 
 interface Props {
+    message?: string
     isMultiTenancy: boolean
 }
 
-const Signup: NextPageWithLayout<Props> = () => {
+const Signup: NextPageWithLayout<Props> = ({ message }) => {
     const [error, setError] = useState<string | null>(null)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -91,9 +92,10 @@ Signup.getLayout = function getLayout(page: ReactElement<Props>) {
     )
 }
 
-export const getServerSideProps = (): GetStaticPropsResult<Props> => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     return {
         props: {
+            message: ctx.query.message as string | undefined,
             isMultiTenancy: process.env.MULTI_TENANCY ?? false,
         },
     }

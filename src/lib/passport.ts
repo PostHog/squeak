@@ -122,7 +122,7 @@ if (process.env.GITHUB_CLIENT_SECRET && process.env.GITHUB_CLIENT_ID) {
                         if (action === 'login' && user.profiles.length === 0) {
                             cb(null, undefined, {
                                 message:
-                                    "It looks like there isn't an account associated with that email. Try logging in from the Q&A widget instead or signing-up for a new account.",
+                                    "There isn't an account associated with that email. Try logging in first from the Q&A widget.",
                             })
                         } else if (action === 'signup') {
                             const org = await prisma.organization.create({

@@ -12,11 +12,12 @@ import { getSessionUser } from '../lib/auth'
 interface Props {
     isMultiTenancy: boolean
     user: User | null
+    message?: string
 }
 
-const Login: NextPageWithLayout<Props> = ({ user }) => {
+const Login: NextPageWithLayout<Props> = ({ user, message }) => {
     // FIXME: Remember me has no effect
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null | undefined>(message)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const router = useRouter()
@@ -185,6 +186,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext): Pr
 
     return {
         props: {
+            message: context.query.message as string | undefined,
             isMultiTenancy: process.env.MULTI_TENANCY ?? false,
             user,
         },

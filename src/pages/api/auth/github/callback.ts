@@ -27,9 +27,13 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
     .get((req, res, next) => {
         const handleAuth = async (err: Error | null | undefined, user: SafeUser | undefined, info: any) => {
             if (err) {
+                console.error(err)
+                res.redirect('/login')
+                return
             }
+
             if (!user) {
-                res.redirect('/signup')
+                res.redirect(`/login${info.message ? '?message=' + encodeURIComponent(info.message) : ''}`)
                 return
             }
 
