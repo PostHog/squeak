@@ -1,12 +1,13 @@
 import passport from 'passport'
 import Local from 'passport-local'
-import OAuth2Strategy from 'passport-oauth2'
+import OAuth2Strategy, { VerifyCallback } from 'passport-oauth2'
 import { Octokit } from 'octokit'
 
-import { verifyUserCredentials } from '../db'
+import { UserRoles, verifyUserCredentials } from '../db'
 import prisma from './db'
 import { randomUUID } from 'crypto'
 import { Provider } from '@prisma/client'
+import { OAuthState } from './auth'
 
 if (!process.env.JWT_SECRET) {
     throw 'No JWT_SECRET found in environment'
@@ -31,70 +32,123 @@ if (process.env.GITHUB_CLIENT_SECRET && process.env.GITHUB_CLIENT_ID) {
                 callbackURL: 'http://localhost:3000/api/auth/github/callback',
                 passReqToCallback: true,
             },
-            async (req, accessToken, _refreshToken, _, cb) => {
-                console.log(JSON.stringify(req.query))
-                console.log(req.query)
-                const octokit = new Octokit({
-                    auth: accessToken,
-                })
+            async (req, accessToken, _refreshToken, _profile, cb: VerifyCallback) => {
+                try {
+                    const { action, redirect, organizationId } = JSON.parse(req.query.state) as OAuthState
 
-                const profile = await octokit.request('GET /user', {})
-                const emails = await octokit.request('GET /user/emails')
+                    const octokit = new Octokit({
+                        auth: accessToken,
+                    })
 
-                const primaryEmail = emails.data.find((email) => email.primary)
+                    const profile = await octokit.request('GET /user')
+                    const emails = await octokit.request('GET /user/emails')
 
-                if (!primaryEmail) {
-                    cb('User does not have a primary email address', null)
-                    return
-                }
+                    const primaryEmail = emails.data.find((email) => email.primary)
 
-                let user = await prisma.user.upsert({
-                    where: {
-                        email: primaryEmail.email,
-                    },
-                    update: {
-                        auth_providers: {
-                            create: {
-                                id: randomUUID(),
-                                oid: profile.data.id.toString(),
-                                provider: Provider.GITHUB,
-                                token: accessToken,
-                                scopes: ['user:email'],
+                    if (!primaryEmail) {
+                        cb(new Error('User does not have a primary email address'), undefined)
+                        return
+                    }
+
+                    const [user] = await prisma.$transaction([
+                        prisma.user.upsert({
+                            where: {
+                                email: primaryEmail.email,
                             },
-                        },
-                    },
-                    create: {
-                        id: randomUUID(),
-                        email: primaryEmail.email,
-                        auth_providers: {
                             create: {
                                 id: randomUUID(),
-                                oid: profile.data.id.toString(),
-                                provider: Provider.GITHUB,
-                                token: accessToken,
-                                scopes: ['user:email'],
-                            },
-                        },
-                        profiles: {
-                            create: {
-                                id: randomUUID(),
-                                first_name: 'Paul',
-                                last_name: 'Hultgren',
-                                role: 'admin',
-                                organization: {
-                                    create: {
-                                        id: randomUUID(),
+                                email: primaryEmail.email,
+                                email_confirmed_at: new Date(),
+                                auth_providers: {
+                                    connectOrCreate: {
+                                        where: {
+                                            id_provider: {
+                                                id: profile.data.id.toString(),
+                                                provider: Provider.GITHUB,
+                                            },
+                                        },
+                                        create: {
+                                            id: profile.data.id.toString(),
+                                            provider: Provider.GITHUB,
+                                            token: accessToken,
+                                            scopes: ['user:email'],
+                                        },
                                     },
                                 },
                             },
-                        },
-                    },
-                    include: {
-                        auth_providers: false,
-                    },
-                })
+                            update: {
+                                auth_providers: {
+                                    connectOrCreate: {
+                                        where: {
+                                            id_provider: {
+                                                id: profile.data.id.toString(),
+                                                provider: Provider.GITHUB,
+                                            },
+                                        },
+                                        create: {
+                                            id: profile.data.id.toString(),
+                                            provider: Provider.GITHUB,
+                                            token: accessToken,
+                                            scopes: ['user:email'],
+                                        },
+                                    },
+                                },
+                            },
+                            include: {
+                                auth_providers: true,
+                                profiles: true,
+                            },
+                        }),
+                    ])
 
-                cb(null, user)
+                    if (organizationId) {
+                        await prisma.profile.upsert({
+                            where: {
+                                user_id_organization_id: {
+                                    organization_id: organizationId,
+                                    user_id: user.id,
+                                },
+                            },
+                            create: {
+                                user_id: user.id,
+                                organization_id: organizationId,
+                                role: UserRoles.user,
+                            },
+                            update: {},
+                        })
+
+                        cb(null, user)
+                    } else {
+                        if (action === 'login' && user.profiles.length === 0) {
+                            cb(null, undefined, {
+                                message:
+                                    "It looks like there isn't an account associated with that email. Try logging in from the Q&A widget instead or signing-up for a new account.",
+                            })
+                        } else if (action === 'signup') {
+                            const org = await prisma.organization.create({
+                                data: {
+                                    id: randomUUID(),
+                                    profiles: {
+                                        create: {
+                                            role: UserRoles.admin,
+                                            user_id: user.id,
+                                        },
+                                    },
+                                },
+                            })
+
+                            cb(null, user, { redirect })
+                        } else if (user) {
+                            console.log('test')
+                            cb(null, user, { redirect })
+                        } else {
+                            throw 'Unsupported action'
+                        }
+                    }
+                } catch (error) {
+                    console.error(error)
+                    // cb(new Error('Something went wrong'), undefined)
+                }
             }
         )
     )

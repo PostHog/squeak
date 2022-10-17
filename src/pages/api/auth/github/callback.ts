@@ -1,7 +1,8 @@
 import { User } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
-import { setLoginSession } from 'src/lib/auth'
+import { VerifyCallback } from 'passport-oauth2'
+import { SafeUser, setLoginSession } from 'src/lib/auth'
 import prisma from 'src/lib/db'
 
 import passport from 'src/lib/passport'
@@ -23,12 +24,17 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
         next()
     })
     .use(passport.initialize())
-    .get(
-        passport.authenticate('github', { failureRedirect: '/login', session: false, failWithError: true }),
-        async (req: NextApiRequest & { user: User }, res) => {
-            // Log the user into the first org they have access to
+    .get((req, res, next) => {
+        const handleAuth = async (err: Error | null | undefined, user: SafeUser | undefined, info: any) => {
+            if (err) {
+            }
+            if (!user) {
+                res.redirect('/signup')
+                return
+            }
+
             const profile = await prisma.profile.findFirst({
-                where: { user_id: req.user.id },
+                where: { user_id: user.id },
                 select: {
                     id: true,
                     organization_id: true,
@@ -40,10 +46,16 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
             const orgId = profile.organization_id
             const profileId = profile.id
 
-            await setLoginSession(res, req.user.id, orgId, profileId)
+            await setLoginSession(res, user.id, orgId, profileId)
 
-            return res.redirect('/')
+            return res.redirect(info.redirect || '/')
         }
-    )
+
+        passport.authenticate('github', { failureRedirect: '/login', session: false, failWithError: true }, handleAuth)(
+            req,
+            res,
+            next
+        )
+    })
 
 export default handler

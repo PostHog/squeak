@@ -185,27 +185,28 @@ model User {
   auth_providers              AuthProvider[]
 
   updated_at                  DateTime?         @db.Timestamptz(6)
-  created_at                  DateTime?         @db.Timestamptz(6)
+  created_at                  DateTime?         @default(now()) @db.Timestamptz(6)
 
   @@index([instance_id], map: "users_instance_id_email_idx")
   @@index([instance_id])
+  @@index([email])
+
   @@map("users")
 }
 
 model AuthProvider {
-  id                    String            @id @db.Uuid
-  oid                   String
-
+  id                    String
   provider              Provider
+
   token                 String
   scopes                String[]
 
   user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user_id               String            @db.Uuid
 
-
   created_at            DateTime          @default(now())
 
+  @@id([id, provider])
   @@map("squeak_auth_providers")
 }
 
@@ -238,6 +239,7 @@ model Profile {
 
   created_at              DateTime          @default(now()) @db.Timestamptz(6)
 
+  @@unique([user_id, organization_id])
   @@map("squeak_profiles")
 }
 

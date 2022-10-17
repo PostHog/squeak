@@ -48,6 +48,10 @@ const Signup: NextPageWithLayout<Props> = () => {
                         Already got an account? Sign in instead
                     </a>
                 </Link>
+
+                <Link href="/api/auth/github?action=signup&redirect=/signup/profile" passHref>
+                    <a className="font-medium text-accent-light hover:text-accent-light">Sign up with GitHub</a>
+                </Link>
             </div>
         </>
     )
