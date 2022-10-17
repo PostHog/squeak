@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const user = await getSessionUser(req)
+    const user = req.body.organizationId || req.query.organizationId || await getSessionUser(req)
 
     if (!user) return orgIdNotFound(res)
 
