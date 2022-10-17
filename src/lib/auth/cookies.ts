@@ -2,7 +2,7 @@ import { serialize, parse } from 'cookie'
 import { NextApiResponse } from 'next'
 import { RequestWithCookies } from './session'
 
-export const TOKEN_NAME = 'squeak_session'
+export const TOKEN_NAME = 'squeak@@session'
 
 export const MAX_AGE = 86400 * 30 // 30 days
 
