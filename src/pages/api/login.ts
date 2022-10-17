@@ -6,23 +6,10 @@ import passport from '../../lib/passport'
 import { setLoginSession } from '../../lib/auth/'
 import prisma from '../../lib/db'
 import { isSDKRequest } from '../../lib/api/apiUtils'
+import { nextCors } from 'src/lib/middleware'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({})
-    .use(async (req, res, next) => {
-        const controlHeaders = req.headers['access-control-request-headers'] || ''
-
-        res.setHeader('Access-Control-Allow-Headers', controlHeaders)
-        res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,POST,OPTIONS,PUT,PATCH,DELETE')
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
-        res.setHeader('Access-Control-Allow-Credentials', 'true')
-
-        if (req.method === 'OPTIONS') {
-            res.status(200)
-            res.end()
-        }
-
-        next()
-    })
+    .use(nextCors)
     .use(passport.initialize())
     .post(passport.authenticate('local', { session: false, failureMessage: false, failWithError: true }), handleLogin)
 
