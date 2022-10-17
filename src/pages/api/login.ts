@@ -6,10 +6,11 @@ import passport from '../../lib/passport'
 import { setLoginSession } from '../../lib/auth/'
 import prisma from '../../lib/db'
 import { isSDKRequest } from '../../lib/api/apiUtils'
-import { nextCors } from 'src/lib/middleware'
+import { allowedOrigin, corsMiddleware } from 'src/lib/middleware'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({})
-    .use(nextCors)
+    .use(corsMiddleware)
+    .use(allowedOrigin)
     .use(passport.initialize())
     .post(passport.authenticate('local', { session: false, failureMessage: false, failWithError: true }), handleLogin)
 
