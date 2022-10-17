@@ -53,7 +53,7 @@ const Signup: NextPageWithLayout<Props> = () => {
             <div className="flex flex-col items-center space-y-2 pt-6 border-t border-gray-400 border-dashed">
                 <span className="text-gray-600">Or signup with</span>
 
-                <Link href="/api/auth/github">
+                <Link href="/api/auth/github?action=signup&redirect=/signup/profile">
                     <a className="inline-flex items-center space-x-1 px-2 py-1 rounded hover:bg-orange-100">
                         <svg
                             viewBox="64 64 896 896"
