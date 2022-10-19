@@ -8,13 +8,15 @@ import SetupLayout from '../../layout/SetupLayout'
 import withPreflightCheck from '../../util/withPreflightCheck'
 import prisma from '../../lib/db'
 
-interface Props {}
+interface Props {
+    organizationId: string
+}
 
-const Snippet: NextPageWithLayout<Props> = () => {
+const Snippet: NextPageWithLayout<Props> = ({ organizationId }) => {
     return (
         <div>
             <main>
-                <CodeSnippet />
+                <CodeSnippet organizationId={organizationId} />
 
                 <hr className="mb-6" />
 
@@ -45,7 +47,7 @@ export const getServerSideProps = withPreflightCheck({
     redirectTo: '/',
     authCheck: true,
     authRedirectTo: '/setup/administration',
-    async getServerSideProps(context): Promise<GetStaticPropsResult<Props>> {
+    async getServerSideProps(): Promise<GetStaticPropsResult<Props>> {
         const config = await prisma.squeakConfig.findFirst()
 
         if (!config) {
@@ -58,7 +60,9 @@ export const getServerSideProps = withPreflightCheck({
         })
 
         return {
-            props: {},
+            props: {
+                organizationId: config.organization_id,
+            },
         }
     },
 })

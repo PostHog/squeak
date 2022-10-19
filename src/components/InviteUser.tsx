@@ -1,7 +1,6 @@
 import Button from './Button'
 import { useState } from 'react'
 import classNames from 'classnames'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import { useToasts } from 'react-toast-notifications'
 import { doPost } from '../lib/api'
 
@@ -10,9 +9,6 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, ...rest }) => {
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
-
     const { addToast } = useToasts()
 
     const [email, setEmail] = useState('')
@@ -23,7 +19,7 @@ const InviteUser: React.VoidFunctionComponent<Props> = ({ onInvite, className, .
     const handleInvite = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        await doPost('/api/user/invite', { email, firstName, role, organizationId })
+        await doPost('/api/user/invite', { email, firstName, role })
 
         if (onInvite) {
             onInvite()

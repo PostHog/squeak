@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 
 import Modal from '../Modal'
 import Button from '../Button'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { updateQuestion } from '../../lib/api'
 import { ApiResponseError } from '../../lib/api/client'
 
@@ -18,8 +17,6 @@ interface Props {
 
 const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClose, onSubmit, initialValues }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
 
     const updateToast = (message: string, appearance: 'success' | 'error') => {
         addToast(message, { appearance })
@@ -47,7 +44,7 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
 
             onSubmit()
         },
-        [addToast, initialValues?.slugs, onSubmit, organizationId, questionId]
+        [addToast, initialValues?.slugs, onSubmit, questionId]
     )
 
     const handleDelete = useCallback(
@@ -75,7 +72,7 @@ const SlugModal: React.VoidFunctionComponent<Props> = ({ questionId, open, onClo
 
             onSubmit()
         },
-        [addToast, initialValues, onSubmit, organizationId, questionId]
+        [addToast, initialValues, onSubmit, questionId]
     )
 
     return (

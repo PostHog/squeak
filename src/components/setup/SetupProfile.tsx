@@ -4,7 +4,6 @@ import posthog from 'posthog-js'
 import { User } from '@prisma/client'
 
 import ProfileForm from '../ProfileForm'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { setupProfile } from '../../lib/api/setup'
 
 interface Props {
@@ -12,8 +11,6 @@ interface Props {
 }
 
 const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
-    const { setActiveOrganization } = useActiveOrganization()
-
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [firstName, setFirstName] = useState('')
@@ -38,8 +35,6 @@ const SetupProfile: React.VoidFunctionComponent<Props> = ({ user }) => {
             if (!data) return
 
             const { userId, organizationId } = data
-
-            await setActiveOrganization(userId, organizationId)
 
             posthog.identify(userId)
             posthog.group('organization', `id:${organizationId}`)

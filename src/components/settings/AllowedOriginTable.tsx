@@ -1,23 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import AllowedOriginModal from './AllowedOriginModal'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { getConfig } from '../../lib/api'
 import { useUser } from '../../contexts/user'
 
-interface Props {}
+interface Props {
+    organizationId: string
+}
 
-const AllowedOriginTable: React.VoidFunctionComponent<Props> = () => {
+const AllowedOriginTable: React.VoidFunctionComponent<Props> = ({ organizationId }) => {
     const { isLoading: isUserLoading } = useUser()
     const [allowedOrigins, setAllowedOrigins] = useState<string[]>([])
     const [initialValues, setInitialValues] = useState<{ allowedOrigins: string[]; allowedOrigin: string } | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
 
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
-
     const getAllowedOrigins = useCallback(async () => {
         if (!isUserLoading) {
-            const { body: data } = await getConfig(getActiveOrganization())
+            const { body: data } = await getConfig(organizationId)
             setAllowedOrigins(data?.allowed_origins || [])
             setInitialValues({
                 allowedOrigins: data?.allowed_origins || [],

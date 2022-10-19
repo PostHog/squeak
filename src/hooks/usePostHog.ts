@@ -2,14 +2,11 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
-import useActiveOrganization from './useActiveOrganization'
 import { useUser } from '../contexts/user'
 
 const usePostHog = () => {
     const router = useRouter()
-    const { getActiveOrganization } = useActiveOrganization()
     const { user, isLoading: userLoading } = useUser()
-    const organizationId = getActiveOrganization()
 
     const capturePageView = () => posthog?.capture('$pageview')
 
@@ -26,9 +23,9 @@ const usePostHog = () => {
                         ph.identify(user.id)
                     }
 
-                    if (organizationId) {
+                    /*if (organizationId) {
                         ph.group('organization', `id:${organizationId}`)
-                    }
+                    }*/
 
                     capturePageView()
                 },

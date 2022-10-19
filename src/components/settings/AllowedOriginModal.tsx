@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 
 import Modal from '../Modal'
 import Button from '../Button'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { updateSqueakConfig } from '../../lib/api'
 import { ApiResponseError } from '../../lib/api/client'
 
@@ -17,8 +16,6 @@ interface Props {
 
 const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose, onSubmit, initialValues }) => {
     const { addToast } = useToasts()
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
 
     const doConfigUpdate = async (allowedOrigins: string[]) => {
         try {
@@ -48,7 +45,7 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
 
             onSubmit()
         },
-        [addToast, initialValues?.allowedOrigins, onSubmit, organizationId]
+        [addToast, initialValues?.allowedOrigins, onSubmit]
     )
 
     const handleDelete = useCallback(
@@ -71,7 +68,7 @@ const AllowedOriginModal: React.VoidFunctionComponent<Props> = ({ open, onClose,
 
             onSubmit()
         },
-        [addToast, initialValues, onSubmit, organizationId]
+        [addToast, initialValues, onSubmit]
     )
 
     return (
