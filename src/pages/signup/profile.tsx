@@ -5,7 +5,6 @@ import { useState } from 'react'
 
 import type { NextPageWithLayout } from '../../@types/types'
 import ProfileForm from '../../components/ProfileForm'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import LoginLayout from '../../layout/LoginLayout'
 import withMultiTenantCheck from '../../util/withMultiTenantCheck'
 import posthog from 'posthog-js'
@@ -15,8 +14,6 @@ import { setupUser } from '../../lib/api'
 interface Props {}
 
 const Profile: NextPageWithLayout<Props> = () => {
-    const { setActiveOrganization } = useActiveOrganization()
-
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [firstName, setFirstName] = useState('')
@@ -44,8 +41,6 @@ const Profile: NextPageWithLayout<Props> = () => {
                 posthog.identify(userId)
                 posthog.group('organization', `id:${organizationId}`)
             }
-
-            await setActiveOrganization(userId, organizationId)
 
             Router.push('/questions')
         } catch (error) {

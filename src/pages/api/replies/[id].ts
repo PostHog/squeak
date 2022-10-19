@@ -9,16 +9,14 @@ import { Reply } from '@prisma/client'
 
 export interface UpdateReplyPayload {
     published: boolean
-    organizationId: string
 }
 
 const schema: JSONSchemaType<UpdateReplyPayload> = {
     type: 'object',
     properties: {
-        organizationId: { type: 'string' },
         published: { type: 'boolean' },
     },
-    required: ['organizationId'],
+    required: [],
     additionalProperties: true,
 }
 
@@ -35,7 +33,7 @@ async function findReply(req: NextApiRequest, res: NextApiResponse): Promise<Rep
     const organizationId = req.body.organizationId
 
     const reply = await prisma.reply.findFirst({
-        where: { organization_id: organizationId, id },
+        where: { id },
     })
 
     if (!reply) {

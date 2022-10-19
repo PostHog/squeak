@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import SlugModal from './SlugModal'
 import Button from '../Button'
 import { getQuestion } from '../../lib/api'
@@ -17,9 +16,6 @@ const SlugTable: React.VoidFunctionComponent<Props> = ({ questionId }) => {
 
     const isUserLoading = status === 'loading'
 
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
-
     const getSlugsForQuestion = useCallback(async () => {
         if (!isUserLoading) {
             const { body: data } = await getQuestion(questionId, 'slug')
@@ -29,7 +25,7 @@ const SlugTable: React.VoidFunctionComponent<Props> = ({ questionId }) => {
                 slug: '',
             })
         }
-    }, [isUserLoading, organizationId, questionId])
+    }, [isUserLoading, questionId])
 
     const handleSubmit = () => {
         getSlugsForQuestion()

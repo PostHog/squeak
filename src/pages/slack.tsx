@@ -1,4 +1,5 @@
 import { SqueakConfig } from '@prisma/client'
+import { NextPage } from 'next'
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import tinytime from 'tinytime'
@@ -9,7 +10,6 @@ import SlackManifestSnippet from '../components/SlackManifestSnippet'
 import SlackTableSkeleton from '../components/SlackTableSkeleton'
 import Surface from '../components/Surface'
 import { useUser } from '../contexts/user'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 import AdminLayout from '../layout/AdminLayout'
 import { doGet, doPost } from '../lib/api'
 import { withAdminGetStaticProps } from '../util/withAdminAccess'
@@ -20,10 +20,11 @@ interface SlackData {
     slackQuestionChannel: string
 }
 
-const Slack = () => {
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
+type Props = {
+    organizationId: string
+}
 
+const Slack: NextPage<Props> = ({ organizationId }) => {
     const checkbox = useRef<HTMLInputElement>(null)
 
     const [questions, setQuestions] = useState<Array<MessageResponse>>([])
@@ -140,7 +141,10 @@ const Slack = () => {
     }, [getQuestions, isLoading])
 
     return (
-        <>
+        <AdminLayout
+            contentStyle={{ maxWidth: 1200, margin: '0 auto', paddingLeft: '1rem' }}
+            title={'Import Slack threads'}
+        >
             {slackSetup ? (
                 <>
                     <h3 className="pb-0 text-lg font-bold">
@@ -312,26 +316,17 @@ const Slack = () => {
                     </div>
                 </div>
             )}
-        </>
-    )
-}
-
-Slack.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <AdminLayout
-            contentStyle={{ maxWidth: 1200, margin: '0 auto', paddingLeft: '1rem' }}
-            title={'Import Slack threads'}
-        >
-            {page}
         </AdminLayout>
     )
 }
 
 export const getServerSideProps = withAdminGetStaticProps({
     redirectTo: () => '/login',
-    async getServerSideProps() {
+    async getServerSideProps(_, user) {
         return {
-            props: {},
+            props: {
+                organizationId: user.organizationId,
+            },
         }
     },
 })

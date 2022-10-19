@@ -1,3 +1,4 @@
+import { or } from 'ajv/dist/compile/codegen'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
@@ -21,6 +22,7 @@ import prisma from '../lib/db'
 import { withAdminGetStaticProps } from '../util/withAdminAccess'
 
 interface Props {
+    organizationId: string
     mailgunApiKey: string
     mailgunDomain: string
     mailgunName: string
@@ -37,6 +39,7 @@ interface Props {
 }
 
 const Settings: NextPageWithLayout<Props> = ({
+    organizationId,
     mailgunApiKey,
     mailgunDomain,
     mailgunName,
@@ -81,7 +84,11 @@ const Settings: NextPageWithLayout<Props> = ({
                     and copy in the variables from below.
                 </p>
                 <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
-                    <CodeSnippet allQuestions={allQuestions} className="text-sm !px-8" />
+                    <CodeSnippet
+                        allQuestions={allQuestions}
+                        organizationId={organizationId}
+                        className="text-sm !px-8"
+                    />
                 </div>
                 <h3 className="font-bold">Snippet settings</h3>
                 <Toggle
@@ -149,7 +156,7 @@ const Settings: NextPageWithLayout<Props> = ({
             <Surface className="mb-4">
                 <h3 className="font-bold">Allowed domain(s)</h3>
                 <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
-                <AllowedOriginTable />
+                <AllowedOriginTable organizationId={organizationId} />
             </Surface>
             <Surface className="mb-4">
                 <h3 className="font-bold">Email notifications</h3>
@@ -242,6 +249,7 @@ export const getServerSideProps = withAdminGetStaticProps({
 
         return {
             props: {
+                organizationId: user.organizationId,
                 mailgunApiKey: config?.mailgun_api_key || '',
                 mailgunDomain: config?.mailgun_domain || '',
                 mailgunName: config?.mailgun_from_name || '',

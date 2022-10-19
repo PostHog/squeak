@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
-import useActiveOrganization from '../hooks/useActiveOrganization'
 
 interface Props {
     className?: string
     allQuestions?: boolean
+    organizationId: string
 }
 
-const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, ...rest }) => {
-    const { getActiveOrganization } = useActiveOrganization()
-    const organizationId = getActiveOrganization()
+const CodeSnippet: React.VoidFunctionComponent<Props> = ({ allQuestions, organizationId, ...rest }) => {
     const [snippetCopied, setSnippetCopied] = useState(false)
 
     const snippet = `<div id="squeak-root" style="max-width: 450px"></div>

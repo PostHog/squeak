@@ -1,5 +1,4 @@
 import type { Dispatch, SetStateAction } from 'react'
-import useActiveOrganization from '../../hooks/useActiveOrganization'
 import { updateReply } from '../../lib/api/'
 
 interface Props {
@@ -17,12 +16,11 @@ const PublishButton: React.FunctionComponent<Props> = ({
     confirmPublish,
     setConfirmPublish,
 }) => {
-    const { getActiveOrganization } = useActiveOrganization()
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
 
         if (confirmPublish) {
-            await updateReply(id, { published: !published, organizationId: getActiveOrganization() })
+            await updateReply(id, { published: !published })
             setPublished(!published)
             setConfirmPublish(false)
         } else {
