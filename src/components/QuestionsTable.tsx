@@ -6,7 +6,7 @@ import dayFormat from '../util/dayFormat'
 export type QuestionTableRow = {
     question: Question
     profile: Profile | null
-    numReplies: number
+    numReplies?: number
 }
 
 type QuestionsTableProps = {
@@ -14,8 +14,8 @@ type QuestionsTableProps = {
     start: number
     perPage: number
     total: number
-    nextPage: () => void
-    prevPage: () => void
+    nextPage?: () => void
+    prevPage?: () => void
 }
 
 export const QuestionsTable: React.FC<QuestionsTableProps> = ({
@@ -98,7 +98,7 @@ export const QuestionsTable: React.FC<QuestionsTableProps> = ({
                                                                         ? '1 day ago'
                                                                         : `${createdAt} days ago`}{' '}
                                                                     by{' '}
-                                                                    <Link href={`/questions?profile_id=${profile.id}`}>
+                                                                    <Link href={`/profiles/${profile.id}`}>
                                                                         <a className="text-gray-800">
                                                                             {profile.first_name} {profile.last_name}
                                                                         </a>
@@ -112,23 +112,25 @@ export const QuestionsTable: React.FC<QuestionsTableProps> = ({
                                                     {question.slug[0]}
                                                 </td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                    <div className="flex items-center space-x-2">
-                                                        <span>{numReplies - 1}</span>
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="w-4 h-4"
-                                                        >
-                                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                                        </svg>
-                                                    </div>
+                                                    {numReplies && (
+                                                        <div className="flex items-center space-x-2">
+                                                            <span>{numReplies - 1}</span>
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="24"
+                                                                height="24"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="w-4 h-4"
+                                                            >
+                                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
                                                 </td>
                                             </tr>
                                         )
@@ -146,22 +148,24 @@ export const QuestionsTable: React.FC<QuestionsTableProps> = ({
                                         {total === 1 ? 'question' : 'questions'}
                                     </p>
                                 </div>
-                                <div className="flex flex-1 justify-between sm:justify-end">
-                                    <button
-                                        onClick={prevPage}
-                                        disabled={start === 0}
-                                        className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-50"
-                                    >
-                                        Previous
-                                    </button>
-                                    <button
-                                        onClick={nextPage}
-                                        disabled={questions.length < perPage}
-                                        className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-50"
-                                    >
-                                        Next
-                                    </button>
-                                </div>
+                                {prevPage && nextPage ? (
+                                    <div className="flex flex-1 justify-between sm:justify-end">
+                                        <button
+                                            onClick={prevPage}
+                                            disabled={start === 0}
+                                            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-50"
+                                        >
+                                            Previous
+                                        </button>
+                                        <button
+                                            onClick={nextPage}
+                                            disabled={questions.length < perPage}
+                                            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-50"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                ) : null}
                             </nav>
                         </div>
                     </div>

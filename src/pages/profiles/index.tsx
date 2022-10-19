@@ -2,14 +2,14 @@ import { Team } from '@prisma/client'
 import { GetStaticPropsResult } from 'next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
-import { NextPageWithLayout } from '../@types/types'
+import { NextPageWithLayout } from 'src/@types/types'
 
-import InviteUser from '../components/InviteUser'
-import ProfileTable from '../components/ProfileTable'
-import AdminLayout from '../layout/AdminLayout'
-import { getProfiles, ApiResponseError, getTeams } from '../lib/api'
-import { withAdminGetStaticProps } from '../util/withAdminAccess'
-import { GetProfilesResponse } from './api/profiles'
+import InviteUser from 'src/components/InviteUser'
+import ProfileTable from 'src/components/ProfileTable'
+import AdminLayout from 'src/layout/AdminLayout'
+import { getProfiles, ApiResponseError, getTeams } from 'src/lib/api'
+import { withAdminGetStaticProps } from 'src/util/withAdminAccess'
+import { GetProfilesResponse } from 'src/pages/api/profiles'
 
 interface Props {}
 

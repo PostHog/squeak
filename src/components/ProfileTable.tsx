@@ -7,6 +7,7 @@ import { ApiResponseError } from '../lib/api/client'
 import { GetProfilesResponse } from '../pages/api/profiles'
 import { useUser } from '../contexts/user'
 import { Team } from '@prisma/client'
+import Link from 'next/link'
 
 interface TableProps {
     profiles: GetProfilesResponse[]
@@ -117,9 +118,11 @@ const ProfileRow: React.VoidFunctionComponent<RowProps> = ({ profile, teams, onU
                         <Avatar image={avatar} />
                     </div>
                     <div className="ml-4">
-                        <div className="text-sm font-medium text-primary-light">
-                            {first_name || last_name ? `${first_name ?? ''} ${last_name ?? ''}` : 'Anonymous'}
-                        </div>
+                        <Link href={`/profiles/${profile.id}`}>
+                            <a className="text-sm font-semibold text-red">
+                                {first_name || last_name ? `${first_name ?? ''} ${last_name ?? ''}` : 'Anonymous'}
+                            </a>
+                        </Link>
                         {/* <div className="text-sm text-gray-500">{person.email}</div> */}
                     </div>
                 </div>
