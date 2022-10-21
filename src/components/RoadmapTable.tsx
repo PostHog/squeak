@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { deleteRoadmap, updateRoadmap } from '../lib/api/roadmap'
 import { RoadmapForm } from '../pages/team/[id]'
 import Modal from './Modal'
-import uniqBy from 'lodash.groupby'
 import { GetRoadmapResponse } from 'src/pages/api/roadmap'
 import { Combobox } from '@headlessui/react'
 import { getTeams } from 'src/lib/api'
@@ -13,13 +12,14 @@ const RoadmapTable = ({
     roadmap,
     onUpdate,
     showTeams = false,
+    categories,
 }: {
     roadmap: GetRoadmapResponse[]
     onUpdate?: () => void
     showTeams?: boolean
+    categories?: string[]
 }) => {
     const [teams, setTeams] = useState<GetTeamResponse[]>()
-    const categories = Object.keys(uniqBy(roadmap, 'category'))
 
     useEffect(() => {
         if (showTeams) {
@@ -80,7 +80,7 @@ const RoadmapTable = ({
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {roadmap.map((roadmapItem) => (
                                     <RoadmapRow
-                                        categories={categories}
+                                        categories={categories || []}
                                         onUpdate={onUpdate}
                                         key={String(roadmapItem.id)}
                                         roadmapItem={roadmapItem}
@@ -118,6 +118,7 @@ const RoadmapRow = ({
         projected_completion_date,
         milestone,
         team,
+        beta_available,
     } = roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
     const [query, setQuery] = useState('')
@@ -154,6 +155,7 @@ const RoadmapRow = ({
                     submitText="Update goal"
                     categories={categories}
                     initialValues={{
+                        beta_available,
                         complete,
                         github_urls,
                         description,
