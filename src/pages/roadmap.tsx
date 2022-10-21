@@ -1,3 +1,4 @@
+import uniqBy from 'lodash.groupby'
 import { ReactElement, useEffect, useState } from 'react'
 import Button from 'src/components/Button'
 import Modal from 'src/components/Modal'
@@ -12,6 +13,7 @@ import { RoadmapForm } from './team/[id]'
 const Roadmaps: NextPageWithLayout = () => {
     const [modalOpen, setModalOpen] = useState(false)
     const [roadmaps, setRoadmaps] = useState<GetRoadmapResponse[]>([])
+    const categories = Object.keys(uniqBy(roadmaps, 'category'))
 
     useEffect(() => {
         getRoadmaps().then(({ data }) => {
@@ -40,7 +42,7 @@ const Roadmaps: NextPageWithLayout = () => {
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
                     handleDelete={null}
-                    categories={[]}
+                    categories={categories}
                     initialValues={{
                         complete: false,
                         github_urls: [],
@@ -58,7 +60,7 @@ const Roadmaps: NextPageWithLayout = () => {
                 <h1>Roadmap</h1>
                 <Button onClick={() => setModalOpen(true)}>New</Button>
             </div>
-            <RoadmapTable onUpdate={handleUpdate} showTeams roadmap={roadmaps} />
+            <RoadmapTable categories={categories} onUpdate={handleUpdate} showTeams roadmap={roadmaps} />
         </>
     )
 }
