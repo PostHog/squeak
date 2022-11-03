@@ -1,33 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 import { getSessionUser } from 'src/lib/auth'
-import checkAllowedOrigins from 'src/util/checkAllowedOrigins'
-import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import nc from 'next-connect'
-
-// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-//     await NextCors(req, res, {
-//         methods: ['GET', 'HEAD', 'PATCH'],
-//         origin: '*',
-//     })
-
-//     const { error: allowedOriginError } = await checkAllowedOrigins(req)
-
-//     if (allowedOriginError) {
-//         res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
-//         return
-//     }
-
-//     switch (req.method) {
-//         case 'GET':
-//             return handleGet(req, res)
-//         case 'PATCH':
-//             return handlePatch(req, res)
-//         default:
-//             return methodNotAllowed(res)
-//     }
-// }
 
 import { allowedOrigin, corsMiddleware, validateBody } from '../../../lib/middleware'
 
