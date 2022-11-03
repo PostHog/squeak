@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
-import { requireOrgAdmin, safeJson } from '../../lib/api/apiUtils'
-import prisma from '../../lib/db'
-import checkAllowedOrigins from '../../util/checkAllowedOrigins'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
+import prisma from '../../../lib/db'
+import checkAllowedOrigins from '../../../util/checkAllowedOrigins'
 import { Prisma } from '@prisma/client'
 import { getSessionUser } from 'src/lib/auth'
 
