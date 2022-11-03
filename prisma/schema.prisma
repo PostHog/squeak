@@ -221,8 +221,19 @@ model Profile {
   avatar     String?
   first_name String?
   last_name  String?
+  email      String?
+  biography  String?
+  location   String?
+  website    String?
 
-  squeak_messages Question[]
+  github     String?
+  twitter    String?
+  linkedin   String?
+
+  company       String?
+  company_role  String?
+
+  squeak_messages  Question[]
 
   organization    Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   organization_id String       @db.Uuid
