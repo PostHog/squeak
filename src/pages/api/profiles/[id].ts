@@ -79,7 +79,7 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         }
 
         const profile = await prisma.profile.update({
-            where: { id: profileId },
+            where: { id: session.profileId },
             data,
         })
 
