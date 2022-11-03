@@ -1,24 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
-import { methodNotAllowed, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
+import { getSessionUser } from 'src/lib/auth'
+import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
+import nc from 'next-connect'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await NextCors(req, res, {
-        methods: ['GET', 'HEAD', 'PATCH'],
-        origin: '*',
-    })
+import { allowedOrigin, corsMiddleware, validateBody } from '../../../lib/middleware'
 
-    switch (req.method) {
-        case 'GET':
-            return handleGet(req, res)
-        case 'PATCH':
-            return handlePatch(req, res)
-        default:
-            return methodNotAllowed(res)
-    }
-}
-
+const handler = nc<NextApiRequest, NextApiResponse>()
+    .use(corsMiddleware)
+    .use(allowedOrigin)
+    .get(handleGet)
+    .patch(handlePatch)
 export interface UpdateProfilePayload {
     role?: string
     teamId?: string
@@ -69,24 +61,32 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
+const allowed = ['first_name', 'last_name', 'website', 'github', 'linkedin', 'twitter', 'biography', 'teamId', 'role']
+
 // PATCH /api/profiles/[id]
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
-    if (!(await requireOrgAdmin(req, res))) return
     const profileId = req.query.id as string
+    const session = await getSessionUser(req)
+    if (!session) return res.status(403)
+    if ((await requireOrgAdmin(req, res)) || session?.profileId === profileId) {
+        const params: UpdateProfilePayload = req.body
+        if (!params || Object.keys(params).some((param) => !allowed.includes(param))) return res.status(500)
+        const { teamId, ...other } = params
 
-    const params: UpdateProfilePayload = req.body
-    if (!params.role && !params.teamId) {
-        res.status(400).json({ error: 'Missing params' })
-        return
+        const data = {
+            ...(teamId ? { team_id: teamId === 'None' ? null : parseInt(teamId) } : {}),
+            ...other,
+        }
+
+        const profile = await prisma.profile.update({
+            where: { id: session.profileId },
+            data,
+        })
+
+        safeJson(res, profile)
+    } else {
+        return res.status(403).json({ error: 'Not authorized' })
     }
-
-    const profile = await prisma.profile.update({
-        where: { id: profileId },
-        data: {
-            ...(params.role ? { role: params?.role } : {}),
-            ...(params.teamId ? { team_id: params?.teamId === 'None' ? null : parseInt(params.teamId) } : {}),
-        },
-    })
-
-    safeJson(res, profile)
 }
+
+export default handler
