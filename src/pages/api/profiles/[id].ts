@@ -67,6 +67,7 @@ const allowed = ['first_name', 'last_name', 'website', 'github', 'linkedin', 'tw
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     const profileId = req.query.id as string
     const session = await getSessionUser(req)
+    if (!session) return res.status(403)
     if ((await requireOrgAdmin(req, res)) || session?.profileId === profileId) {
         const params: UpdateProfilePayload = req.body
         if (!params || Object.keys(params).some((param) => !allowed.includes(param))) return res.status(500)
