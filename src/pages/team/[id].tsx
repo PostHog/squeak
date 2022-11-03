@@ -200,14 +200,26 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
                             Add GitHub URL
                         </button>
 
-                        <div className="flex items-center space-x-2 mb-6">
-                            <label
-                                className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
-                                htmlFor="milestone"
-                            >
-                                Milestone
-                            </label>
-                            <Field type="checkbox" name="milestone" id="milestone" />
+                        <div className="flex space-x-4">
+                            <div className="flex items-center space-x-2 mb-6">
+                                <label
+                                    className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                    htmlFor="milestone"
+                                >
+                                    Milestone
+                                </label>
+                                <Field type="checkbox" name="milestone" id="milestone" />
+                            </div>
+
+                            <div className="flex items-center space-x-2 mb-6">
+                                <label
+                                    className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                    htmlFor="beta_available"
+                                >
+                                    Beta available
+                                </label>
+                                <Field type="checkbox" name="beta_available" id="beta_available" />
+                            </div>
                         </div>
 
                         <div className="flex items-center mt-4 space-x-2 justify-between">
@@ -277,7 +289,9 @@ const Team = ({ id }) => {
                             <h1 className="m-0">Roadmap</h1>
                             <Button onClick={() => setCreateModalOpen(true)}>New goal</Button>
                         </div>
-                        {team?.Roadmap?.length > 0 && <RoadmapTable onUpdate={handleUpdate} roadmap={team.Roadmap} />}
+                        {team?.Roadmap?.length > 0 && (
+                            <RoadmapTable categories={categories} onUpdate={handleUpdate} roadmap={team.Roadmap} />
+                        )}
                     </section>
                     <aside className="max-w-[300px] w-full mt-6">
                         <h3 className="font-bold text-xl">{team.name}</h3>
