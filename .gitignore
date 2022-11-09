@@ -4,7 +4,7 @@
 /.idea
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -14,8 +14,8 @@
 /cypress/screenshots
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
 /build

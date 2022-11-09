@@ -10,6 +10,9 @@ jobs:
     cypress:
         name: Cypress E2E tests
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: packages/squeak
         timeout-minutes: 30
 
         steps:
@@ -40,6 +43,7 @@ jobs:
                   start: |
                       yarn start
                   command: yarn test:e2e
+                  working-directory: packages/squeak
 
             - name: Archive test screenshots
               uses: actions/upload-artifact@v3
