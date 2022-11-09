@@ -18,16 +18,18 @@ jobs:
               with:
                   username: ${{ secrets.DOCKERHUB_USERNAME }}
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: Move to Squeak directory
+              run: cd packages/squeak
             - name: Build and push
               uses: docker/build-push-action@v2
               with:
                   push: true
                   tags: posthog/squeak:latest
                   build-args: |
-                    SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                      SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             - name: Deploy app
               env:
-                DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
-                DO_APP_ID: ${{ secrets.DO_APP_ID }}
+                  DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
+                  DO_APP_ID: ${{ secrets.DO_APP_ID }}
               run: |
-                curl -X POST -H "Authorization: Bearer $DO_API_TOKEN" https://api.digitalocean.com/v2/apps/$DO_APP_ID/deployments
+                  curl -X POST -H "Authorization: Bearer $DO_API_TOKEN" https://api.digitalocean.com/v2/apps/$DO_APP_ID/deployments

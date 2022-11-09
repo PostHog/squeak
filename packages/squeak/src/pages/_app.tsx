@@ -30,7 +30,9 @@ function Squeak({ Component, pageProps }: AppPropsWithLayout) {
 
     return (
         <UserProvider user={pageProps.user}>
+            {/* @ts-ignore */}
             <ToastProvider newestOnTop autoDismiss components={{ Toast: Toast }}>
+                {/* @ts-ignore */}
                 {getLayout(<Component {...pageProps} />)}
             </ToastProvider>
         </UserProvider>
