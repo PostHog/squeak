@@ -70,11 +70,7 @@ const getQuestions = async (context: Context, params: GetQuestionsParams): Promi
                     replies: true,
                 },
             },
-            topics: {
-                select: {
-                    topic: true,
-                },
-            },
+            topics: true,
             replies: {
                 include: {
                     profile: true,
