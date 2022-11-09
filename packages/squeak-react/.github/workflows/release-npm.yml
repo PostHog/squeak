@@ -1,0 +1,76 @@
+name: Publish package to npmjs
+
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git Config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: Detect version bump type
+        id: bump-type
+        run: |
+          BUMP_TYPE=null
+          if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
+              BUMP_TYPE=patch
+          fi
+          if [[ $BUMP_MINOR_PRESENT == 'true' ]]; then
+              BUMP_TYPE=minor
+          fi
+          if [[ $BUMP_MAJOR_PRESENT == 'true' ]]; then
+              BUMP_TYPE=major
+          fi
+          echo "::set-output name=bump-type::$BUMP_TYPE"
+        env:
+          BUMP_PATCH_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump patch') }}
+          BUMP_MINOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump minor') }}
+          BUMP_MAJOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump major') }}
+
+      - name: Get current version
+        id: package-version
+        if: steps.bump-type.outputs.bump-type != 'null'
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - name: Determine new version
+        id: new-version
+        if: steps.bump-type.outputs.bump-type != 'null'
+        run: |
+          NEW_VERSION=$(npx semver ${{ steps.package-version.outputs.current-version }} -i ${{ steps.bump-type.outputs.bump-type }})
+          echo "New version: $NEW_VERSION"
+          echo "::set-output name=new-version::$NEW_VERSION"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Bump package version
+        if: steps.bump-type.outputs.bump-type != 'null'
+        run: |
+          npm version ${{ steps.new-version.outputs.new-version }}
+          git push origin HEAD:${{ github.event.pull_request.base.ref }}
+
+      - name: Install deps
+        if: steps.bump-type.outputs.bump-type != 'null'
+        run: yarn install --frozen-lockfile
+
+      - name: Build package
+        run: yarn build
+        if: steps.bump-type.outputs.bump-type != 'null'
+
+      - name: Publish to NPM
+        run: yarn publish
+        if: steps.bump-type.outputs.bump-type != 'null'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
