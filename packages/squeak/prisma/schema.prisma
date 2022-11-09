@@ -33,6 +33,9 @@ model SqueakConfig {
   permalink_base           String?
   permalinks_enabled       Boolean?     @default(false)
   organization             Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "config_organizations_id_fkey")
+  cloudinary_cloud_name    String?
+  cloudinary_api_key       String?
+  cloudinary_api_secret    String?
 
   @@map("squeak_config")
 }

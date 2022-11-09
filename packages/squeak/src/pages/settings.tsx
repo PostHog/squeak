@@ -2,6 +2,7 @@ import { or } from 'ajv/dist/compile/codegen'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
+import ImageSettings from 'src/components/ImageSettings'
 import { NextPageWithLayout } from '../@types/types'
 
 import Button from '../components/Button'
@@ -36,6 +37,9 @@ interface Props {
     initialShowSlackUserInfo: boolean
     permalinkBase: string
     permalinksEnabled: boolean
+    cloudinary_cloud_name: string
+    cloudinary_api_key: string
+    cloudinary_api_secret: string
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -53,6 +57,9 @@ const Settings: NextPageWithLayout<Props> = ({
     initialShowSlackUserInfo,
     permalinkBase,
     permalinksEnabled,
+    cloudinary_cloud_name,
+    cloudinary_api_key,
+    cloudinary_api_secret,
 }) => {
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
@@ -174,6 +181,20 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
+                <h3 className="font-bold">Images</h3>
+                <p>Connect to Cloudinary to add image support to certain fields</p>
+                <ImageSettings
+                    cloudinary_cloud_name={cloudinary_cloud_name}
+                    cloudinary_api_key={cloudinary_api_key}
+                    cloudinary_api_secret={cloudinary_api_secret}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
                 <h3 className="font-bold">Import threads from Slack</h3>
                 <p className="mb-6">
                     Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
@@ -241,6 +262,9 @@ export const getServerSideProps = withAdminGetStaticProps({
                 show_slack_user_profiles: true,
                 permalink_base: true,
                 permalinks_enabled: true,
+                cloudinary_cloud_name: true,
+                cloudinary_api_key: true,
+                cloudinary_api_secret: true,
             },
             where: { organization_id: user.organizationId },
         })
@@ -263,6 +287,9 @@ export const getServerSideProps = withAdminGetStaticProps({
                 initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
                 permalinkBase: config?.permalink_base || '',
                 permalinksEnabled: config?.permalinks_enabled || false,
+                cloudinary_cloud_name: config?.cloudinary_cloud_name || '',
+                cloudinary_api_key: config?.cloudinary_api_key || '',
+                cloudinary_api_secret: config?.cloudinary_api_secret || '',
             },
         }
     },
