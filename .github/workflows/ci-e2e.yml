@@ -10,6 +10,9 @@ jobs:
     cypress:
         name: Cypress E2E tests
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: packages/squeak
         timeout-minutes: 30
 
         steps:
@@ -18,7 +21,6 @@ jobs:
 
             - name: Setup env
               run: |
-                  cd packages/squeak
                   cat <<EOT >> .env
                   DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
                   SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
