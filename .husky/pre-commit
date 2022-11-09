@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn lint-staged && yarn types:check
+yarn workspace squeak run lint-staged && yarn workspace squeak run types:check
