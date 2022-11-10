@@ -4,6 +4,7 @@ interface Props {
     open?: boolean
     onClose: () => void
     className?: string
+    children: React.ReactNode
 }
 
 const Modal: React.FunctionComponent<Props> = ({ children, open = false, onClose, className = '' }) => {

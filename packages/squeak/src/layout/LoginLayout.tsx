@@ -1,14 +1,15 @@
 import Head from 'next/head'
 import AnimatedLogo from '../components/AnimatedLogo'
-import { ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import usePostHog from '../hooks/usePostHog'
 
 interface Props {
     title?: string
     subtitle?: ReactNode
+    children?: React.ReactNode | ReactElement
 }
 
-const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children }) => {
+const LoginLayout: React.FC<Props> = ({ title, subtitle, children }) => {
     usePostHog()
 
     return (
@@ -20,6 +21,7 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children
                 <link rel="icon" href="/favicon.png" />
             </Head>
 
+            {/* @ts-ignore */}
             <div className="flex flex-col justify-center min-h-full py-12 sm:px-6 lg:px-8">
                 <div className="flex justify-center sm:mx-auto sm:w-full sm:max-w-md">
                     <AnimatedLogo className="w-[600px]" />
@@ -29,6 +31,7 @@ const LoginLayout: React.FunctionComponent<Props> = ({ title, subtitle, children
                 {subtitle}
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                    {/* @ts-ignore */}
                     <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">{children}</div>
                 </div>
             </div>

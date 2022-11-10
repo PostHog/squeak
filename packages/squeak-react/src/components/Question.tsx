@@ -103,6 +103,7 @@ const Expanded = () => {
 
 const Replies = ({ expanded, setExpanded }: { expanded: boolean; setExpanded: (expanded: boolean) => void }) => {
     const { resolved, replies, onSubmit, question } = useQuestion()
+
     return (
         <>
             {replies && replies.length - 1 > 0 && (

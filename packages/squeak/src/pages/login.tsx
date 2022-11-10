@@ -167,7 +167,7 @@ Login.getLayout = function getLayout(page: ReactElement<Props>) {
                 )
             }
         >
-            {page}
+            {page as any}
         </LoginLayout>
     )
 }

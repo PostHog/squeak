@@ -75,150 +75,146 @@ const Settings: NextPageWithLayout<Props> = ({
     }
 
     return (
-        <div>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Snippet</h3>
-                <p>Embed this JavaScript snippet on any page where you want Squeak! to appear.</p>
-                <p>
-                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a>{' '}
-                    and copy in the variables from below.
-                </p>
-                <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
-                    <CodeSnippet
-                        allQuestions={allQuestions}
-                        organizationId={organizationId}
-                        className="text-sm !px-8"
-                    />
-                </div>
-                <h3 className="font-bold">Snippet settings</h3>
-                <Toggle
-                    className="pt-1"
-                    checked={allQuestions}
-                    setChecked={() => setAllQuestions(!allQuestions)}
-                    label="Display all questions"
-                    helper="Turn this on to display all questions regardless of the pathname"
-                />
-                <Toggle
-                    className="pt-1"
-                    checked={showSlackUserInfo}
-                    setChecked={handleShowSlackUserInfo}
-                    label="Display Slack user info"
-                    helper="Turn this on to display first name and avatar on Slack messages"
-                />
-                <h3 className="mt-6 font-bold">Moderation settings</h3>
-                <Toggle
-                    className="pt-1"
-                    checked={questionAutoPublish}
-                    setChecked={handleQuestionAutoPublish}
-                    label="Publish new questions automatically"
-                    helper="Turn this off if you'd like to moderate questions before they appear on your site"
-                />
-                <Toggle
-                    className="pt-1"
-                    checked={replyAutoPublish}
-                    setChecked={handleReplyAutoPublish}
-                    label="Publish new replies automatically"
-                    helper="Disable to moderate replies before they appear on your site"
-                />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Permalinks</h3>
-                <PermalinkSettings
-                    companyDomain={companyDomain}
-                    permalinkBase={permalinkBase}
-                    permalinksEnabled={permalinksEnabled}
-                    actionButtons={(isValid, loading) => (
-                        <Button loading={loading} disabled={!isValid} type="submit">
-                            Save
-                        </Button>
-                    )}
-                />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Company details</h3>
-                <CompanyDetails
-                    companyDomain={companyDomain}
-                    companyName={companyName}
-                    actionButtons={(isValid, loading) => (
-                        <Button loading={loading} disabled={!isValid} type="submit">
-                            Save
-                        </Button>
-                    )}
-                />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Alerts</h3>
-                <p className="mb-6">
-                    Setup outgoing webhooks to alert other services (like Slack) about new questions added to Squeak!
-                </p>
-                <WebhookTable />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Allowed domain(s)</h3>
-                <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
-                <AllowedOriginTable organizationId={organizationId} />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Email notifications</h3>
-                <p>Configure emails for users when someone answers their question.</p>
-                <NotificationForm
-                    mailgunName={mailgunName}
-                    mailgunEmail={mailgunEmail}
-                    mailgunDomain={mailgunDomain}
-                    mailgunApiKey={mailgunApiKey}
-                    actionButtons={(isValid, loading) => (
-                        <Button loading={loading} disabled={!isValid} type="submit">
-                            Save
-                        </Button>
-                    )}
-                />
-            </Surface>
-            <Surface className="mb-4">
-                <h3 className="font-bold">Import threads from Slack</h3>
-                <p className="mb-6">
-                    Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
-                    <Link href="/slack" passHref>
-                        <a>Import Slack threads</a>
-                    </Link>{' '}
-                    page.)
-                </p>
-
-                <p>
-                    Note: This is specifically for importing threads from Slack. To receive notifications when a user
-                    posts a question on your site, visit the Alerts section above.
-                </p>
-                <hr className="my-8" />
-                <SlackManifestSnippet />
-
-                <SlackForm
-                    slackApiKey={slackApiKey}
-                    slackQuestionChannel={slackQuestionChannel}
-                    actionButtons={(isValid: boolean, loading: boolean) => (
-                        <Button loading={loading} disabled={!isValid} type="submit">
-                            Save
-                        </Button>
-                    )}
-                />
-            </Surface>
-            <Surface>
-                <h3 className="font-bold">Change password</h3>
-                <p>Careful, we only ask for it once (because your time is valuable).</p>
-                <ResetPassword
-                    actionButtons={(isValid: boolean, loading: boolean) => (
-                        <Button loading={loading} disabled={!isValid} type="submit">
-                            Update
-                        </Button>
-                    )}
-                />
-            </Surface>
-        </div>
-    )
-}
-
-Settings.getLayout = function getLayout(page: ReactElement) {
-    return (
         <AdminLayout contentStyle={{ maxWidth: 800, margin: '0 auto' }} title="Settings">
-            {page}
+            <div>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Snippet</h3>
+                    <p>Embed this JavaScript snippet on any page where you want Squeak! to appear.</p>
+                    <p>
+                        <strong>Using React?</strong> Use{' '}
+                        <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables
+                        from below.
+                    </p>
+                    <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
+                        <CodeSnippet
+                            allQuestions={allQuestions}
+                            organizationId={organizationId}
+                            className="text-sm !px-8"
+                        />
+                    </div>
+                    <h3 className="font-bold">Snippet settings</h3>
+                    <Toggle
+                        className="pt-1"
+                        checked={allQuestions}
+                        setChecked={() => setAllQuestions(!allQuestions)}
+                        label="Display all questions"
+                        helper="Turn this on to display all questions regardless of the pathname"
+                    />
+                    <Toggle
+                        className="pt-1"
+                        checked={showSlackUserInfo}
+                        setChecked={handleShowSlackUserInfo}
+                        label="Display Slack user info"
+                        helper="Turn this on to display first name and avatar on Slack messages"
+                    />
+                    <h3 className="mt-6 font-bold">Moderation settings</h3>
+                    <Toggle
+                        className="pt-1"
+                        checked={questionAutoPublish}
+                        setChecked={handleQuestionAutoPublish}
+                        label="Publish new questions automatically"
+                        helper="Turn this off if you'd like to moderate questions before they appear on your site"
+                    />
+                    <Toggle
+                        className="pt-1"
+                        checked={replyAutoPublish}
+                        setChecked={handleReplyAutoPublish}
+                        label="Publish new replies automatically"
+                        helper="Disable to moderate replies before they appear on your site"
+                    />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Permalinks</h3>
+                    <PermalinkSettings
+                        companyDomain={companyDomain}
+                        permalinkBase={permalinkBase}
+                        permalinksEnabled={permalinksEnabled}
+                        actionButtons={(isValid, loading) => (
+                            <Button loading={loading} disabled={!isValid} type="submit">
+                                Save
+                            </Button>
+                        )}
+                    />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Company details</h3>
+                    <CompanyDetails
+                        companyDomain={companyDomain}
+                        companyName={companyName}
+                        actionButtons={(isValid, loading) => (
+                            <Button loading={loading} disabled={!isValid} type="submit">
+                                Save
+                            </Button>
+                        )}
+                    />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Alerts</h3>
+                    <p className="mb-6">
+                        Setup outgoing webhooks to alert other services (like Slack) about new questions added to
+                        Squeak!
+                    </p>
+                    <WebhookTable />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Allowed domain(s)</h3>
+                    <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
+                    <AllowedOriginTable organizationId={organizationId} />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Email notifications</h3>
+                    <p>Configure emails for users when someone answers their question.</p>
+                    <NotificationForm
+                        mailgunName={mailgunName}
+                        mailgunEmail={mailgunEmail}
+                        mailgunDomain={mailgunDomain}
+                        mailgunApiKey={mailgunApiKey}
+                        actionButtons={(isValid, loading) => (
+                            <Button loading={loading} disabled={!isValid} type="submit">
+                                Save
+                            </Button>
+                        )}
+                    />
+                </Surface>
+                <Surface className="mb-4">
+                    <h3 className="font-bold">Import threads from Slack</h3>
+                    <p className="mb-6">
+                        Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
+                        <Link href="/slack" passHref>
+                            <a>Import Slack threads</a>
+                        </Link>{' '}
+                        page.)
+                    </p>
+
+                    <p>
+                        Note: This is specifically for importing threads from Slack. To receive notifications when a
+                        user posts a question on your site, visit the Alerts section above.
+                    </p>
+                    <hr className="my-8" />
+                    <SlackManifestSnippet />
+
+                    <SlackForm
+                        slackApiKey={slackApiKey}
+                        slackQuestionChannel={slackQuestionChannel}
+                        actionButtons={(isValid: boolean, loading: boolean) => (
+                            <Button loading={loading} disabled={!isValid} type="submit">
+                                Save
+                            </Button>
+                        )}
+                    />
+                </Surface>
+                <Surface>
+                    <h3 className="font-bold">Change password</h3>
+                    <p>Careful, we only ask for it once (because your time is valuable).</p>
+                    <ResetPassword
+                        actionButtons={(isValid: boolean, loading: boolean) => (
+                            <Button loading={loading} disabled={!isValid} type="submit">
+                                Update
+                            </Button>
+                        )}
+                    />
+                </Surface>
+            </div>
         </AdminLayout>
     )
 }

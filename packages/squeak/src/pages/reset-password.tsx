@@ -6,18 +6,16 @@ import LoginLayout from '../layout/LoginLayout'
 
 const Reset: NextPageWithLayout = () => {
     return (
-        <ResetPassword
-            actionButtons={(isValid: boolean, loading: boolean) => (
-                <Button loading={loading} disabled={!isValid} type="submit">
-                    Update
-                </Button>
-            )}
-        />
+        <LoginLayout title="Reset your password">
+            <ResetPassword
+                actionButtons={(isValid: boolean, loading: boolean) => (
+                    <Button loading={loading} disabled={!isValid} type="submit">
+                        Update
+                    </Button>
+                )}
+            />
+        </LoginLayout>
     )
-}
-
-Reset.getLayout = function getLayout(page: ReactElement) {
-    return <LoginLayout title="Reset your password">{page}</LoginLayout>
 }
 
 export default Reset

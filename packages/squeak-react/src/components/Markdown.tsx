@@ -6,11 +6,11 @@ export default function Markdown({ children }: { children: string }) {
     return (
         <ReactMarkdown
             rehypePlugins={[rehypeSanitize]}
+            children={children}
             components={{
                 pre: ({ children }) => {
                     return (
                         <>
-                            {/* @ts-ignore */}
                             <Highlight
                                 {...defaultProps}
                                 code={(children[0] as any)?.props?.children[0]}
@@ -36,8 +36,6 @@ export default function Markdown({ children }: { children: string }) {
                 },
             }}
             className="squeak-post-markdown"
-        >
-            {children}
-        </ReactMarkdown>
+        />
     )
 }

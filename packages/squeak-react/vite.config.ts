@@ -6,12 +6,13 @@ import * as pkg from './package.json'
 export default defineConfig({
     plugins: [react()],
     build: {
+        minify: false,
         sourcemap: true,
         emptyOutDir: false,
         lib: {
             entry: './src/index.ts',
             name: 'SqueakReact',
-            formats: ['es', 'umd'],
+            formats: ['es'],
             fileName: (format) => `squeak-react.${format}.js`,
         },
         rollupOptions: {

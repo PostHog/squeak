@@ -38,7 +38,7 @@ const Roadmaps: NextPageWithLayout = () => {
     }
 
     return (
-        <>
+        <AdminLayout hideTitle contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Roadmap">
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
                     handleDelete={null}
@@ -61,14 +61,6 @@ const Roadmaps: NextPageWithLayout = () => {
                 <Button onClick={() => setModalOpen(true)}>New</Button>
             </div>
             <RoadmapTable categories={categories} onUpdate={handleUpdate} showTeams roadmap={roadmaps} />
-        </>
-    )
-}
-
-Roadmaps.getLayout = function getLayout(page: ReactElement) {
-    return (
-        <AdminLayout hideTitle contentStyle={{ maxWidth: 1200, margin: '0 auto' }} title="Roadmap">
-            {page}
         </AdminLayout>
     )
 }
