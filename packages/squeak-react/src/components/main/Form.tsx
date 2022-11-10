@@ -5,19 +5,29 @@ import { Provider as UserProvider } from '../../context/user'
 import QuestionForm from '../QuestionForm'
 import { Theme } from '../Theme'
 
-export const Form = ({ apiHost, organizationId, onSubmit }) => {
-  const containerRef = useRef()
+type FormProps = {
+    apiHost: string
+    organizationId: string
+    onSubmit: React.FormEventHandler
+}
 
-  return (
-    <root.div ref={containerRef}>
-      <OrgProvider value={{ organizationId, apiHost }}>
-        <UserProvider>
-          <Theme containerRef={containerRef} />
-          <div className='squeak'>
-            <QuestionForm onSubmit={onSubmit} />
-          </div>
-        </UserProvider>
-      </OrgProvider>
-    </root.div>
-  )
+export const Form: React.FC<FormProps> = ({ apiHost, organizationId, onSubmit }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    return (
+        <>
+            {/* @ts-ignore */}
+            <root.div ref={containerRef}>
+                <OrgProvider value={{ organizationId, apiHost }}>
+                    <UserProvider>
+                        <Theme containerRef={containerRef} />
+                        <div className="squeak">
+                            {/* @ts-ignore */}
+                            <QuestionForm onSubmit={onSubmit} />
+                        </div>
+                    </UserProvider>
+                </OrgProvider>
+            </root.div>
+        </>
+    )
 }

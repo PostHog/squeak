@@ -6,7 +6,29 @@ import Avatar from './Avatar'
 import Days from './Days'
 import Markdown from './Markdown'
 
-export default function Reply({ profile, created_at, body, subject, badgeText, id, published, permalink, ...other }) {
+type ReplyProps = {
+    id: string
+    profile: Record<string, any>
+    created_at: string
+    body: string
+    subject: string
+    badgeText: string
+    published: boolean
+    permalink: string
+    [key: string]: any
+}
+
+export default function Reply({
+    profile,
+    created_at,
+    body,
+    subject,
+    badgeText,
+    id,
+    published,
+    permalink,
+    ...other
+}: ReplyProps) {
     const question = useQuestion()
     const { questionAuthorId, resolved, resolvedBy, handleResolve, handlePublish, handleReplyDelete } = question
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -14,7 +36,7 @@ export default function Reply({ profile, created_at, body, subject, badgeText, i
     const { profileLink } = useOrg()
     const isModerator = user?.isModerator
     const isAuthor = user?.profile?.id === questionAuthorId
-    const handleDelete = (e) => {
+    const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         if (confirmDelete) {
             handleReplyDelete(id)

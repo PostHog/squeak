@@ -5,33 +5,36 @@ import { Provider as UserProvider } from '../../context/user'
 import SingleQuestion from '../Question'
 import { Theme } from '../Theme'
 
-export const Question = ({
-  apiHost,
-  organizationId,
-  onResolve,
-  onSubmit,
-  question,
-  url,
-  apiKey,
-  ...other
-}) => {
-  const containerRef = useRef()
-  return (
-    <root.div ref={containerRef}>
-      <OrgProvider value={{ organizationId, apiHost }}>
-        <UserProvider>
-          <Theme containerRef={containerRef} />
-          <div className='squeak'>
-            <SingleQuestion
-              apiHost={apiHost}
-              replies={question?.replies}
-              question={question?.question}
-              onSubmit={onSubmit}
-              onResolve={onResolve}
-            />
-          </div>
-        </UserProvider>
-      </OrgProvider>
-    </root.div>
-  )
+type QuestionProps = {
+    apiHost: string
+    organizationId: string
+    onResolve: (resolved: boolean, replyId: string | null) => void
+    onSubmit: () => void
+    question: any
+}
+
+export const Question: React.FC<QuestionProps> = ({ apiHost, organizationId, onResolve, onSubmit, question }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    return (
+        <>
+            {/* @ts-ignore */}
+            <root.div ref={containerRef}>
+                <OrgProvider value={{ organizationId, apiHost }}>
+                    <UserProvider>
+                        <Theme containerRef={containerRef} />
+                        <div className="squeak">
+                            <SingleQuestion
+                                apiHost={apiHost}
+                                replies={question?.replies}
+                                question={question?.question}
+                                onSubmit={onSubmit}
+                                onResolve={onResolve}
+                            />
+                        </div>
+                    </UserProvider>
+                </OrgProvider>
+            </root.div>
+        </>
+    )
 }
