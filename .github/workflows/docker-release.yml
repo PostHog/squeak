@@ -26,7 +26,7 @@ jobs:
               with:
                   push: true
                   tags: posthog/squeak:latest
-                  context: '{{defaultContext}}/packages/squeak-react'
+                  context: '{{defaultContext}}:packages/squeak'
                   build-args: |
                       SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
