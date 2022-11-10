@@ -10,14 +10,15 @@ import { withAdminGetStaticProps } from '../../util/withAdminAccess'
 import { getConfig } from '../../db'
 import prisma from 'src/lib/db'
 import dynamic from 'next/dynamic'
+import { Question as SqueakQuestion } from '../../../../squeak-react/src/index'
 
-const SqueakQuestion = dynamic(
+/*const SqueakQuestion = dynamic(
     // @ts-ignore
     import('squeak-react').then((mod) => mod.Question),
     {
         ssr: false,
     }
-)
+)*/
 
 const Question = ({ question, topics: allTopics, organizationId, permalinkBase }) => {
     const router = useRouter()
