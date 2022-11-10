@@ -8,6 +8,7 @@ import prisma from '../../../lib/db'
 const roadmap = Prisma.validator<Prisma.RoadmapArgs>()({
     include: {
         team: true,
+        image: true,
     },
 })
 
@@ -35,6 +36,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         },
         include: {
             team: true,
+            image: true,
         },
         orderBy: {
             date_completed: 'desc',

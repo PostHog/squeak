@@ -7,17 +7,20 @@ import { GetRoadmapResponse } from 'src/pages/api/roadmap'
 import { Combobox } from '@headlessui/react'
 import { getTeams } from 'src/lib/api'
 import { GetTeamResponse } from 'src/pages/api/teams'
+import { SqueakConfig } from '@prisma/client'
 
 const RoadmapTable = ({
     roadmap,
     onUpdate,
     showTeams = false,
     categories,
+    config,
 }: {
     roadmap: GetRoadmapResponse[]
     onUpdate?: () => void
     showTeams?: boolean
     categories?: string[]
+    config?: SqueakConfig
 }) => {
     const [teams, setTeams] = useState<GetTeamResponse[]>()
 
@@ -80,6 +83,7 @@ const RoadmapTable = ({
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {roadmap.map((roadmapItem) => (
                                     <RoadmapRow
+                                        config={config}
                                         categories={categories || []}
                                         onUpdate={onUpdate}
                                         key={String(roadmapItem.id)}
@@ -101,11 +105,13 @@ const RoadmapRow = ({
     onUpdate,
     categories,
     teams,
+    config,
 }: {
     roadmapItem: GetRoadmapResponse
     onUpdate?: () => void
     categories: string[]
     teams?: GetTeamResponse[]
+    config?: SqueakConfig
 }) => {
     const {
         title,
@@ -119,12 +125,28 @@ const RoadmapRow = ({
         milestone,
         team,
         beta_available,
+        image,
     } = roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
     const [query, setQuery] = useState('')
 
     const handleSubmit = async (values) => {
-        await updateRoadmap(id, values)
+        let roadmap
+        if (values.image && !values.image.id) {
+            const formData = new FormData()
+            formData.append('image', values.image)
+            const uploadedImage = await fetch('/api/image', {
+                method: 'POST',
+                body: formData,
+            }).then((res) => res.json())
+            const { image, ...other } = values
+            roadmap = { ...other, imageId: uploadedImage.id }
+        } else {
+            const { image, ...other } = values
+            roadmap = other
+        }
+
+        await updateRoadmap(id, roadmap)
         onUpdate && onUpdate()
         setModalOpen(false)
     }
@@ -151,6 +173,7 @@ const RoadmapRow = ({
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
+                    config={config}
                     onSubmit={handleSubmit}
                     submitText="Update goal"
                     categories={categories}
@@ -166,6 +189,7 @@ const RoadmapRow = ({
                         title,
                         category,
                         milestone,
+                        image,
                     }}
                     handleDelete={handleDelete}
                 />

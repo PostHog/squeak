@@ -28,8 +28,6 @@ const ImageSettings: React.VoidFunctionComponent<Props & InitialValues> = ({
         const { cloudinary_api_key, cloudinary_api_secret, cloudinary_cloud_name } = values
         setLoading(true)
 
-        console.log(values)
-
         try {
             await updateSqueakConfig({
                 cloudinary_api_key,

@@ -36,6 +36,7 @@
         "cookies-next": "^2.1.1",
         "cors": "^2.8.5",
         "form-data": "^4.0.0",
+        "formidable": "^2.0.1",
         "formik": "^2.2.9",
         "jsonwebtoken": "^8.5.1",
         "lodash.debounce": "^4.0.8",

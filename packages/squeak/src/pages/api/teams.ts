@@ -11,6 +11,7 @@ const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
         Roadmap: {
             include: {
                 team: true,
+                image: true,
             },
         },
     },

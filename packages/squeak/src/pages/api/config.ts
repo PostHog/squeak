@@ -26,13 +26,15 @@ async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
         organizationId = req.query.organizationId as string
     }
 
+    const user = await getSessionUser(req)
+
+    if (!organizationId) organizationId = user?.organizationId || ''
+
     if (!organizationId) {
         return res.status(400).json({ error: 'Missing required fields' })
     }
 
     let admin = false
-
-    const user = await getSessionUser(req)
 
     if (user) {
         const ro = await getUserRole(organizationId, user?.id)
