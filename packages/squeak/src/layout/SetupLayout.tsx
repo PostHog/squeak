@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import { ReactElement } from 'react'
 
 const nav = [
     {
@@ -31,6 +32,7 @@ const nav = [
 interface Props {
     title: string
     subtitle: string
+    children: React.ReactNode | ReactElement
 }
 
 const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle }) => {
@@ -270,6 +272,7 @@ const SetupLayout: React.FunctionComponent<Props> = ({ children, title, subtitle
                     <div className=" max-w-2xl">
                         <h1 className="mb-2">{title}</h1>
                         <h2 className="opacity-70 mb-6">{subtitle}</h2>
+                        {/* @ts-ignore */}
                         <div className="mt-12">{children}</div>
                     </div>
                 </section>

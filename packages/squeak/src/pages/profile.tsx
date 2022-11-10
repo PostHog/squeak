@@ -53,71 +53,69 @@ const Profile: NextPageWithLayout<Props> = ({ user, profile }) => {
     }
 
     return (
-        <div className="space-y-6">
-            {error && <p className="text-sm font-medium text-center text-red-500">{error}</p>}
-            <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                    First name
-                </label>
-                <div className="mt-1">
-                    <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        autoComplete="given-name"
-                        required
-                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    />
+        <LoginLayout title="Edit profile">
+            <div className="space-y-6">
+                {error && <p className="text-sm font-medium text-center text-red-500">{error}</p>}
+                <div>
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                        First name
+                    </label>
+                    <div className="mt-1">
+                        <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            autoComplete="given-name"
+                            required
+                            className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                    Last name
-                </label>
-                <div className="mt-1">
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        autoComplete="family-name"
-                        required
-                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    />
+                <div>
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                        Last name
+                    </label>
+                    <div className="mt-1">
+                        <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            autoComplete="family-name"
+                            required
+                            className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <div className="mt-1">
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="family-name"
-                        required
-                        className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    />
+                <div>
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <div className="mt-1">
+                        <input
+                            id="lastName"
+                            name="lastName"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="family-name"
+                            required
+                            className="block w-full px-3 py-2 placeholder-gray-400 border rounded-md shadow-sm appearance-none border-gray-light focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
+                    </div>
                 </div>
+                <button
+                    onClick={handleSave}
+                    className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                >
+                    Save
+                </button>
             </div>
-            <button
-                onClick={handleSave}
-                className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-accent-light hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-            >
-                Save
-            </button>
-        </div>
+        </LoginLayout>
     )
-}
-
-Profile.getLayout = function getLayout(page: ReactElement<Props>) {
-    return <LoginLayout title="Edit profile">{page}</LoginLayout>
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> {

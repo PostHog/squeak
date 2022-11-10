@@ -1,0 +1,39 @@
+name: Publish package to npmjs
+
+on:
+    pull_request:
+        types: [closed]
+        paths:
+            - 'packages/squeak-react/*'
+
+jobs:
+    release:
+        defaults:
+            run:
+                working-directory: packages/squeak-react
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: '16.x'
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Install deps
+              if: steps.bump-type.outputs.bump-type != 'null'
+              working-directory: ./
+              run: yarn install --frozen-lockfile
+
+            - name: Build package
+              run: yarn build
+              if: steps.bump-type.outputs.bump-type != 'null'
+
+            - name: Publish to NPM
+              run: yarn publish
+              if: steps.bump-type.outputs.bump-type != 'null'
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

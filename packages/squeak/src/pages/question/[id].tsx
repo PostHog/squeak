@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic'
 import superjson from 'superjson'
 import { useRouter } from 'next/router'
 
@@ -10,8 +9,15 @@ import { getQuestion } from '../../db/question'
 import { withAdminGetStaticProps } from '../../util/withAdminAccess'
 import { getConfig } from '../../db'
 import prisma from 'src/lib/db'
+import dynamic from 'next/dynamic'
 
-const SingleQuestion: any = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
+const SqueakQuestion: any = dynamic(
+    // @ts-ignore
+    import('squeak-react').then((mod) => mod.Question),
+    {
+        ssr: false,
+    }
+)
 
 const Question = ({ question, topics: allTopics, organizationId, permalinkBase }) => {
     const router = useRouter()
@@ -30,7 +36,7 @@ const Question = ({ question, topics: allTopics, organizationId, permalinkBase }
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="flex items-start col-span-2 space-x-9">
                 <div className="flex-grow max-w-[700px]">
-                    <SingleQuestion
+                    <SqueakQuestion
                         apiHost={apiHost}
                         organizationId={organizationId}
                         onResolve={refreshQuestion}

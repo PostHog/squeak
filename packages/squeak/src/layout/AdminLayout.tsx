@@ -25,6 +25,7 @@ interface Props {
     navStyle?: React.CSSProperties
     contentStyle?: React.CSSProperties
     hideTitle?: boolean
+    children: React.ReactNode
 }
 
 const AdminLayout: React.FunctionComponent<Props> = ({ title, children, navStyle, contentStyle, hideTitle }) => {
