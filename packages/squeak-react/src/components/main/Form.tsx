@@ -4,6 +4,7 @@ import { Provider as OrgProvider } from '../../context/org'
 import { Provider as UserProvider } from '../../context/user'
 import QuestionForm from '../QuestionForm'
 import { Theme } from '../Theme'
+import ErrorBoundary from '../ErrorBoundary'
 
 type FormProps = {
     apiHost: string
@@ -15,7 +16,7 @@ export const Form: React.FC<FormProps> = ({ apiHost, organizationId, onSubmit })
     const containerRef = useRef<HTMLDivElement>(null)
 
     return (
-        <>
+        <ErrorBoundary>
             {/* @ts-ignore */}
             <root.div ref={containerRef}>
                 <OrgProvider value={{ organizationId, apiHost }}>
@@ -28,6 +29,6 @@ export const Form: React.FC<FormProps> = ({ apiHost, organizationId, onSubmit })
                     </UserProvider>
                 </OrgProvider>
             </root.div>
-        </>
+        </ErrorBoundary>
     )
 }

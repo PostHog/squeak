@@ -4,6 +4,7 @@ import { Provider as OrgProvider } from '../../context/org'
 import { Provider as UserProvider } from '../../context/user'
 import SingleQuestion from '../Question'
 import { Theme } from '../Theme'
+import ErrorBoundary from '../ErrorBoundary'
 
 type QuestionProps = {
     apiHost: string
@@ -17,7 +18,7 @@ export const Question: React.FC<QuestionProps> = ({ apiHost, organizationId, onR
     const containerRef = useRef<HTMLDivElement>(null)
 
     return (
-        <>
+        <ErrorBoundary>
             {/* @ts-ignore */}
             <root.div ref={containerRef}>
                 <OrgProvider value={{ organizationId, apiHost }}>
@@ -35,6 +36,6 @@ export const Question: React.FC<QuestionProps> = ({ apiHost, organizationId, onR
                     </UserProvider>
                 </OrgProvider>
             </root.div>
-        </>
+        </ErrorBoundary>
     )
 }

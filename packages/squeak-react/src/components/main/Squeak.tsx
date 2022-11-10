@@ -5,6 +5,7 @@ import { Provider as OrgProvider } from '../../context/org'
 import { Provider as UserProvider } from '../../context/user'
 import Questions from '../Questions'
 import { Theme } from '../Theme'
+import ErrorBoundary from '../ErrorBoundary'
 
 type SqueakProps = {
     apiHost: string
@@ -34,7 +35,7 @@ export const Squeak = ({
     const containerRef = useRef<HTMLDivElement>(null)
 
     return (
-        <>
+        <ErrorBoundary>
             {/* @ts-ignore */}
             <root.div ref={containerRef}>
                 <OrgProvider value={{ organizationId, apiHost, profileLink }}>
@@ -54,6 +55,6 @@ export const Squeak = ({
                     </UserProvider>
                 </OrgProvider>
             </root.div>
-        </>
+        </ErrorBoundary>
     )
 }
