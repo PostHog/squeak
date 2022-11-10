@@ -32,6 +32,7 @@
         "babel-plugin-superjson-next": "^0.4.3",
         "bcrypt": "^5.0.1",
         "classnames": "^2.3.1",
+        "cloudinary": "^1.32.0",
         "cookie": "^0.5.0",
         "cookies-next": "^2.1.1",
         "cors": "^2.8.5",
