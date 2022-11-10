@@ -47,6 +47,7 @@ const Users: NextPageWithLayout<Props> = () => {
 
     return (
         <AdminLayout title="Profiles">
+
             <div className="flex items-center space-between">
                 <p className="flex-1 pb-4">This lists all users in your database.</p>
                 <InviteUser
@@ -59,6 +60,7 @@ const Users: NextPageWithLayout<Props> = () => {
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <ProfileTable teams={teams} profiles={profiles} />
             </div>
+
             <p className="pt-4">
                 <strong>Users</strong> can ask questions and post responses <br />
                 <strong>Moderators</strong> can sign in here to manage/remove questions/replies <br />
