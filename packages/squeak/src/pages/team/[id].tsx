@@ -7,7 +7,7 @@ import { Field, Form, Formik } from 'formik'
 import Input from '../../components/Input'
 import { createRoadmap } from '../../lib/api/roadmap'
 import RoadmapTable from '../../components/RoadmapTable'
-import { getProfiles, getTeam, updateProfile } from '../../lib/api'
+import { getConfig, getProfiles, getTeam, updateProfile } from '../../lib/api'
 import { XIcon } from '@heroicons/react/solid'
 import Avatar from '../../components/Avatar'
 import { Combobox } from '@headlessui/react'
@@ -16,6 +16,8 @@ import { ChevronDownIcon } from '@heroicons/react/outline'
 import { GetProfilesResponse } from '../api/profiles'
 import _ from 'lodash'
 import { GetTeamResponse } from '../../pages/api/teams'
+import ImageUpload from 'src/components/ImageUpload'
+import { SqueakConfig } from '@prisma/client'
 
 const AddTeamMember = ({ teamId, onSubmit }) => {
     const [profiles, setProfiles] = useState<GetProfilesResponse[] | null | undefined>(null)
@@ -79,7 +81,7 @@ const AddTeamMember = ({ teamId, onSubmit }) => {
     ) : null
 }
 
-export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal', categories }) => {
+export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText = 'Add goal', categories, config }) => {
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [query, setQuery] = useState('')
     const filteredCategories =
@@ -93,135 +95,145 @@ export const RoadmapForm = ({ onSubmit, handleDelete, initialValues, submitText 
             {({ values, setFieldValue }) => {
                 return (
                     <Form>
-                        <Input value={values.title} label="Title" id="title" name="title" placeholder="Title" />
-                        <Input
-                            id="description"
-                            value={values.description}
-                            as={'textarea'}
-                            label="Description"
-                            name="description"
-                            placeholder="Description"
-                        />
-                        <div className="flex items-center space-x-2 mb-6">
-                            <label
-                                className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
-                                htmlFor="complete"
-                            >
-                                Complete
-                            </label>
-                            <Field type="checkbox" name="complete" id="complete" />
-                        </div>
+                        <div className="flex space-x-6">
+                            <div className="flex-grow">
+                                <Input value={values.title} label="Title" id="title" name="title" placeholder="Title" />
+                                <Input
+                                    id="description"
+                                    value={values.description}
+                                    as={'textarea'}
+                                    label="Description"
+                                    name="description"
+                                    placeholder="Description"
+                                />
 
-                        {values.complete && (
-                            <Input
-                                value={values.date_completed}
-                                label="Date completed"
-                                id="date_completed"
-                                name="date_completed"
-                                placeholder="Date completed"
-                                type="date"
-                            />
-                        )}
-                        {!values.complete && (
-                            <Input
-                                value={values.projected_completion_date}
-                                label="Projected completion date"
-                                id="projected_completion_date"
-                                name="projected_completion_date"
-                                placeholder="Projected completion date"
-                                type="date"
-                            />
-                        )}
-                        <div className="mb-6">
-                            <label className="text-[16px] font-semibold opacity-75 my-2" htmlFor={'category'}>
-                                Category
-                            </label>
-                            <Combobox
-                                value={values.category}
-                                onChange={(category) => setFieldValue('category', category)}
-                            >
-                                <div className="relative">
-                                    <Combobox.Input
-                                        id="category"
-                                        className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
-                                        onChange={(event) => {
-                                            setFieldValue('category', event.target.value)
-                                            setQuery(event.target.value)
-                                        }}
+                                {values.complete && (
+                                    <Input
+                                        value={values.date_completed}
+                                        label="Date completed"
+                                        id="date_completed"
+                                        name="date_completed"
+                                        placeholder="Date completed"
+                                        type="date"
                                     />
-                                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                        <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                    </Combobox.Button>
-                                </div>
-                                <Combobox.Options className="shadow-md rounded-md">
-                                    {filteredCategories.map((category) => (
-                                        <Combobox.Option
-                                            className="cursor-pointer m-0 py-3 px-2 "
-                                            key={category}
-                                            value={category}
-                                        >
-                                            {category}
-                                        </Combobox.Option>
-                                    ))}
-                                </Combobox.Options>
-                            </Combobox>
-                        </div>
-
-                        {values.github_urls.map((issue, index) => {
-                            return (
-                                <div key={index} className="flex items-center space-x-2">
-                                    <div className="flex-grow">
-                                        <Input
-                                            id="github-url"
-                                            value={values.github_urls[index]}
-                                            label="GitHub URL"
-                                            name={`github_urls[${index}]`}
-                                            placeholder="GitHub URL"
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const issues = [...values.github_urls]
-                                            issues.splice(index, 1)
-                                            setFieldValue('github_urls', issues)
-                                        }}
+                                )}
+                                {!values.complete && (
+                                    <Input
+                                        value={values.projected_completion_date}
+                                        label="Projected completion date"
+                                        id="projected_completion_date"
+                                        name="projected_completion_date"
+                                        placeholder="Projected completion date"
+                                        type="date"
+                                    />
+                                )}
+                                <div className="mb-6">
+                                    <label className="text-[16px] font-semibold opacity-75 my-2" htmlFor={'category'}>
+                                        Category
+                                    </label>
+                                    <Combobox
+                                        value={values.category}
+                                        onChange={(category) => setFieldValue('category', category)}
                                     >
-                                        <XIcon className="w-4 text-[red]" />
-                                    </button>
+                                        <div className="relative">
+                                            <Combobox.Input
+                                                id="category"
+                                                className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
+                                                onChange={(event) => {
+                                                    setFieldValue('category', event.target.value)
+                                                    setQuery(event.target.value)
+                                                }}
+                                            />
+                                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                            </Combobox.Button>
+                                        </div>
+                                        <Combobox.Options className="shadow-md rounded-md">
+                                            {filteredCategories.map((category) => (
+                                                <Combobox.Option
+                                                    className="cursor-pointer m-0 py-3 px-2 "
+                                                    key={category}
+                                                    value={category}
+                                                >
+                                                    {category}
+                                                </Combobox.Option>
+                                            ))}
+                                        </Combobox.Options>
+                                    </Combobox>
                                 </div>
-                            )
-                        })}
-                        <button
-                            type="button"
-                            onClick={() => setFieldValue('github_urls', [...values.github_urls, ''])}
-                            className="text-red font-bold mb-6"
-                        >
-                            Add GitHub URL
-                        </button>
 
-                        <div className="flex space-x-4">
-                            <div className="flex items-center space-x-2 mb-6">
-                                <label
-                                    className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
-                                    htmlFor="milestone"
+                                {values.github_urls.map((issue, index) => {
+                                    return (
+                                        <div key={index} className="flex items-center space-x-2">
+                                            <div className="flex-grow">
+                                                <Input
+                                                    id="github-url"
+                                                    value={values.github_urls[index]}
+                                                    label="GitHub URL"
+                                                    name={`github_urls[${index}]`}
+                                                    placeholder="GitHub URL"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const issues = [...values.github_urls]
+                                                    issues.splice(index, 1)
+                                                    setFieldValue('github_urls', issues)
+                                                }}
+                                            >
+                                                <XIcon className="w-4 text-[red]" />
+                                            </button>
+                                        </div>
+                                    )
+                                })}
+                                <button
+                                    type="button"
+                                    onClick={() => setFieldValue('github_urls', [...values.github_urls, ''])}
+                                    className="text-red font-bold mb-6"
                                 >
-                                    Milestone
-                                </label>
-                                <Field type="checkbox" name="milestone" id="milestone" />
+                                    Add GitHub URL
+                                </button>
                             </div>
+                            <div className="w-48">
+                                {config.cloudinary_cloud_name && (
+                                    <ImageUpload
+                                        onChange={(file) => setFieldValue('image', file)}
+                                        value={values.image}
+                                    />
+                                )}
+                                <div className="flex items-center space-x-2 my-6">
+                                    <label
+                                        className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                        htmlFor="complete"
+                                    >
+                                        Complete
+                                    </label>
+                                    <Field type="checkbox" name="complete" id="complete" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <div className="flex items-center space-x-2 mb-6">
+                                        <label
+                                            className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                            htmlFor="milestone"
+                                        >
+                                            Milestone
+                                        </label>
+                                        <Field type="checkbox" name="milestone" id="milestone" />
+                                    </div>
 
-                            <div className="flex items-center space-x-2 mb-6">
-                                <label
-                                    className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
-                                    htmlFor="beta_available"
-                                >
-                                    Beta available
-                                </label>
-                                <Field type="checkbox" name="beta_available" id="beta_available" />
+                                    <div className="flex items-center space-x-2 mb-6">
+                                        <label
+                                            className="text-[16px] font-semibold opacity-75 flex-shrink-0 m-0"
+                                            htmlFor="beta_available"
+                                        >
+                                            Beta available
+                                        </label>
+                                        <Field type="checkbox" name="beta_available" id="beta_available" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                         <div className="flex items-center mt-4 space-x-2 justify-between">
                             {handleDelete && (
                                 <Button
@@ -247,6 +259,7 @@ const Team = ({ id }) => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
     const [team, setTeam] = useState<GetTeamResponse | null | undefined>(null)
     const [addTeamMemberOpen, setAddTeamMemberOpen] = useState(false)
+    const [config, setConfig] = useState<SqueakConfig>()
     const handleNewRoadmap = async (values) => {
         await createRoadmap({ ...values, teamId: team?.id.toString() })
         handleUpdate()
@@ -255,6 +268,11 @@ const Team = ({ id }) => {
 
     useEffect(() => {
         getTeam(id).then(({ data }) => setTeam(data))
+        getConfig('').then(({ data }) => {
+            if (data) {
+                setConfig(data)
+            }
+        })
     }, [])
 
     const handleUpdate = async () => {
@@ -268,6 +286,7 @@ const Team = ({ id }) => {
             <AdminLayout title={''} hideTitle>
                 <Modal open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
                     <RoadmapForm
+                        config={config}
                         handleDelete={null}
                         categories={categories}
                         initialValues={{
@@ -290,7 +309,12 @@ const Team = ({ id }) => {
                             <Button onClick={() => setCreateModalOpen(true)}>New goal</Button>
                         </div>
                         {team?.Roadmap?.length > 0 && (
-                            <RoadmapTable categories={categories} onUpdate={handleUpdate} roadmap={team.Roadmap} />
+                            <RoadmapTable
+                                config={config}
+                                categories={categories}
+                                onUpdate={handleUpdate}
+                                roadmap={team.Roadmap}
+                            />
                         )}
                     </section>
                     <aside className="max-w-[300px] w-full mt-6">

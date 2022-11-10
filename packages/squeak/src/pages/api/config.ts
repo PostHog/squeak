@@ -26,13 +26,15 @@ async function handleGetConfig(req: NextApiRequest, res: NextApiResponse) {
         organizationId = req.query.organizationId as string
     }
 
+    const user = await getSessionUser(req)
+
+    if (!organizationId) organizationId = user?.organizationId || ''
+
     if (!organizationId) {
         return res.status(400).json({ error: 'Missing required fields' })
     }
 
     let admin = false
-
-    const user = await getSessionUser(req)
 
     if (user) {
         const ro = await getUserRole(organizationId, user?.id)
@@ -77,6 +79,9 @@ export type UpdateConfigPayload = Pick<
     | 'show_slack_user_profiles'
     | 'permalink_base'
     | 'permalinks_enabled'
+    | 'cloudinary_cloud_name'
+    | 'cloudinary_api_key'
+    | 'cloudinary_api_secret'
 >
 
 // PATCH /api/config

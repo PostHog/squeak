@@ -1,8 +1,10 @@
+import { SqueakConfig } from '@prisma/client'
 import uniqBy from 'lodash.groupby'
 import { ReactElement, useEffect, useState } from 'react'
 import Button from 'src/components/Button'
 import Modal from 'src/components/Modal'
 import RoadmapTable from 'src/components/RoadmapTable'
+import { getConfig } from 'src/lib/api'
 import { createRoadmap, getRoadmaps } from 'src/lib/api/roadmap'
 import { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
@@ -13,12 +15,18 @@ import { RoadmapForm } from './team/[id]'
 const Roadmaps: NextPageWithLayout = () => {
     const [modalOpen, setModalOpen] = useState(false)
     const [roadmaps, setRoadmaps] = useState<GetRoadmapResponse[]>([])
+    const [config, setConfig] = useState<SqueakConfig>()
     const categories = Object.keys(uniqBy(roadmaps, 'category'))
 
     useEffect(() => {
         getRoadmaps().then(({ data }) => {
             if (data) {
                 setRoadmaps(data)
+            }
+        })
+        getConfig('').then(({ data }) => {
+            if (data) {
+                setConfig(data)
             }
         })
     }, [])
@@ -32,7 +40,21 @@ const Roadmaps: NextPageWithLayout = () => {
     }
 
     const handleNewRoadmap = async (values) => {
-        await createRoadmap({ ...values })
+        let roadmap
+        if (values.image && !values.image.id) {
+            const formData = new FormData()
+            formData.append('image', values.image)
+            const uploadedImage = await fetch('/api/image', {
+                method: 'POST',
+                body: formData,
+            }).then((res) => res.json())
+            const { image, ...other } = values
+            roadmap = { ...other, imageId: uploadedImage.id }
+        } else {
+            const { image, ...other } = values
+            roadmap = other
+        }
+        await createRoadmap(roadmap)
         handleUpdate()
         setModalOpen(false)
     }
@@ -41,6 +63,7 @@ const Roadmaps: NextPageWithLayout = () => {
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
+                    config={config}
                     handleDelete={null}
                     categories={categories}
                     initialValues={{
@@ -52,6 +75,7 @@ const Roadmaps: NextPageWithLayout = () => {
                         title: '',
                         category: '',
                         milestone: false,
+                        image: null,
                     }}
                     onSubmit={handleNewRoadmap}
                 />
@@ -60,7 +84,13 @@ const Roadmaps: NextPageWithLayout = () => {
                 <h1>Roadmap</h1>
                 <Button onClick={() => setModalOpen(true)}>New</Button>
             </div>
-            <RoadmapTable categories={categories} onUpdate={handleUpdate} showTeams roadmap={roadmaps} />
+            <RoadmapTable
+                config={config}
+                categories={categories}
+                onUpdate={handleUpdate}
+                showTeams
+                roadmap={roadmaps}
+            />
         </>
     )
 }
