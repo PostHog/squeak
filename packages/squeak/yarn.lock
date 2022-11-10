@@ -5814,7 +5814,7 @@ split2@^4.1.0:
   resolved "https://registry.yarnpkg.com/split2/-/split2-4.1.0.tgz#101907a24370f85bb782f08adaabe4e281ecf809"
   integrity sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==
 
-squeak-react@^3.0.1:
+"squeak-react@workspace:*":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-3.2.0.tgz#87cb75acf96677caad6754ef3338c304ee456c0e"
   integrity sha512-eftNkNVagpPHB02k17aRQEmWBKN6Xl2NYXFnphubwBpDFq0uOa41ywbgwPsutOP0l3ejLvBpNvV8l5AO5eVaAA==

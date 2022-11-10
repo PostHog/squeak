@@ -10,6 +10,7 @@ import { getQuestion } from '../../db/question'
 import { withAdminGetStaticProps } from '../../util/withAdminAccess'
 import { getConfig } from '../../db'
 import prisma from 'src/lib/db'
+import {} from 'squeak-react'
 
 const SingleQuestion: any = dynamic(() => import('squeak-react').then((mod) => mod.Question), { ssr: false })
 
