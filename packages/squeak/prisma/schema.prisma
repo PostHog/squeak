@@ -33,6 +33,9 @@ model SqueakConfig {
   permalink_base           String?
   permalinks_enabled       Boolean?     @default(false)
   organization             Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "config_organizations_id_fkey")
+  cloudinary_cloud_name    String?
+  cloudinary_api_key       String?
+  cloudinary_api_secret    String?
 
   @@map("squeak_config")
 }
@@ -226,14 +229,14 @@ model Profile {
   location   String?
   website    String?
 
-  github     String?
-  twitter    String?
-  linkedin   String?
+  github   String?
+  twitter  String?
+  linkedin String?
 
-  company       String?
-  company_role  String?
+  company      String?
+  company_role String?
 
-  squeak_messages  Question[]
+  squeak_messages Question[]
 
   organization    Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   organization_id String       @db.Uuid
@@ -278,6 +281,18 @@ model Roadmap {
   category                  String
   milestone                 Boolean   @default(false)
   beta_available            Boolean   @default(false)
+  image                     Image?    @relation(fields: [imageId], references: [id])
+  imageId                   String?
 
   @@map("squeak_roadmaps")
+}
+
+model Image {
+  id              String    @id @default(cuid())
+  publicId        String    @unique
+  format          String
+  version         String
+  organization_id String
+  cloud_name      String
+  Roadmap         Roadmap[]
 }

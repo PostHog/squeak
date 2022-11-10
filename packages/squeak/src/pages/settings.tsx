@@ -2,6 +2,7 @@ import { or } from 'ajv/dist/compile/codegen'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
+import ImageSettings from 'src/components/ImageSettings'
 import { NextPageWithLayout } from '../@types/types'
 
 import Button from '../components/Button'
@@ -36,6 +37,9 @@ interface Props {
     initialShowSlackUserInfo: boolean
     permalinkBase: string
     permalinksEnabled: boolean
+    cloudinary_cloud_name: string
+    cloudinary_api_key: string
+    cloudinary_api_secret: string
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -53,6 +57,9 @@ const Settings: NextPageWithLayout<Props> = ({
     initialShowSlackUserInfo,
     permalinkBase,
     permalinksEnabled,
+    cloudinary_cloud_name,
+    cloudinary_api_key,
+    cloudinary_api_secret,
 }) => {
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
@@ -100,92 +107,120 @@ const Settings: NextPageWithLayout<Props> = ({
                         label="Display all questions"
                         helper="Turn this on to display all questions regardless of the pathname"
                     />
-                    <Toggle
-                        className="pt-1"
-                        checked={showSlackUserInfo}
-                        setChecked={handleShowSlackUserInfo}
-                        label="Display Slack user info"
-                        helper="Turn this on to display first name and avatar on Slack messages"
-                    />
-                    <h3 className="mt-6 font-bold">Moderation settings</h3>
-                    <Toggle
-                        className="pt-1"
-                        checked={questionAutoPublish}
-                        setChecked={handleQuestionAutoPublish}
-                        label="Publish new questions automatically"
-                        helper="Turn this off if you'd like to moderate questions before they appear on your site"
-                    />
-                    <Toggle
-                        className="pt-1"
-                        checked={replyAutoPublish}
-                        setChecked={handleReplyAutoPublish}
-                        label="Publish new replies automatically"
-                        helper="Disable to moderate replies before they appear on your site"
-                    />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Permalinks</h3>
-                    <PermalinkSettings
-                        companyDomain={companyDomain}
-                        permalinkBase={permalinkBase}
-                        permalinksEnabled={permalinksEnabled}
-                        actionButtons={(isValid, loading) => (
-                            <Button loading={loading} disabled={!isValid} type="submit">
-                                Save
-                            </Button>
-                        )}
-                    />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Company details</h3>
-                    <CompanyDetails
-                        companyDomain={companyDomain}
-                        companyName={companyName}
-                        actionButtons={(isValid, loading) => (
-                            <Button loading={loading} disabled={!isValid} type="submit">
-                                Save
-                            </Button>
-                        )}
-                    />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Alerts</h3>
-                    <p className="mb-6">
-                        Setup outgoing webhooks to alert other services (like Slack) about new questions added to
-                        Squeak!
-                    </p>
-                    <WebhookTable />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Allowed domain(s)</h3>
-                    <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
-                    <AllowedOriginTable organizationId={organizationId} />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Email notifications</h3>
-                    <p>Configure emails for users when someone answers their question.</p>
-                    <NotificationForm
-                        mailgunName={mailgunName}
-                        mailgunEmail={mailgunEmail}
-                        mailgunDomain={mailgunDomain}
-                        mailgunApiKey={mailgunApiKey}
-                        actionButtons={(isValid, loading) => (
-                            <Button loading={loading} disabled={!isValid} type="submit">
-                                Save
-                            </Button>
-                        )}
-                    />
-                </Surface>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Import threads from Slack</h3>
-                    <p className="mb-6">
-                        Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
-                        <Link href="/slack" passHref>
-                            <a>Import Slack threads</a>
-                        </Link>{' '}
-                        page.)
-                    </p>
+                </div>
+                <h3 className="font-bold">Snippet settings</h3>
+                <Toggle
+                    className="pt-1"
+                    checked={allQuestions}
+                    setChecked={() => setAllQuestions(!allQuestions)}
+                    label="Display all questions"
+                    helper="Turn this on to display all questions regardless of the pathname"
+                />
+                <Toggle
+                    className="pt-1"
+                    checked={showSlackUserInfo}
+                    setChecked={handleShowSlackUserInfo}
+                    label="Display Slack user info"
+                    helper="Turn this on to display first name and avatar on Slack messages"
+                />
+                <h3 className="mt-6 font-bold">Moderation settings</h3>
+                <Toggle
+                    className="pt-1"
+                    checked={questionAutoPublish}
+                    setChecked={handleQuestionAutoPublish}
+                    label="Publish new questions automatically"
+                    helper="Turn this off if you'd like to moderate questions before they appear on your site"
+                />
+                <Toggle
+                    className="pt-1"
+                    checked={replyAutoPublish}
+                    setChecked={handleReplyAutoPublish}
+                    label="Publish new replies automatically"
+                    helper="Disable to moderate replies before they appear on your site"
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Permalinks</h3>
+                <PermalinkSettings
+                    companyDomain={companyDomain}
+                    permalinkBase={permalinkBase}
+                    permalinksEnabled={permalinksEnabled}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Company details</h3>
+                <CompanyDetails
+                    companyDomain={companyDomain}
+                    companyName={companyName}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Alerts</h3>
+                <p className="mb-6">
+                    Setup outgoing webhooks to alert other services (like Slack) about new questions added to Squeak!
+                </p>
+                <WebhookTable />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Allowed domain(s)</h3>
+                <p className="mb-6">Restrict the origins where Squeak! can be embedded.</p>
+                <AllowedOriginTable organizationId={organizationId} />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Email notifications</h3>
+                <p>Configure emails for users when someone answers their question.</p>
+                <NotificationForm
+                    mailgunName={mailgunName}
+                    mailgunEmail={mailgunEmail}
+                    mailgunDomain={mailgunDomain}
+                    mailgunApiKey={mailgunApiKey}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Images</h3>
+                <p>Connect to Cloudinary to add image support to certain fields</p>
+                <ImageSettings
+                    cloudinary_cloud_name={cloudinary_cloud_name}
+                    cloudinary_api_key={cloudinary_api_key}
+                    cloudinary_api_secret={cloudinary_api_secret}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Import threads from Slack</h3>
+                <p className="mb-6">
+                    Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
+                    <Link href="/slack" passHref>
+                        <a>Import Slack threads</a>
+                    </Link>{' '}
+                    page.)
+                </p>
 
+                <p>
+                    Note: This is specifically for importing threads from Slack. To receive notifications when a user
+                    posts a question on your site, visit the Alerts section above.
+                </p>
+                <hr className="my-8" />
+                <SlackManifestSnippet />
                     <p>
                         Note: This is specifically for importing threads from Slack. To receive notifications when a
                         user posts a question on your site, visit the Alerts section above.
@@ -237,6 +272,9 @@ export const getServerSideProps = withAdminGetStaticProps({
                 show_slack_user_profiles: true,
                 permalink_base: true,
                 permalinks_enabled: true,
+                cloudinary_cloud_name: true,
+                cloudinary_api_key: true,
+                cloudinary_api_secret: true,
             },
             where: { organization_id: user.organizationId },
         })
@@ -259,6 +297,9 @@ export const getServerSideProps = withAdminGetStaticProps({
                 initialShowSlackUserInfo: config?.show_slack_user_profiles || false,
                 permalinkBase: config?.permalink_base || '',
                 permalinksEnabled: config?.permalinks_enabled || false,
+                cloudinary_cloud_name: config?.cloudinary_cloud_name || '',
+                cloudinary_api_key: config?.cloudinary_api_key || '',
+                cloudinary_api_secret: config?.cloudinary_api_secret || '',
             },
         }
     },
