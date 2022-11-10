@@ -82,30 +82,19 @@ const Settings: NextPageWithLayout<Props> = ({
     }
 
     return (
-        <AdminLayout contentStyle={{ maxWidth: 800, margin: '0 auto' }} title="Settings">
-            <div>
-                <Surface className="mb-4">
-                    <h3 className="font-bold">Snippet</h3>
-                    <p>Embed this JavaScript snippet on any page where you want Squeak! to appear.</p>
-                    <p>
-                        <strong>Using React?</strong> Use{' '}
-                        <a href="https://github.com/posthog/squeak-react">squeak-react</a> and copy in the variables
-                        from below.
-                    </p>
-                    <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
-                        <CodeSnippet
-                            allQuestions={allQuestions}
-                            organizationId={organizationId}
-                            className="text-sm !px-8"
-                        />
-                    </div>
-                    <h3 className="font-bold">Snippet settings</h3>
-                    <Toggle
-                        className="pt-1"
-                        checked={allQuestions}
-                        setChecked={() => setAllQuestions(!allQuestions)}
-                        label="Display all questions"
-                        helper="Turn this on to display all questions regardless of the pathname"
+        <div>
+            <Surface className="mb-4">
+                <h3 className="font-bold">Snippet</h3>
+                <p>Embed this JavaScript snippet on any page where you want Squeak! to appear.</p>
+                <p>
+                    <strong>Using React?</strong> Use <a href="https://github.com/posthog/squeak-react">squeak-react</a>{' '}
+                    and copy in the variables from below.
+                </p>
+                <div className="overflow-x-auto max-w-6xl -ml-7 -mr-7 my-6 w-[calc(100%_+_3.5rem)]">
+                    <CodeSnippet
+                        allQuestions={allQuestions}
+                        organizationId={organizationId}
+                        className="text-sm !px-8"
                     />
                 </div>
                 <h3 className="font-bold">Snippet settings</h3>
@@ -221,35 +210,36 @@ const Settings: NextPageWithLayout<Props> = ({
                 </p>
                 <hr className="my-8" />
                 <SlackManifestSnippet />
-                    <p>
-                        Note: This is specifically for importing threads from Slack. To receive notifications when a
-                        user posts a question on your site, visit the Alerts section above.
-                    </p>
-                    <hr className="my-8" />
-                    <SlackManifestSnippet />
 
-                    <SlackForm
-                        slackApiKey={slackApiKey}
-                        slackQuestionChannel={slackQuestionChannel}
-                        actionButtons={(isValid: boolean, loading: boolean) => (
-                            <Button loading={loading} disabled={!isValid} type="submit">
-                                Save
-                            </Button>
-                        )}
-                    />
-                </Surface>
-                <Surface>
-                    <h3 className="font-bold">Change password</h3>
-                    <p>Careful, we only ask for it once (because your time is valuable).</p>
-                    <ResetPassword
-                        actionButtons={(isValid: boolean, loading: boolean) => (
-                            <Button loading={loading} disabled={!isValid} type="submit">
-                                Update
-                            </Button>
-                        )}
-                    />
-                </Surface>
-            </div>
+                <SlackForm
+                    slackApiKey={slackApiKey}
+                    slackQuestionChannel={slackQuestionChannel}
+                    actionButtons={(isValid: boolean, loading: boolean) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface>
+                <h3 className="font-bold">Change password</h3>
+                <p>Careful, we only ask for it once (because your time is valuable).</p>
+                <ResetPassword
+                    actionButtons={(isValid: boolean, loading: boolean) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Update
+                        </Button>
+                    )}
+                />
+            </Surface>
+        </div>
+    )
+}
+
+Settings.getLayout = function getLayout(page: ReactElement) {
+    return (
+        <AdminLayout contentStyle={{ maxWidth: 800, margin: '0 auto' }} title="Settings">
+            {page}
         </AdminLayout>
     )
 }
