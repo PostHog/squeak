@@ -50,9 +50,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     const user = await getSessionUser(req)
 
-    if (!user) return orgIdNotFound(res)
+    const organizationId = (req.query.organizationId as string) || user?.organizationId
 
-    const organizationId = req.body.organizationId || user.organizationId
+    if (!organizationId) return orgIdNotFound(res)
 
     const teams: Team[] = await prisma.team.findMany({
         where: {
