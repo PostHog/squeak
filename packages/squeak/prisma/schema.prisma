@@ -249,7 +249,8 @@ model Profile {
 
   replies Reply[]
 
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  subscriptions Roadmap[]
 
   @@unique([user_id, organization_id])
   @@map("squeak_profiles")
@@ -283,6 +284,7 @@ model Roadmap {
   beta_available            Boolean   @default(false)
   image                     Image?    @relation(fields: [imageId], references: [id])
   imageId                   String?
+  subscribers               Profile[]
 
   @@map("squeak_roadmaps")
 }
