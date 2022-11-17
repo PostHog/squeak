@@ -2,6 +2,7 @@ import { or } from 'ajv/dist/compile/codegen'
 import { GetStaticPropsResult } from 'next'
 import Link from 'next/link'
 import React, { ReactElement, useState } from 'react'
+import CustomerIOSettings from 'src/components/CustomerIOSettings'
 import ImageSettings from 'src/components/ImageSettings'
 import { NextPageWithLayout } from '../@types/types'
 
@@ -40,6 +41,10 @@ interface Props {
     cloudinary_cloud_name: string
     cloudinary_api_key: string
     cloudinary_api_secret: string
+    customer_io_app_api_key: string
+    customer_io_tracking_api_key: string
+    customer_io_broadcast_id?: number | null | undefined
+    customer_io_site_id: string
 }
 
 const Settings: NextPageWithLayout<Props> = ({
@@ -60,6 +65,10 @@ const Settings: NextPageWithLayout<Props> = ({
     cloudinary_cloud_name,
     cloudinary_api_key,
     cloudinary_api_secret,
+    customer_io_app_api_key,
+    customer_io_tracking_api_key,
+    customer_io_broadcast_id,
+    customer_io_site_id,
 }) => {
     const [questionAutoPublish, setQuestionAutoPublish] = useState(initialQuestionAutoPublish)
     const [replyAutoPublish, setReplyAutoPublish] = useState(initialReplyAutoPublish)
@@ -195,6 +204,21 @@ const Settings: NextPageWithLayout<Props> = ({
                 />
             </Surface>
             <Surface className="mb-4">
+                <h3 className="font-bold">Customer.io</h3>
+                <p>Connect to Customer.io to enable email notifications</p>
+                <CustomerIOSettings
+                    customer_io_site_id={customer_io_site_id}
+                    customer_io_broadcast_id={customer_io_broadcast_id}
+                    customer_io_app_api_key={customer_io_app_api_key}
+                    customer_io_tracking_api_key={customer_io_tracking_api_key}
+                    actionButtons={(isValid, loading) => (
+                        <Button loading={loading} disabled={!isValid} type="submit">
+                            Save
+                        </Button>
+                    )}
+                />
+            </Surface>
+            <Surface className="mb-4">
                 <h3 className="font-bold">Import threads from Slack</h3>
                 <p className="mb-6">
                     Manage configuration for importing threads via Slack. (Imported posts appear on the{' '}
@@ -265,6 +289,10 @@ export const getServerSideProps = withAdminGetStaticProps({
                 cloudinary_cloud_name: true,
                 cloudinary_api_key: true,
                 cloudinary_api_secret: true,
+                customer_io_app_api_key: true,
+                customer_io_tracking_api_key: true,
+                customer_io_broadcast_id: true,
+                customer_io_site_id: true,
             },
             where: { organization_id: user.organizationId },
         })
@@ -290,6 +318,10 @@ export const getServerSideProps = withAdminGetStaticProps({
                 cloudinary_cloud_name: config?.cloudinary_cloud_name || '',
                 cloudinary_api_key: config?.cloudinary_api_key || '',
                 cloudinary_api_secret: config?.cloudinary_api_secret || '',
+                customer_io_app_api_key: config?.customer_io_app_api_key || '',
+                customer_io_tracking_api_key: config?.customer_io_tracking_api_key || '',
+                customer_io_broadcast_id: config?.customer_io_broadcast_id,
+                customer_io_site_id: config?.customer_io_site_id || '',
             },
         }
     },

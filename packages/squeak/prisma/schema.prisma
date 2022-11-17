@@ -36,6 +36,10 @@ model SqueakConfig {
   cloudinary_cloud_name    String?
   cloudinary_api_key       String?
   cloudinary_api_secret    String?
+  customer_io_app_api_key      String?
+  customer_io_tracking_api_key      String?
+  customer_io_broadcast_id Int?
+  customer_io_site_id String?
 
   @@map("squeak_config")
 }

@@ -82,6 +82,10 @@ export type UpdateConfigPayload = Pick<
     | 'cloudinary_cloud_name'
     | 'cloudinary_api_key'
     | 'cloudinary_api_secret'
+    | 'customer_io_app_api_key'
+    | 'customer_io_tracking_api_key'
+    | 'customer_io_broadcast_id'
+    | 'customer_io_site_id'
 >
 
 // PATCH /api/config

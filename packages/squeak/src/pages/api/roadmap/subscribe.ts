@@ -5,6 +5,7 @@ import nextConnect from 'next-connect'
 import { corsMiddleware, allowedOrigin } from 'src/lib/middleware'
 import { getSessionUser } from 'src/lib/auth'
 import prisma from 'src/lib/db'
+import { addPersonToCustomerIO } from 'src/util/customerIO'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
@@ -30,7 +31,9 @@ async function subscribeToRoadmapItem(req: NextApiRequest, res: NextApiResponse)
         })
         .catch((err) => console.log(err))
 
-    res.status(200)
+    await addPersonToCustomerIO({ user, res })
+
+    return res.status(200).json({ success: 'User subscribed' })
 }
 
 export default handler

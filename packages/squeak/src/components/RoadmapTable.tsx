@@ -64,6 +64,12 @@ const RoadmapTable = ({
                                     >
                                         Category
                                     </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                    >
+                                        Subscribers
+                                    </th>
                                     {showTeams && (
                                         <th
                                             scope="col"
@@ -126,6 +132,7 @@ const RoadmapRow = ({
         team,
         beta_available,
         image,
+        subscribers,
     } = roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
     const [query, setQuery] = useState('')
@@ -204,6 +211,7 @@ const RoadmapRow = ({
                     {date_completed ? new Date(date_completed).toISOString().slice(0, 10) : ''}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{category}</td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{subscribers?.length}</td>
                 {teams && (
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap relative">
                         <Combobox value={team} onChange={updateGoalTeam}>

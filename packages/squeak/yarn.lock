@@ -2278,6 +2278,11 @@ csstype@^3.0.2, csstype@^3.0.6:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
+customerio-node@^3.3.6:
+  version "3.3.6"
+  resolved "https://registry.yarnpkg.com/customerio-node/-/customerio-node-3.3.6.tgz#6ac608b9fbdf207745db17a541e265bfe15fc70b"
+  integrity sha512-NdjsimaIWSvRmdBL/j+IY/XLgq95FdO6ryQTwj7dBRSs7TUaTowXi4sOFlSO6AkoZY/g5tzxQ0Bt611XBKh0ug==
+
 cypress@^10.9.0:
   version "10.11.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-10.11.0.tgz#e9fbdd7638bae3d8fb7619fd75a6330d11ebb4e8"
