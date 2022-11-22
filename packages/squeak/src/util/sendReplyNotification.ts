@@ -99,7 +99,7 @@ const sendReplyNotification = async (organizationId: string, messageId: number, 
         from: `${mailgun_from_name || company_name} <${mailgun_from_email || `noreply@${url.hostname}`}>`,
         to: email,
         subject: `Someone answered your question on ${company_domain}!`,
-        html: `Hey,<br>Someone answered your question on <a href="${url.origin}${message.slug}">${url.origin}${message.slug}</a>!<br><br>Question:<br>${message.subject}<br>${question.body}<br><br>Reply:<br>${body}<br>Thanks,<br>${company_name}`,
+        html: `Hey,<br>Someone answered your question on <a href="${url.origin}${message.slug}">${url.origin}${message.slug}</a>!<br><br><b>Question:</b><br>${message.subject}<br>${question.body}<br><br><b>Reply:</b><br>${body}<br><br>Thanks,<br>${company_name}`,
     }
 
     await mg.messages.create(mailgun_domain, mailgunData)
