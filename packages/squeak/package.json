@@ -47,6 +47,7 @@
         "lodash.groupby": "^4.6.0",
         "lodash.uniqby": "^4.7.0",
         "mailgun.js": "^5.0.1",
+        "marked": "^4.2.3",
         "next": "^12.3.1",
         "next-absolute-url": "^1.2.2",
         "next-connect": "^0.12.2",

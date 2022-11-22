@@ -38,7 +38,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         include: {
             team: true,
             image: true,
-            subscribers: true,
+            subscribers: {
+                include: {
+                    user: {
+                        select: {
+                            email: true,
+                        },
+                    },
+                },
+            },
         },
         orderBy: {
             date_completed: 'desc',

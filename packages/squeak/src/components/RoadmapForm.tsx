@@ -9,6 +9,7 @@ import Button from './Button'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 
 const MDEditor: any = dynamic(
     // @ts-ignore
@@ -213,11 +214,13 @@ const Update = ({
 
 const Notify = ({ subscribers, handleBack, onSubmit, updates }) => {
     const [emailContent, setEmailContent] = useState(updates.join(', '))
+    const [subject, setSubject] = useState('New roadmap update!')
+    const [viewSubscribers, setViewSubscribers] = useState(false)
     const subscriberCount = subscribers.length
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onSubmit && onSubmit()
+        onSubmit && onSubmit({ content: emailContent, subject })
     }
 
     useEffect(() => {
@@ -226,9 +229,43 @@ const Notify = ({ subscribers, handleBack, onSubmit, updates }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className="container">
+            <label className="text-[16px] font-semibold opacity-75 mb-2" htmlFor="subject">
+                Subject
+            </label>
+            <input
+                className="block px-4 py-2 pr-0 border-gray-light border rounded-md w-full"
+                id="subject"
+                name="subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+            />
+            <div className="mt-4">
+                <label className="text-[16px] font-semibold opacity-75 mb-2" htmlFor="content">
+                    Content
+                </label>
                 {/* @ts-ignore */}
-                <MDEditor height={350} value={emailContent} onChange={setEmailContent} />
+                <MDEditor id="content" name="content" height={350} value={emailContent} onChange={setEmailContent} />
+            </div>
+            <div className=" my-6">
+                {!viewSubscribers && (
+                    <button className="text-red font-semibold" onClick={() => setViewSubscribers(true)}>
+                        View subscribers
+                    </button>
+                )}
+                {viewSubscribers && (
+                    <ul className="max-h-52 overflow-auto py-2 px-4 border border-dashed border-gray-400 rounded-md">
+                        {subscribers.map((subscriber) => {
+                            const { id, email, first_name, last_name, user } = subscriber
+                            return (
+                                <li className="text-sm" key={id}>
+                                    <Link href={`/profiles/${id}`}>
+                                        {`${first_name} ${last_name} (${user?.email})`}
+                                    </Link>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                )}
             </div>
             <div className="flex items-center mt-4 space-x-2 justify-between">
                 <Button type="button" onClick={handleBack}>
@@ -279,8 +316,21 @@ export const RoadmapForm = (props) => {
         }
     }
 
-    const handleNotifySubmit = () => {
-        console.log(updates)
+    const handleNotifySubmit = async ({ content, subject }) => {
+        await fetch('/api/roadmap/notify', {
+            method: 'POST',
+            body: JSON.stringify({
+                emails: subscribers.map((subscriber) => subscriber.user?.email),
+                content,
+                subject,
+            }),
+            credentials: 'include',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+        onSubmit && onSubmit(values)
     }
 
     const handleBack = () => {
