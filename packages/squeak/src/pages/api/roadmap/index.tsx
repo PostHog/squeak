@@ -26,13 +26,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-    const user = req.body.organizationId || req.query.organizationId || (await getSessionUser(req))
+    const organizationId =
+        req.body.organizationId || req.query.organizationId || (await getSessionUser(req))?.organizationId
 
-    if (!user) return orgIdNotFound(res)
+    if (!organizationId) return orgIdNotFound(res)
 
     const roadmap = await prisma.roadmap.findMany({
         where: {
-            organization_id: user.organizationId,
+            organization_id: organizationId,
         },
         include: {
             team: true,
