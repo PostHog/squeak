@@ -1,13 +1,13 @@
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import React, { useEffect, useState } from 'react'
 import { deleteRoadmap, updateRoadmap } from '../lib/api/roadmap'
-import { RoadmapForm } from '../pages/team/[id]'
 import Modal from './Modal'
 import { GetRoadmapResponse } from 'src/pages/api/roadmap'
 import { Combobox } from '@headlessui/react'
 import { getTeams } from 'src/lib/api'
 import { GetTeamResponse } from 'src/pages/api/teams'
 import { SqueakConfig } from '@prisma/client'
+import { RoadmapForm } from './RoadmapForm'
 
 const RoadmapTable = ({
     roadmap,
@@ -180,6 +180,8 @@ const RoadmapRow = ({
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
+                    subscribers={subscribers}
+                    allowNotify
                     config={config}
                     onSubmit={handleSubmit}
                     submitText="Update goal"

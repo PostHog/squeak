@@ -741,3 +741,6 @@ label {
 .squeak .squeak-approval-required .squeak-post-button {
     margin-top: 0.5rem;
 }
+.wmde-markdown ul {
+    list-style: initial;
+}
