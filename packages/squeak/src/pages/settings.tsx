@@ -205,7 +205,7 @@ const Settings: NextPageWithLayout<Props> = ({
             </Surface>
             <Surface className="mb-4">
                 <h3 className="font-bold">Customer.io</h3>
-                <p>Connect to Customer.io to enable email notifications</p>
+                <p>Connect to Customer.io to enable email notifications on roadmap items</p>
                 <CustomerIOSettings
                     customer_io_site_id={customer_io_site_id}
                     customer_io_broadcast_id={customer_io_broadcast_id}

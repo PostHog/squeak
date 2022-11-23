@@ -181,7 +181,12 @@ const RoadmapRow = ({
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
                     subscribers={subscribers}
-                    allowNotify
+                    allowNotify={
+                        config?.customer_io_app_api_key &&
+                        config.customer_io_broadcast_id &&
+                        config.customer_io_site_id &&
+                        config.customer_io_tracking_api_key
+                    }
                     config={config}
                     onSubmit={handleSubmit}
                     submitText="Update goal"

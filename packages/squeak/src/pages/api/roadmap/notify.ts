@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSessionUser } from 'src/lib/auth'
 const { APIClient, RegionEU } = require('customerio-node')
-
+import { marked } from 'marked'
 import { methodNotAllowed, orgIdNotFound, requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 
@@ -40,7 +40,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const api = new APIClient(config.customer_io_app_api_key, { region: RegionEU })
 
     const data = {
-        content,
+        content: marked.parse(content),
         subject,
     }
 

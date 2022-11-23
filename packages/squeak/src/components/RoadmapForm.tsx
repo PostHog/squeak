@@ -212,20 +212,24 @@ const Update = ({
     )
 }
 
-const Notify = ({ subscribers, handleBack, onSubmit, updates }) => {
-    const [emailContent, setEmailContent] = useState(updates.join(', '))
+const updatesToMD = (title = '', updates = []) => `## ${title} \n${updates.map((update) => `- ${update}\n`).join('')}`
+
+const Notify = ({ subscribers, handleBack, onSubmit, updates, title }) => {
+    const [emailContent, setEmailContent] = useState(updatesToMD(title, updates))
     const [subject, setSubject] = useState('New roadmap update!')
+    const [loading, setLoading] = useState(false)
     const [viewSubscribers, setViewSubscribers] = useState(false)
     const subscriberCount = subscribers.length
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        onSubmit && onSubmit({ content: emailContent, subject })
+        setLoading(true)
+        onSubmit && (await onSubmit({ content: emailContent, subject }))
     }
 
     useEffect(() => {
-        setEmailContent(updates.join(', '))
-    }, [updates])
+        setEmailContent(updatesToMD(title, updates))
+    }, [updates, title])
 
     return (
         <form onSubmit={handleSubmit}>
@@ -247,7 +251,7 @@ const Notify = ({ subscribers, handleBack, onSubmit, updates }) => {
                 <MDEditor id="content" name="content" height={350} value={emailContent} onChange={setEmailContent} />
             </div>
             <div className=" my-6">
-                {!viewSubscribers && (
+                {subscribers?.length > 0 && !viewSubscribers && (
                     <button className="text-red font-semibold" onClick={() => setViewSubscribers(true)}>
                         View subscribers
                     </button>
@@ -271,7 +275,7 @@ const Notify = ({ subscribers, handleBack, onSubmit, updates }) => {
                 <Button type="button" onClick={handleBack}>
                     Back
                 </Button>
-                <Button disabled={emailContent.trim().length <= 0}>
+                <Button loading={loading} disabled={loading || emailContent.trim().length <= 0}>
                     Update & notify {`${subscriberCount} subscriber${subscriberCount === 1 ? '' : 's'}`}
                 </Button>
             </div>
@@ -305,7 +309,7 @@ export const RoadmapForm = (props) => {
                 }
             }
             valueKeys.forEach((key) => {
-                const oldValue = valueKeys[key]
+                const oldValue = props.initialValues[key]
                 const newValue = values[key]
                 const update = getUpdate(key, oldValue, newValue)
                 if (update) updates.push(update)
@@ -341,6 +345,12 @@ export const RoadmapForm = (props) => {
     return step === 0 ? (
         <Update {...other} onSubmit={handleUpdateSubmit} handleNotify={handleNotify} notify={notify} />
     ) : (
-        <Notify updates={updates} onSubmit={handleNotifySubmit} handleBack={handleBack} subscribers={subscribers} />
+        <Notify
+            title={other.initialValues.title}
+            updates={updates}
+            onSubmit={handleNotifySubmit}
+            handleBack={handleBack}
+            subscribers={subscribers}
+        />
     )
 }
