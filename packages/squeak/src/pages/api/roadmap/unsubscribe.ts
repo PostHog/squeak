@@ -10,9 +10,9 @@ import { addPersonToCustomerIO } from 'src/util/customerIO'
 const handler = nextConnect<NextApiRequest, NextApiResponse>()
     .use(corsMiddleware)
     .use(allowedOrigin)
-    .post(subscribeToRoadmapItem)
+    .post(unsubscribeFromRoadmapItem)
 
-async function subscribeToRoadmapItem(req: NextApiRequest, res: NextApiResponse) {
+async function unsubscribeFromRoadmapItem(req: NextApiRequest, res: NextApiResponse) {
     const user = await getSessionUser(req)
     if (!user) return notAuthenticated(res)
 
@@ -26,7 +26,7 @@ async function subscribeToRoadmapItem(req: NextApiRequest, res: NextApiResponse)
                 id: Number(id),
             },
             data: {
-                subscribers: { connect: { id: user.profileId } },
+                subscribers: { disconnect: { id: user.profileId } },
             },
         })
         .catch((err) => console.log(err))

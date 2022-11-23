@@ -31,6 +31,9 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>()
                 email: true,
                 profiles: {
                     where: { organization_id: session.org_id },
+                    include: {
+                        subscriptions: true,
+                    },
                 },
             },
         })
