@@ -3,7 +3,7 @@ import { getSessionUser } from 'src/lib/auth'
 import { requireOrgAdmin, safeJson } from '../../../lib/api/apiUtils'
 import prisma from '../../../lib/db'
 import nc from 'next-connect'
-
+import getGravatar from 'gravatar'
 import { allowedOrigin, corsMiddleware, validateBody } from '../../../lib/middleware'
 
 const handler = nc<NextApiRequest, NextApiResponse>()
@@ -72,10 +72,12 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         const params: UpdateProfilePayload = req.body
         if (!params || Object.keys(params).some((param) => !allowed.includes(param))) return res.status(500)
         const { teamId, ...other } = params
-
+        const gravatar = getGravatar.url(session?.email || '')
+        const avatar = await fetch(`https:${gravatar}?d=404`).then((res) => (res.ok && `https:${gravatar}`) || null)
         const data = {
             ...(teamId ? { team_id: teamId === 'None' ? null : parseInt(teamId) } : {}),
             ...other,
+            avatar,
         }
 
         const profile = await prisma.profile.update({
