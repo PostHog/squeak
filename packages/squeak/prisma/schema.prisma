@@ -40,6 +40,7 @@ model SqueakConfig {
   customer_io_tracking_api_key      String?
   customer_io_broadcast_id Int?
   customer_io_site_id String?
+  customer_io_segment_id String?
 
   @@map("squeak_config")
 }

@@ -86,6 +86,7 @@ export type UpdateConfigPayload = Pick<
     | 'customer_io_tracking_api_key'
     | 'customer_io_broadcast_id'
     | 'customer_io_site_id'
+    | 'customer_io_segment_id'
 >
 
 // PATCH /api/config

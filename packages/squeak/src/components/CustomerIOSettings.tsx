@@ -14,6 +14,7 @@ interface InitialValues {
     customer_io_tracking_api_key: string
     customer_io_broadcast_id?: number | null | undefined
     customer_io_site_id?: string
+    customer_io_segment_id?: string
 }
 
 const CustomerIOSettings: React.VoidFunctionComponent<Props & InitialValues> = ({
@@ -21,14 +22,20 @@ const CustomerIOSettings: React.VoidFunctionComponent<Props & InitialValues> = (
     customer_io_tracking_api_key,
     customer_io_broadcast_id,
     customer_io_site_id,
+    customer_io_segment_id,
     actionButtons,
 }) => {
     const { addToast } = useToasts()
     const [loading, setLoading] = useState(false)
 
     const handleSaveSettings = async (values: InitialValues) => {
-        const { customer_io_app_api_key, customer_io_tracking_api_key, customer_io_broadcast_id, customer_io_site_id } =
-            values
+        const {
+            customer_io_app_api_key,
+            customer_io_tracking_api_key,
+            customer_io_broadcast_id,
+            customer_io_site_id,
+            customer_io_segment_id,
+        } = values
         setLoading(true)
 
         try {
@@ -37,6 +44,7 @@ const CustomerIOSettings: React.VoidFunctionComponent<Props & InitialValues> = (
                 customer_io_tracking_api_key,
                 customer_io_broadcast_id: Number(customer_io_broadcast_id),
                 customer_io_site_id,
+                customer_io_segment_id,
             })
             addToast('Customer.io settings saved', { appearance: 'success' })
         } catch (error) {
@@ -53,6 +61,7 @@ const CustomerIOSettings: React.VoidFunctionComponent<Props & InitialValues> = (
         customer_io_tracking_api_key,
         customer_io_broadcast_id,
         customer_io_site_id,
+        customer_io_segment_id,
     }
 
     return (
@@ -79,10 +88,18 @@ const CustomerIOSettings: React.VoidFunctionComponent<Props & InitialValues> = (
                             placeholder="Customer.io site ID"
                         />
                         <Input
+                            helperText="Broadcast template to use when notifying users of roadmap updates"
                             label="Customer.io broadcast ID"
                             id="customer_io_broadcast_id"
                             name="customer_io_broadcast_id"
                             placeholder="Customer.io broadcast ID"
+                        />
+                        <Input
+                            helperText="Adds person to specified segment when they subscribe to roadmap updates"
+                            label="Customer.io segment ID"
+                            id="customer_io_segment_id"
+                            name="customer_io_segment_id"
+                            placeholder="Customer.io segment ID"
                         />
 
                         <div className="flex items-center mt-4 space-x-6">{actionButtons(isValid, loading)}</div>

@@ -11,6 +11,7 @@ export const addPersonToCustomerIO = async ({ res, user }: { res: NextApiRespons
             customer_io_broadcast_id: true,
             customer_io_site_id: true,
             customer_io_tracking_api_key: true,
+            customer_io_segment_id: true,
         },
     })
 
@@ -26,10 +27,29 @@ export const addPersonToCustomerIO = async ({ res, user }: { res: NextApiRespons
     const cio = new TrackClient(config?.customer_io_site_id, config?.customer_io_tracking_api_key, { region: RegionUS })
 
     // Creates new person in Customer IO if one doesn't exist
-    return cio
+    await cio
         .identify(user?.email, {
             first_name: profile.first_name,
             last_name: profile.last_name,
         })
         .catch((err) => console.log(err))
+
+    if (config?.customer_io_segment_id) {
+        const auth = new Buffer(`${config?.customer_io_site_id}:${config?.customer_io_tracking_api_key}`).toString(
+            'base64'
+        )
+        await fetch(
+            `https://track.customer.io/api/v1/segments/${config?.customer_io_segment_id}/add_customers?id_type=email`,
+            {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    Authorization: `Basic ${auth}`,
+                },
+                body: JSON.stringify({
+                    ids: [user?.email],
+                }),
+            }
+        ).catch((err) => console.error(err))
+    }
 }
