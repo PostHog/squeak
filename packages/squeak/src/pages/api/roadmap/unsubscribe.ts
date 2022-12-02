@@ -18,7 +18,7 @@ async function unsubscribeFromRoadmapItem(req: NextApiRequest, res: NextApiRespo
 
     const { id } = req.body
 
-    if (!id) return res.status(500).json({ error: 'No roadmap ID provided' })
+    if (!id) return res.status(400).json({ error: 'No roadmap ID provided' })
 
     await prisma.roadmap
         .update({
