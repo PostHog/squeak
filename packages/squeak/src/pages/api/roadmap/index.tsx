@@ -9,6 +9,7 @@ const roadmap = Prisma.validator<Prisma.RoadmapArgs>()({
     include: {
         team: true,
         image: true,
+        subscribers: true,
     },
 })
 
@@ -38,6 +39,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         include: {
             team: true,
             image: true,
+            subscribers: {
+                include: {
+                    user: {
+                        select: {
+                            email: true,
+                        },
+                    },
+                },
+            },
         },
         orderBy: {
             date_completed: 'desc',

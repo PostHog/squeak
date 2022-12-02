@@ -1,13 +1,13 @@
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/outline'
 import React, { useEffect, useState } from 'react'
 import { deleteRoadmap, updateRoadmap } from '../lib/api/roadmap'
-import { RoadmapForm } from '../pages/team/[id]'
 import Modal from './Modal'
 import { GetRoadmapResponse } from 'src/pages/api/roadmap'
 import { Combobox } from '@headlessui/react'
 import { getTeams } from 'src/lib/api'
 import { GetTeamResponse } from 'src/pages/api/teams'
 import { SqueakConfig } from '@prisma/client'
+import { RoadmapForm } from './RoadmapForm'
 
 const RoadmapTable = ({
     roadmap,
@@ -63,6 +63,12 @@ const RoadmapTable = ({
                                         className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                     >
                                         Category
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                    >
+                                        Subscribers
                                     </th>
                                     {showTeams && (
                                         <th
@@ -126,6 +132,7 @@ const RoadmapRow = ({
         team,
         beta_available,
         image,
+        subscribers,
     } = roadmapItem
     const [modalOpen, setModalOpen] = useState(false)
     const [query, setQuery] = useState('')
@@ -173,6 +180,13 @@ const RoadmapRow = ({
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <RoadmapForm
+                    subscribers={subscribers}
+                    allowNotify={
+                        config?.customer_io_app_api_key &&
+                        config.customer_io_broadcast_id &&
+                        config.customer_io_site_id &&
+                        config.customer_io_tracking_api_key
+                    }
                     config={config}
                     onSubmit={handleSubmit}
                     submitText="Update goal"
@@ -204,6 +218,7 @@ const RoadmapRow = ({
                     {date_completed ? new Date(date_completed).toISOString().slice(0, 10) : ''}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{category}</td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{subscribers?.length}</td>
                 {teams && (
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap relative">
                         <Combobox value={team} onChange={updateGoalTeam}>

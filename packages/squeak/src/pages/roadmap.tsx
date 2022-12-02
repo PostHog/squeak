@@ -3,6 +3,7 @@ import uniqBy from 'lodash.groupby'
 import { ReactElement, useEffect, useState } from 'react'
 import Button from 'src/components/Button'
 import Modal from 'src/components/Modal'
+import { RoadmapForm } from 'src/components/RoadmapForm'
 import RoadmapTable from 'src/components/RoadmapTable'
 import { getConfig } from 'src/lib/api'
 import { createRoadmap, getRoadmaps } from 'src/lib/api/roadmap'
@@ -10,7 +11,6 @@ import { NextPageWithLayout } from '../@types/types'
 import AdminLayout from '../layout/AdminLayout'
 import { withAdminGetStaticProps } from '../util/withAdminAccess'
 import { GetRoadmapResponse } from './api/roadmap'
-import { RoadmapForm } from './team/[id]'
 
 const Roadmaps: NextPageWithLayout = () => {
     const [modalOpen, setModalOpen] = useState(false)

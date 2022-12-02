@@ -12,6 +12,7 @@ const teamWithProfiles = Prisma.validator<Prisma.TeamArgs>()({
             include: {
                 team: true,
                 image: true,
+                subscribers: true,
             },
         },
     },

@@ -36,6 +36,11 @@ model SqueakConfig {
   cloudinary_cloud_name    String?
   cloudinary_api_key       String?
   cloudinary_api_secret    String?
+  customer_io_app_api_key      String?
+  customer_io_tracking_api_key      String?
+  customer_io_broadcast_id Int?
+  customer_io_site_id String?
+  customer_io_segment_id String?
 
   @@map("squeak_config")
 }
@@ -249,7 +254,8 @@ model Profile {
 
   replies Reply[]
 
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  subscriptions Roadmap[]
 
   @@unique([user_id, organization_id])
   @@map("squeak_profiles")
@@ -283,6 +289,7 @@ model Roadmap {
   beta_available            Boolean   @default(false)
   image                     Image?    @relation(fields: [imageId], references: [id])
   imageId                   String?
+  subscribers               Profile[]
 
   @@map("squeak_roadmaps")
 }
