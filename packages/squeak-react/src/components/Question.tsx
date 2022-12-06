@@ -213,6 +213,7 @@ export default function Question({
 
   const getQuestion = async () => {
     const permalink = window.location.pathname
+    // @ts-ignore
     const { response, data: question } =
       (await get(apiHost, '/api/question', {
         organizationId,
