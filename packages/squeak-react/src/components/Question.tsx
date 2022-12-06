@@ -193,7 +193,6 @@ type QuestionProps = {
   onResolve: (resolved: boolean, replyId: string | null) => void
   apiHost: string
   question: Question
-  [key: string]: any
 }
 
 export default function Question({
@@ -214,14 +213,13 @@ export default function Question({
 
   const getQuestion = async () => {
     const permalink = window.location.pathname
-    // @ts-ignore
     const { response, data: question } =
       (await get(apiHost, '/api/question', {
         organizationId,
         permalink
       })) || {}
 
-    if (response.status !== 200) return null
+    if (response?.status !== 200) return null
 
     return question
   }
