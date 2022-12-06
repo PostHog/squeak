@@ -1,12 +1,22 @@
-export default function Days({ created, permalink }: { created: string; permalink: string }) {
-    const today = new Date()
-    const posted = new Date(created)
-    const diff = today.getTime() - posted.getTime()
-    const days = Math.round(diff / (1000 * 3600 * 24))
+export const Days = ({
+  created,
+  permalink
+}: {
+  created: string
+  permalink: string
+}) => {
+  const today = new Date()
+  const posted = new Date(created)
+  const diff = today.getTime() - posted.getTime()
+  const days = Math.round(diff / (1000 * 3600 * 24))
 
-    return (
-        <span className="squeak-post-timestamp">
-            <a href={permalink}>{days <= 0 ? 'Today' : `${days} day${days === 1 ? '' : 's'} ago`}</a>
-        </span>
-    )
+  return (
+    <span className='squeak-post-timestamp'>
+      <a href={permalink}>
+        {days <= 0 ? 'Today' : `${days} day${days === 1 ? '' : 's'} ago`}
+      </a>
+    </span>
+  )
 }
+
+export default Days

@@ -1,6 +1,9 @@
 import { Form } from './components/main/Form'
 import { Question } from './components/main/Question'
 import { Squeak } from './components/main/Squeak'
+import { Markdown } from './components/Markdown'
+import { Days } from './components/Days'
+import { Avatar } from './components/Avatar'
 import { Login } from './components/main/Login'
 import { Provider as OrgProvider } from './context/org'
 import { Provider as UserProvider } from './context/user'
@@ -13,6 +16,9 @@ export {
   Question,
   Form,
   Login,
+  Avatar,
+  Markdown,
+  Days,
   OrgProvider,
   UserProvider,
   useOrg,

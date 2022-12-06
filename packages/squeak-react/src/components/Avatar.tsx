@@ -14,13 +14,13 @@ const Image = ({ src }: { src: string | null | undefined }) => {
   )
 }
 
-export default function Avatar({
+export const Avatar = ({
   image,
   url
 }: {
   image?: string | null
   url?: string | null
-}) {
+}) => {
   return (
     <div className='squeak-avatar-container'>
       {url ? (
@@ -33,3 +33,5 @@ export default function Avatar({
     </div>
   )
 }
+
+export default Avatar
