@@ -6,5 +6,16 @@ import { Provider as OrgProvider } from './context/org'
 import { Provider as UserProvider } from './context/user'
 import { useOrg } from './hooks/useOrg'
 import { useUser } from './hooks/useUser'
+import { useQuestion } from './hooks/useQuestion'
 
-export { Squeak, Question, Form, Login, OrgProvider, UserProvider, useOrg, useUser }
+export {
+  Squeak,
+  Question,
+  Form,
+  Login,
+  OrgProvider,
+  UserProvider,
+  useOrg,
+  useUser,
+  useQuestion
+}
