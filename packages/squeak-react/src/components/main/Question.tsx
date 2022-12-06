@@ -2,19 +2,11 @@ import React, { useRef } from 'react'
 import root from 'react-shadow/styled-components'
 import { Provider as OrgProvider } from '../../context/org'
 import { Provider as UserProvider } from '../../context/user'
-import SingleQuestion from '../Question'
+import SingleQuestion, { QuestionProps } from '../Question'
 import { Theme } from '../Theme'
 import ErrorBoundary from '../ErrorBoundary'
 
-type QuestionProps = {
-  apiHost: string
-  organizationId: string
-  onResolve: (resolved: boolean, replyId: string | null) => void
-  onSubmit: () => void
-  question: any
-}
-
-export const Question: React.FC<QuestionProps> = ({
+export const Question: React.FC<QuestionProps & { organizationId: string }> = ({
   apiHost,
   organizationId,
   onResolve,
@@ -33,7 +25,7 @@ export const Question: React.FC<QuestionProps> = ({
             <div className='squeak'>
               <SingleQuestion
                 apiHost={apiHost}
-                question={question?.question}
+                question={question}
                 onSubmit={onSubmit}
                 onResolve={onResolve}
               />

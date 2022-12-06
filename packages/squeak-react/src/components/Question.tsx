@@ -188,11 +188,11 @@ type Question = {
   replies: Reply[]
 }
 
-type QuestionProps = {
+export type QuestionProps = {
   onSubmit: (question: any) => void
   onResolve: (resolved: boolean, replyId: string | null) => void
   apiHost: string
-  question: Question
+  question?: Question
 }
 
 export default function Question({
