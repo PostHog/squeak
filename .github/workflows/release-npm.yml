@@ -1,8 +1,9 @@
 name: Publish package to npmjs
 
 on:
-    pull_request:
-        types: [closed]
+    push:
+        branches:
+            - master
         paths:
             - 'packages/squeak-react/*'
 
