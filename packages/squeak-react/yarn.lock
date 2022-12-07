@@ -1560,11 +1560,6 @@ space-separated-tokens@^2.0.0:
   resolved "https://registry.yarnpkg.com/space-separated-tokens/-/space-separated-tokens-2.0.1.tgz#43193cec4fb858a2ce934b7f98b7f2c18107098b"
   integrity sha512-ekwEbFp5aqSPKaqeY1PGrlGQxPNaq+Cnx4+bE2D8sciBQrHpbwoBbawqTN2+6jPs9IdWxxiUcN0K2pkczD3zmw==
 
-squeak-react@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/squeak-react/-/squeak-react-4.0.0.tgz#fd137f9b6095ee2781d3531f964a414b1fba77d0"
-  integrity sha512-ZLliWBAYGTBPrNoaK/+PBcdsr0NUCyNHm02e82mFwiJDI3kxE0gDcNrfKgbrFfOsmN+Pll5M0VL75HRNzDsbow==
-
 stack-generator@^2.0.5:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/stack-generator/-/stack-generator-2.0.10.tgz#8ae171e985ed62287d4f1ed55a1633b3fb53bb4d"

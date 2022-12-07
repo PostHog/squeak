@@ -4,7 +4,9 @@
   "type": "module",
   "module": "./dist/squeak-react.es.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist/"],
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc --emitDeclarationOnly && vite build",

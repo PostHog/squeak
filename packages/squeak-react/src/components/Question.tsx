@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Provider as QuestionProvider } from '../context/question'
 import { useOrg } from '../hooks/useOrg'
 import { useQuestion } from '../hooks/useQuestion'
-import { get } from '../lib/api'
 import Avatar from './Avatar'
 import QuestionForm from './QuestionForm'
 import Reply from './Reply'
@@ -206,12 +205,14 @@ export default function Question({
   const [replies, setReplies] = useState(other?.question?.replies || [])
   const [firstReply] = replies
 
+  console.log(question)
+
   const {
     organizationId,
     config: { permalink_base, permalinks_enabled }
   } = useOrg()
 
-  const getQuestion = async () => {
+  /*const getQuestion = async () => {
     const permalink = window.location.pathname
     // @ts-ignore
     const { response, data: question } =
@@ -232,11 +233,11 @@ export default function Question({
         setReplies(question?.replies || [])
       })
     }
-  }, [organizationId, permalink_base])
+  }, [organizationId, question, permalink_base])
 
   useEffect(() => {
     setQuestion(other?.question)
-  }, [other?.question])
+  }, [other?.question])*/
 
   return question ? (
     <div className='squeak-question-container'>

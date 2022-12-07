@@ -11,10 +11,10 @@ type ReplyProps = {
   profile: Record<string, any>
   created_at: string
   body: string
-  subject: string
-  badgeText: string
+  subject?: string
+  badgeText?: string | null
   published: boolean
-  permalink: string
+  permalink?: string
   className?: string
 }
 
@@ -76,7 +76,7 @@ export default function Reply({
         )}
 
         {badgeText && <span className='squeak-author-badge'>{badgeText}</span>}
-        <Days permalink={permalink} created={created_at} />
+        <Days created={created_at} />
         {resolved && resolvedBy === id && (
           <>
             <span className='squeak-resolved-badge'>Solution</span>
@@ -92,7 +92,9 @@ export default function Reply({
         )}
       </div>
       <div className='squeak-post-content'>
-        {subject && <h3>{subject}</h3>}
+        {subject && <h3>
+          {permalink ? <a href={permalink}>{subject}</a> : subject}
+        </h3>}
         <Markdown>{body}</Markdown>
         {!subject && (
           <div className='squeak-reply-action-buttons'>

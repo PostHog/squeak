@@ -1,9 +1,7 @@
 export const Days = ({
   created,
-  permalink
 }: {
   created: string
-  permalink: string
 }) => {
   const today = new Date()
   const posted = new Date(created)
@@ -12,9 +10,7 @@ export const Days = ({
 
   return (
     <span className='squeak-post-timestamp'>
-      <a href={permalink}>
         {days <= 0 ? 'Today' : `${days} day${days === 1 ? '' : 's'} ago`}
-      </a>
     </span>
   )
 }
