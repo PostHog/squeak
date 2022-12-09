@@ -50,7 +50,7 @@ type QuestionsProps = {
 }
 
 export default function Questions({
-    slug = window.location.pathname.replace(/\/$/, ''),
+    slug,
     limit = 100,
     onSubmit,
     onLoad,

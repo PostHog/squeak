@@ -3,14 +3,13 @@ import root from 'react-shadow/styled-components'
 
 import { Provider as OrgProvider } from '../../context/org'
 import { Provider as UserProvider } from '../../context/user'
-import Questions from '../Questions'
+import QuestionsList from '../Questions'
 import { Theme } from '../Theme'
 import ErrorBoundary from '../ErrorBoundary'
 
-type SqueakProps = {
+type QuestionsProps = {
   apiHost: string
   organizationId: string
-  slug?: string
   limit?: number
   onSubmit: () => void
   onLoad: () => void
@@ -20,10 +19,9 @@ type SqueakProps = {
   profileLink?: (profile: any) => string
 }
 
-export const Squeak = ({
+export const Questions = ({
   apiHost,
   organizationId,
-  slug = window.location.pathname.replace(/\/$/, ''),
   limit,
   onSubmit,
   onLoad,
@@ -31,7 +29,7 @@ export const Squeak = ({
   onSignUp,
   topic,
   profileLink
-}: SqueakProps) => {
+}: QuestionsProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -42,13 +40,12 @@ export const Squeak = ({
           <UserProvider>
             <Theme containerRef={containerRef} />
             <div className='squeak'>
-              <Questions
+              <QuestionsList
                 onSignUp={onSignUp}
                 onLoad={onLoad}
                 topics={topics}
                 onSubmit={onSubmit}
                 limit={limit}
-                slug={slug}
                 topic={topic}
               />
             </div>

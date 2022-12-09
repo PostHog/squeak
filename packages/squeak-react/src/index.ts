@@ -7,6 +7,7 @@ import { Avatar } from './components/Avatar'
 import { Login } from './components/main/Login'
 import { Provider as OrgProvider } from './context/org'
 import { Provider as UserProvider } from './context/user'
+import { Questions } from './components/main/Questions'
 import { useOrg } from './hooks/useOrg'
 import { useUser } from './hooks/useUser'
 import { useQuestion } from './hooks/useQuestion'
@@ -14,6 +15,7 @@ import { useQuestion } from './hooks/useQuestion'
 export {
   Squeak,
   FullQuestion,
+  Questions,
   Question,
   Form,
   Login,
