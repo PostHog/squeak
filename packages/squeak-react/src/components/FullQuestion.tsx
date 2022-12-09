@@ -152,29 +152,29 @@ export const FullQuestion = ({
     <ErrorBoundary>
       {/* @ts-ignore */}
       <root.div ref={containerRef}>
-      <OrgProvider value={{ organizationId, apiHost }}>
-        <Theme containerRef={containerRef} />
-        <UserProvider>
-          <div className='squeak'>
-            <div className='squeak-question-container'>
-              <Reply
-                className='squeak-post'
-                subject={question.subject}
-                {...firstReply}
-              />
-              <QuestionProvider
-                onSubmit={onSubmit}
-                question={question}
-                replies={question.replies}
-                onResolve={onResolve}
-              >
-                <Replies question={question} />
-              </QuestionProvider>
+        <OrgProvider value={{ organizationId, apiHost }}>
+          <Theme containerRef={containerRef} />
+          <UserProvider>
+            <div className='squeak'>
+              <div className='squeak-question-container'>
+                <Reply
+                  className='squeak-post'
+                  subject={question.subject}
+                  {...firstReply}
+                />
+                <QuestionProvider
+                  onSubmit={onSubmit}
+                  question={question}
+                  replies={question.replies}
+                  onResolve={onResolve}
+                >
+                  <Replies question={question} />
+                </QuestionProvider>
+              </div>
             </div>
-          </div>
-        </UserProvider>
-      </OrgProvider>
-    </root.div>
+          </UserProvider>
+        </OrgProvider>
+      </root.div>
     </ErrorBoundary>
   )
 }
