@@ -4,7 +4,10 @@ import { useUser } from '../hooks/useUser'
 import { useOrg } from '../hooks/useOrg'
 import Avatar from './Avatar'
 import Days from './Days'
-import Markdown from './Markdown'
+
+const Markdown = React.lazy(() =>
+  import("./Markdown")
+)
 
 type ReplyProps = {
   id: string
@@ -29,6 +32,8 @@ export default function Reply({
   permalink,
   ...other
 }: ReplyProps) {
+  const isSSR = typeof window === "undefined"
+
   const question = useQuestion()
   const {
     questionAuthorId,
@@ -95,7 +100,11 @@ export default function Reply({
         {subject && <h3>
           {permalink ? <a href={permalink}>{subject}</a> : subject}
         </h3>}
-        <Markdown>{body}</Markdown>
+        {!isSSR && (
+          <React.Suspense fallback={<div />}>
+            <Markdown>{body}</Markdown>
+          </React.Suspense>
+        )}
         {!subject && (
           <div className='squeak-reply-action-buttons'>
             {!resolved && (isAuthor || isModerator) && (

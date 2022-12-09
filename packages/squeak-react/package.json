@@ -27,11 +27,13 @@
     "prism-react-renderer": "^1.3.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.3",
+    "react-markdown": "^8.0.4",
     "react-shadow": "^19.0.3",
-    "rehype-sanitize": "^5.0.1",
     "styled-components": "^5.3.6",
     "typescript": "^4.8.4",
     "vite": "^3.2.3"
+  },
+  "dependencies": {
+    "rehype-sanitize": "^5.0.1"
   }
 }
