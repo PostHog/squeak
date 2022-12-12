@@ -92,9 +92,6 @@ async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
                     },
                 },
             },
-            orderBy,
-            skip: parseInt(start), // offset
-            take: parseInt(perPage), // limit
         })
 
         const orderMap = latestQuestions.reduce((acc, q, i) => {
