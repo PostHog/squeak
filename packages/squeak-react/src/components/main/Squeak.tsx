@@ -23,7 +23,7 @@ type SqueakProps = {
 export const Squeak = ({
   apiHost,
   organizationId,
-  slug = window.location.pathname.replace(/\/$/, ''),
+  slug,
   limit,
   onSubmit,
   onLoad,
@@ -48,7 +48,7 @@ export const Squeak = ({
                 topics={topics}
                 onSubmit={onSubmit}
                 limit={limit}
-                slug={slug}
+                slug={typeof window !== "undefined" ? window.location.pathname.replace(/\/$/, '') : undefined}
                 topic={topic}
               />
             </div>
