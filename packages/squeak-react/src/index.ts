@@ -1,6 +1,7 @@
 import { Form } from './components/main/Form'
 import { Question } from './components/main/Question'
 import { FullQuestion } from './components/FullQuestion'
+import { Authentication } from './components/Authentication'
 import { Squeak } from './components/main/Squeak'
 import { Days } from './components/Days'
 import { Avatar } from './components/Avatar'
@@ -13,6 +14,7 @@ import { useUser } from './hooks/useUser'
 import { useQuestion } from './hooks/useQuestion'
 
 export {
+  Authentication,
   Squeak,
   FullQuestion,
   Questions,

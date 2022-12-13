@@ -20,7 +20,7 @@ type AuthenticationProps = {
     onSignUp?: () => void
 }
 
-export default function Authentication({
+export const Authentication = ({
     handleMessageSubmit,
     formValues,
     setParentView,
@@ -28,7 +28,7 @@ export default function Authentication({
     buttonText = { login: 'Login', signUp: 'Sign up' },
     banner,
     onSignUp,
-}: AuthenticationProps) {
+}: AuthenticationProps) => {
     const { organizationId, apiHost } = useOrg()
     const [view, setView] = useState(initialView)
     const [message, setMessage] = useState(null)
@@ -127,3 +127,5 @@ export default function Authentication({
         </div>
     )
 }
+
+export default Authentication
