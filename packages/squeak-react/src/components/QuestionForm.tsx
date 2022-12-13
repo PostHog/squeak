@@ -121,18 +121,20 @@ type QuestionFormProps = {
   messageID?: string
   onSubmit: (values: any, formType: string) => void
   onSignUp?: () => void
+  initialView?: string
 }
 
 export default function QuestionForm({
   formType = 'question',
   messageID,
+  initialView,
   onSubmit,
   onSignUp
 }: QuestionFormProps) {
   const { organizationId, apiHost, profileLink } = useOrg()
   const { user, setUser } = useUser()
   const [formValues, setFormValues] = useState(null)
-  const [view, setView] = useState<string | null>(null)
+  const [view, setView] = useState<string | null>(initialView || null)
   const [loading, setLoading] = useState(false)
   const buttonText =
     formType === 'question' ? (
