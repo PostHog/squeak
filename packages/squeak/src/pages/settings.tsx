@@ -263,7 +263,7 @@ const Settings: NextPageWithLayout<Props> = ({
     )
 }
 
-Settings.getLayout = function getLayout(page: ReactElement) {
+Settings.getLayout = function getLayout(page: any) {
     return (
         <AdminLayout contentStyle={{ maxWidth: 800, margin: '0 auto' }} title="Settings">
             {page}
