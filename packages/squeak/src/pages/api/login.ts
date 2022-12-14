@@ -7,6 +7,8 @@ import { setLoginSession } from '../../lib/auth/'
 import prisma from '../../lib/db'
 import { isSDKRequest } from '../../lib/api/apiUtils'
 import { allowedOrigin, corsMiddleware } from 'src/lib/middleware'
+import { promises as fs } from 'fs'
+import path from 'path'
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({})
     .use(corsMiddleware)
@@ -17,6 +19,12 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({})
 async function handleLogin(req: NextApiRequest & { user: User }, res: NextApiResponse) {
     let orgId: string
     let profileId: string
+
+    const dir = path.join(process.cwd(), 'prisma')
+
+    const contents = await fs.readFile(path.join(dir, 'ca-cert.crt'), 'utf8')
+
+    console.log(contents)
 
     // Set the org id based on whether this is a squeak.cloud login or an sdk login
     if (isSDKRequest(req)) {
