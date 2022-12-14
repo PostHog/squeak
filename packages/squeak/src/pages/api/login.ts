@@ -10,7 +10,7 @@ const dir = path.join(process.cwd(), 'prisma')
 
 console.log(dir)
 
-const contents = fs.readFileSync(path.join(process.cwd(), 'prisma', 'ca-cert.crt'), 'utf8')
+const contents = fs.readFileSync(path.join(process.cwd(), 'ca-cert.crt'), 'utf8')
 
 console.log(contents)
 

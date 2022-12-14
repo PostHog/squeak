@@ -3,7 +3,7 @@ const fs = require('fs')
 
 const { withSentryConfig } = require('@sentry/nextjs')
 
-fs.writeFileSync('./prisma/ca-cert.crt', process.env.DATABASE_CA_CERT)
+fs.writeFileSync('./ca-cert.crt', process.env.DATABASE_CA_CERT)
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
