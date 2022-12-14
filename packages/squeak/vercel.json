@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "**/*.(ts|tsx)": {
+            "includeFiles": "./prisma/ca-cert.crt"
+        }
+    }
+}
