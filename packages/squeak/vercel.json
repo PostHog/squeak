@@ -1,6 +1,6 @@
 {
     "functions": {
-        "**/*.ts": {
+        "src/pages/api/**/*.ts": {
             "includeFiles": "ca-cert.crt"
         }
     }
