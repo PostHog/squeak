@@ -7,8 +7,8 @@ fs.writeFileSync('./prisma/ca-cert.crt', process.env.DATABASE_CA_CERT)
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
-    output: 'standalone',
     reactStrictMode: true,
+    outputFileTracing: true,
     async redirects() {
         return [
             {
