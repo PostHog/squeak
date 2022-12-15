@@ -9,8 +9,9 @@ import checkAllowedOrigins from 'src/util/checkAllowedOrigins'
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await NextCors(req, res, {
         methods: ['GET', 'HEAD', 'OPTIONS'],
-        origin: req.headers.origin,
+        origin: '*',
         optionsSuccessStatus: 200,
+        credentials: true,
     })
 
     const { error: allowedOriginError } = await checkAllowedOrigins(req)
