@@ -205,8 +205,6 @@ export default function Question({
   const [replies, setReplies] = useState(other?.question?.replies || [])
   const [firstReply] = replies
 
-  console.log(question)
-
   const {
     organizationId,
     config: { permalink_base, permalinks_enabled }

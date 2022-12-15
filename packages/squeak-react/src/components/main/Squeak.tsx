@@ -34,6 +34,8 @@ export const Squeak = ({
 }: SqueakProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const currentSlug = topic ? undefined : slug || typeof window !== "undefined" ? window.location.pathname : undefined
+
   return (
     <ErrorBoundary>
       {/* @ts-ignore */}
@@ -48,7 +50,7 @@ export const Squeak = ({
                 topics={topics}
                 onSubmit={onSubmit}
                 limit={limit}
-                slug={typeof window !== "undefined" ? window.location.pathname.replace(/\/$/, '') : undefined}
+                slug={currentSlug}
                 topic={topic}
               />
             </div>
