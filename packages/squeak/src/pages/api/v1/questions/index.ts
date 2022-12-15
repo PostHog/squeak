@@ -1,18 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
 import { safeJson } from '../../../../lib/api/apiUtils'
-import nextConnect from 'next-connect'
-import { corsMiddleware, allowedOrigin } from '../../../../lib/middleware'
+import NextCors from 'nextjs-cors'
+import prisma from 'src/lib/db'
+import checkAllowedOrigins from 'src/util/checkAllowedOrigins'
 
-const handler = nextConnect<NextApiRequest, NextApiResponse>()
-    .use(corsMiddleware)
-    .use(allowedOrigin)
-    .get(fetchQuestions)
+export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    await NextCors(req, res, {
+        methods: ['GET', 'HEAD', 'OPTIONS'],
+        origin: req.headers.origin,
+        optionsSuccessStatus: 200,
+    })
 
-const prisma = new PrismaClient()
+    const { error: allowedOriginError } = await checkAllowedOrigins(req)
 
-async function fetchQuestions(req: NextApiRequest, res: NextApiResponse) {
+    if (allowedOriginError) {
+        res.status(allowedOriginError.statusCode).json({ error: allowedOriginError.message })
+        return
+    }
+
     const {
         organizationId,
         start = '0',
