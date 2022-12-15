@@ -1,12 +1,13 @@
 # Install dependencies only when needed
-FROM node:18-alpine AS deps
+FROM node:18.12-alpine3.16 AS deps
+
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production=false
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
+FROM node:18.12-alpine3.16 AS builder
 RUN apk add --no-cache --virtual libc6-compat python3 make g++ openssl openssl-dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -14,14 +15,9 @@ COPY . .
 
 RUN yarn prisma generate
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-
 # PostHog API Key
 ENV NEXT_PUBLIC_POSTHOG_API_KEY=phc_GvaEPSuUrUW2TAwV1vfuMjgikOrw5iOm4a4qJZgNi8k
 
-# Due to the way Next.js works, we set the public URL's to a generic string, then replace these in the entrypoint file
 ENV NEXT_PUBLIC_OPT_OUT_TRACKING=APP_OPT_OUT_TRACKING
 
 # Sentry hooks into `yarn build` and uploads the source maps to Sentry automatically.
@@ -33,7 +29,7 @@ ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 RUN yarn build
 
 # Production image, copy all the files and run next
-FROM node:18-alpine AS runner
+FROM node:18.12-alpine3.16 AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
