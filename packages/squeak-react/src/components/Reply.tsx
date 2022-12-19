@@ -97,14 +97,16 @@ export default function Reply({
         )}
       </div>
       <div className='squeak-post-content'>
-        {subject && <h3>
+        {subject && <h3 className='squeak-subject'>
           {permalink ? <a href={permalink}>{subject}</a> : subject}
         </h3>}
+
         {!isSSR && (
           <React.Suspense fallback={<div />}>
             <Markdown>{body}</Markdown>
           </React.Suspense>
         )}
+
         {!subject && (
           <div className='squeak-reply-action-buttons'>
             {!resolved && (isAuthor || isModerator) && (

@@ -302,6 +302,15 @@ const Style = createGlobalStyle`
             margin-left: 20px;
             border-left: 1px var(--thread-border-style) rgba(var(--primary-color), .4);
             padding-left: calc(25px + 5px);
+
+            .squeak-subject {
+                color: var(--primary-color);
+
+                a {
+                    color: var(--primary-color);
+                    underline: none;
+                }
+            }
         }
 
         // replies to questions
