@@ -1,7 +1,7 @@
 import { TopicGroup, Prisma } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSessionUser } from 'src/lib/auth'
-
+import { requireOrgAdmin } from '../../lib/api/apiUtils'
 import { methodNotAllowed, orgIdNotFound, safeJson } from '../../lib/api/apiUtils'
 import prisma from '../../lib/db'
 
@@ -19,6 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (req.method) {
         case 'POST':
             return handlePost(req, res)
+        case 'PATCH':
+            return handlePatch(req, res)
         case 'GET':
             return handleGet(req, res)
         default:
@@ -37,6 +39,28 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         data: {
             label: body.label,
             organization_id: user.organizationId,
+        },
+    })
+
+    safeJson(res, topicGroup, 201)
+}
+
+async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
+    if (!(await requireOrgAdmin(req, res))) return
+    const user = await getSessionUser(req)
+
+    if (!user) return orgIdNotFound(res)
+
+    const body = req.body
+
+    if (!body?.id || !body?.label) return res.status(400).json({ error: 'Missing required fields' })
+
+    const topicGroup: TopicGroup = await prisma.topicGroup.update({
+        where: {
+            id: BigInt(body?.id),
+        },
+        data: {
+            label: body?.label,
         },
     })
 

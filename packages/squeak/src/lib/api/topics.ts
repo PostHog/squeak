@@ -20,12 +20,19 @@ export function patchTopic({
     organizationId,
     id,
     topicGroupId,
+    label,
 }: {
     organizationId: string
     id: ID
     topicGroupId: string | null
+    label?: string
 }) {
-    return doPatch<GetTopicGroupsResponse[]>(`/api/topics/${id}`, { organizationId, id, topicGroupId })
+    return doPatch<GetTopicGroupsResponse[]>(`/api/topics/${id}`, {
+        organizationId,
+        id,
+        topicGroupId,
+        label,
+    })
 }
 
 export function createTopicGroup(label: string) {
@@ -34,4 +41,8 @@ export function createTopicGroup(label: string) {
 
 export function getTopicGroups(organizationId: string) {
     return doGet<GetTopicGroupsResponse[]>('/api/topic-groups', { organizationId })
+}
+
+export function patchTopicGroup({ organizationId, id, label }) {
+    return doPatch<GetTopicGroupsResponse[]>('/api/topic-groups', { organizationId, id, label })
 }

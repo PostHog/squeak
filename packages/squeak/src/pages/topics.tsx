@@ -7,7 +7,7 @@ import Modal from '../components/Modal'
 import { useEffect, useState } from 'react'
 import { Form, Formik } from 'formik'
 import Input from '../components/Input'
-import { createTopicGroup, getTopicGroups, getTopics, patchTopic } from '../lib/api/topics'
+import { createTopicGroup, getTopicGroups, getTopics, patchTopic, patchTopicGroup } from '../lib/api/topics'
 import Select from '../components/Select'
 import { ID } from '../lib/types'
 import { GetTopicsResponse } from './api/topics'
@@ -29,20 +29,26 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
     const [modalOpen, setModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const handleAddTopicToGroup = async ({
+    const handleUpdateTopic = async ({
         topicGroup,
         newTopicGroup,
+        label,
+        editTopicGroup,
     }: {
         topicGroup: string | bigint
         newTopicGroup: string
+        label: string
+        editTopicGroup: string | null
     }) => {
         setLoading(true)
         let topicGroupId: bigint | string = topicGroup
         if (newTopicGroup) {
             const topicGroupRes = await createTopicGroup(newTopicGroup.trim())
             if (topicGroupRes?.body?.id) topicGroupId = topicGroupRes?.body?.id
+        } else if (editTopicGroup) {
+            await patchTopicGroup({ organizationId, id: topicGroupId, label: editTopicGroup })
         }
-        await patchTopic({ organizationId, id, topicGroupId: topicGroupId as string })
+        await patchTopic({ organizationId, id, label, topicGroupId: topicGroupId as string })
         setModalOpen(false)
         handleSubmit()
         setLoading(false)
@@ -58,7 +64,12 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
         <>
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                 <Formik
-                    initialValues={{ topicGroup: topicGroups[0]?.id, newTopicGroup: '' }}
+                    initialValues={{
+                        topicGroup: topicGroups[0]?.id,
+                        newTopicGroup: '',
+                        label,
+                        editTopicGroup: topicGroups[0]?.label,
+                    }}
                     validateOnMount
                     validate={(values) => {
                         const errors: {
@@ -70,16 +81,27 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
 
                         return errors
                     }}
-                    onSubmit={({ newTopicGroup, topicGroup }) => handleAddTopicToGroup({ newTopicGroup, topicGroup })}
+                    onSubmit={({ newTopicGroup, topicGroup, label, editTopicGroup }) =>
+                        handleUpdateTopic({ newTopicGroup, topicGroup, label, editTopicGroup })
+                    }
                 >
-                    {() => {
+                    {({ values, setFieldValue }) => {
                         return (
                             <Form>
+                                <Input value={values.label} label="Label" placeholder="Label" id="label" name="label" />
                                 <TopicGroupForm
                                     handleRemoveTopicGroup={handleRemoveTopicGroup}
                                     topicGroups={topicGroups}
                                     loading={loading}
+                                    topicGroup={topic_group}
+                                    values={values}
+                                    setFieldValue={setFieldValue}
                                 />
+                                <div className="flex items-center mt-4 space-x-6">
+                                    <Button type="submit" loading={loading} disabled={loading}>
+                                        Update
+                                    </Button>
+                                </div>
                             </Form>
                         )
                     }}
@@ -94,17 +116,35 @@ const Row = ({ label, topic_group, id, organizationId, handleSubmit, topicGroups
                         {topic_group?.label || 'Add to a group'}
                     </button>
                 </td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <button onClick={() => setModalOpen(true)} className="text-red font-semibold">
+                        Edit
+                    </button>
+                </td>
             </tr>
         </>
     )
 }
 
-const TopicGroupForm = ({ loading, topicGroups, handleRemoveTopicGroup }) => {
+const TopicGroupForm = ({ loading, topicGroups, handleRemoveTopicGroup, topicGroup, values, setFieldValue }) => {
     const [createNewGroup, setCreateNewGroup] = useState(false)
+    const [editGroup, setEditGroup] = useState(false)
+
+    useEffect(() => {
+        setFieldValue('editTopicGroup', topicGroups.find((group) => group?.id === values.topicGroup)?.label)
+    }, [values?.topicGroup])
 
     return (
         <>
-            {createNewGroup ? (
+            {editGroup ? (
+                <Input
+                    value={values.editTopicGroup}
+                    label="Edit group"
+                    placeholder="Edit group"
+                    id="edit-topic-group"
+                    name="editTopicGroup"
+                />
+            ) : createNewGroup ? (
                 <Input label="New group" placeholder="New group" id="new-topic-group" name="newTopicGroup" />
             ) : (
                 <Select
@@ -116,37 +156,48 @@ const TopicGroupForm = ({ loading, topicGroups, handleRemoveTopicGroup }) => {
                     })}
                 />
             )}
-            {createNewGroup ? (
-                <button
-                    type="button"
-                    className="text-red font-semibold -mt-4 block"
-                    onClick={(e) => {
-                        e.preventDefault()
-                        setCreateNewGroup(false)
-                    }}
-                >
-                    Add to existing group
-                </button>
-            ) : (
-                <button
-                    type="button"
-                    className="text-red font-semibold -mt-4 block"
-                    onClick={(e) => {
-                        e.preventDefault()
-                        setCreateNewGroup(true)
-                    }}
-                >
-                    Create new group
-                </button>
-            )}
-
-            <div className="flex items-center mt-4 space-x-6">
-                <Button type="submit" loading={loading} disabled={loading}>
-                    Add
-                </Button>
-                <Button type="button" onClick={handleRemoveTopicGroup} loading={loading} disabled={loading}>
-                    Remove
-                </Button>
+            <div className="w-full flex justify-between">
+                {createNewGroup ? (
+                    <button
+                        type="button"
+                        className="text-red font-semibold -mt-4 block"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setCreateNewGroup(false)
+                            setEditGroup(false)
+                        }}
+                    >
+                        Add to existing group
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        className="text-red font-semibold -mt-4 block"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setCreateNewGroup(true)
+                            setEditGroup(false)
+                        }}
+                    >
+                        Create new group
+                    </button>
+                )}
+                {!createNewGroup && (
+                    <button
+                        type="button"
+                        className="text-red font-semibold -mt-4 block"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setFieldValue(
+                                'editTopicGroup',
+                                editGroup ? null : topicGroups.find((group) => group?.id === values.topicGroup)?.label
+                            )
+                            setEditGroup(!editGroup)
+                        }}
+                    >
+                        Edit group
+                    </button>
+                )}
             </div>
         </>
     )
@@ -183,6 +234,12 @@ const TopicsLayout: React.VoidFunctionComponent<Props> = ({ organizationId }) =>
                                             className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                                         >
                                             Group
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                                        >
+                                            <span className="sr-only">Edit</span>
                                         </th>
                                     </tr>
                                 </thead>
