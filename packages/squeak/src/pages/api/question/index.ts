@@ -122,6 +122,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     // generate a permalink from the subject
     let permalink = slugify(subject, {
         lower: true,
+        strict: true,
     })
 
     // Ensure the permalink is unique
