@@ -24,22 +24,18 @@ interface IValues {
 }
 
 const EditQuestion: React.FunctionComponent<Props> = ({ values, replyId, onSubmit, permalinkBase }) => {
-    const { subject, id, published, resolved, ...other } = values
+    const { subject, id, published, resolved, permalink } = values
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const router = useRouter()
     const { addToast } = useToasts()
-    const [permalink, setPermalink] = useState(other.permalink)
 
     const handleSave = async (values: IValues) => {
         setLoading(true)
-        const { subject, published, resolved } = values
+        const { subject, published, resolved, permalink } = values
         try {
-            const { data } = await updateQuestion(id, { subject, published, resolved, replyId, permalink })
-            if (data && data.permalink) {
-                setPermalink(data.permalink)
-            }
+            await updateQuestion(id, { subject, published, resolved, replyId, permalink })
             onSubmit({ subject, published, resolved, permalink })
         } catch (err) {
             if (err instanceof Error) {
