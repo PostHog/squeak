@@ -30,6 +30,7 @@ export async function getQuestion(id: number, params: { fields?: string } = {}) 
         question = await prisma.question.findUnique({
             where: { id },
             select: {
+                permalink: true,
                 subject: true,
                 id: true,
                 slug: true,
