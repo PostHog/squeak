@@ -80,6 +80,7 @@ export async function updateQuestion(
     if (permalink && permalink !== '') {
         permalink = slugify(permalink, {
             lower: true,
+            strict: true,
         })
 
         // Check if another question has the same permalink

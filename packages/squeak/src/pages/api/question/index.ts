@@ -122,6 +122,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     // generate a permalink from the subject
     let permalink = slugify(subject, {
         lower: true,
+        strict: true,
     })
 
     // Ensure the permalink is unique
@@ -154,7 +155,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     // TODO: We should clean this up so we don't rely on the new message's ID, which means we briefly
     //   have two records with the same permalink
     if (existing) {
-        permalink = `${permalink}-${message}`
+        permalink = `${permalink}-${message?.id}`
         await prisma.question.update({
             where: { id: message.id },
             data: { permalink },
