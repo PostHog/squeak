@@ -7,32 +7,35 @@ import { createGlobalStyle } from 'styled-components'
 const Style = createGlobalStyle`
     .squeak {
         .squeak-avatar-container {
-            display: none;
+            display: none !important;
         }
         .squeak-authentication-form-container {
-            margin-left: 0;
+            margin-left: 0 !important;
         }
     }
 `
 
 type LoginProps = {
-    buttonText?: any
-    onSubmit: () => void
+  buttonText?: any
+  onSubmit: () => void
 }
 
 export const Login: React.FC<LoginProps> = ({ onSubmit, buttonText }) => {
-    const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-    return (
-        <>
-            {/* @ts-ignore */}
-            <root.div ref={containerRef}>
-                <Theme containerRef={containerRef} />
-                <Style />
-                <div className="squeak">
-                    <Authentication buttonText={buttonText} handleMessageSubmit={onSubmit} />
-                </div>
-            </root.div>
-        </>
-    )
+  return (
+    <>
+      {/* @ts-ignore */}
+      <root.div ref={containerRef}>
+        <Theme containerRef={containerRef} />
+        <Style />
+        <div className='squeak'>
+          <Authentication
+            buttonText={buttonText}
+            handleMessageSubmit={onSubmit}
+          />
+        </div>
+      </root.div>
+    </>
+  )
 }
