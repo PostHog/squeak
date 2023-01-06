@@ -6,9 +6,9 @@ import lightOrDark from '../util/lightOrDark'
 const Style = createGlobalStyle`
 :host {
     --primary-color: var(--squeak-primary-color, ${(props: any) =>
-        props.dark ? '255, 255, 255' : '0, 0, 0'}); // rgb triplets, no hex
+      props.dark ? '255, 255, 255' : '0, 0, 0'}); // rgb triplets, no hex
     --default-avatar-fill: var(--squeak-default-avatar-fill, ${(props) =>
-        props.dark ? '0, 0, 0' : '255, 255, 255'}); // rgb triplets, no hex
+      props.dark ? '0, 0, 0' : '255, 255, 255'}); // rgb triplets, no hex
     --button-color: var(--squeak-button-color, 29, 74, 255); // rgb triplet, no hex
     --button-weight: bold; // normal | bold | 600 | etc
     --border-radius: var(--squeak-border-radius, .25rem); // adjusts all radii
@@ -18,6 +18,7 @@ const Style = createGlobalStyle`
     --input-text-color: var(--squeak-input-text-color, 0, 0, 0); // rgb triplet, no hex
     --input-background-color: var(--squeak-input-background-color, #fff); // transparent, hex, rgb, or rgba
     --link-text-decoration: none; // none | underline | dashed | etc
+    --richtext-button-color: var(--squeak-richtext-button-color, 0, 0, 0); // rgb triplet, no hex
     all: initial;
     font-family: inherit;
 }
@@ -684,7 +685,7 @@ const Style = createGlobalStyle`
             background: none;
             border: none;
             border-radius: var(--border-radius);
-            color: rgba(var(--primary-color), .5);
+            color: rgba(var(--richtext-button-color), .5);
             cursor: pointer;
             display: flex;
             height: 32px;
@@ -889,13 +890,13 @@ const Style = createGlobalStyle`
 `
 
 export const Theme = ({ containerRef }: any) => {
-    const [dark, setDark] = useState<boolean | null>(null)
+  const [dark, setDark] = useState<boolean | null>(null)
 
-    useEffect(() => {
-        if (containerRef.current) {
-            const color = getBackgroundColor(containerRef.current)
-            setDark(lightOrDark(color) === 'dark')
-        }
-    }, [])
-    return <Style dark={dark} />
+  useEffect(() => {
+    if (containerRef.current) {
+      const color = getBackgroundColor(containerRef.current)
+      setDark(lightOrDark(color) === 'dark')
+    }
+  }, [])
+  return <Style dark={dark} />
 }
