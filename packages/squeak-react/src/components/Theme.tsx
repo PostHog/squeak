@@ -723,6 +723,7 @@ const Style = createGlobalStyle`
         background: var(--warning-color);
         margin: -1.5rem -1.5rem 1.5rem;
         padding: 1.5rem;
+        color: red;
     }
 
     .squeak-return-to-post {
