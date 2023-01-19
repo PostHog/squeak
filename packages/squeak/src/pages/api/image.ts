@@ -3,6 +3,9 @@ import { uploadImage } from 'src/util/cloudinary'
 import prisma from '../../lib/db'
 import { orgIdNotFound, requireOrgAdmin } from 'src/lib/api/apiUtils'
 import { getSessionUser } from 'src/lib/auth'
+import nextConnect from 'next-connect'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { allowedOrigin, corsMiddleware } from 'src/lib/middleware'
 
 export const config = {
     api: {
@@ -10,8 +13,9 @@ export const config = {
     },
 }
 
-export default async function handle(req, res) {
-    if (!(await requireOrgAdmin(req, res))) return
+const handler = nextConnect<NextApiRequest, NextApiResponse>().use(corsMiddleware).use(allowedOrigin).post(createImage)
+
+async function createImage(req, res) {
     const user = await getSessionUser(req)
 
     if (!user) return orgIdNotFound(res)
@@ -43,8 +47,11 @@ export default async function handle(req, res) {
             publicId: imageData.public_id,
             format: imageData.format,
             version: imageData.version.toString(),
+            user_id: user.id,
         },
     })
 
     res.json(result)
 }
+
+export default handler

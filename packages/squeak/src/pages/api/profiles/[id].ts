@@ -14,6 +14,13 @@ const handler = nc<NextApiRequest, NextApiResponse>()
 export interface UpdateProfilePayload {
     role?: string
     teamId?: string
+    image?: {
+        id: string
+        cloud_name: string
+        version: string
+        publicId: string
+        format: string
+    }
 }
 
 // GET /api/profiles/[id]
@@ -61,7 +68,23 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
-const allowed = ['first_name', 'last_name', 'website', 'github', 'linkedin', 'twitter', 'biography', 'teamId', 'role']
+const allowed = [
+    'first_name',
+    'last_name',
+    'website',
+    'github',
+    'linkedin',
+    'twitter',
+    'biography',
+    'teamId',
+    'role',
+    'image',
+]
+
+const getAvatar = async (email) => {
+    const gravatar = getGravatar.url(email || '')
+    return await fetch(`https:${gravatar}?d=404`).then((res) => (res.ok && `https:${gravatar}`) || null)
+}
 
 // PATCH /api/profiles/[id]
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
@@ -71,11 +94,13 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
     if ((await requireOrgAdmin(req, res)) || session?.profileId === profileId) {
         const params: UpdateProfilePayload = req.body
         if (!params || Object.keys(params).some((param) => !allowed.includes(param))) return res.status(500)
-        const { teamId, ...other } = params
-        const gravatar = getGravatar.url(session?.email || '')
-        const avatar = await fetch(`https:${gravatar}?d=404`).then((res) => (res.ok && `https:${gravatar}`) || null)
+        const { teamId, image, ...other } = params
+        let avatar = image
+            ? `https://res.cloudinary.com/${image.cloud_name}/v${image.version}/${image.publicId}.${image.format}`
+            : await getAvatar(session.email)
         const data = {
             ...(teamId ? { team_id: teamId === 'None' ? null : parseInt(teamId) } : {}),
+            ...(image ? { imageId: image?.id } : {}),
             ...other,
             avatar,
         }
