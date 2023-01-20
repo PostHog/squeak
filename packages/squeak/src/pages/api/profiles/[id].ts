@@ -95,9 +95,10 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         const params: UpdateProfilePayload = req.body
         if (!params || Object.keys(params).some((param) => !allowed.includes(param))) return res.status(500)
         const { teamId, image, ...other } = params
-        let avatar = image
-            ? `https://res.cloudinary.com/${image.cloud_name}/v${image.version}/${image.publicId}.${image.format}`
-            : await getAvatar(session.email)
+        let avatar =
+            image && image?.cloud_name && image?.version && image?.publicId && image?.format
+                ? `https://res.cloudinary.com/${image.cloud_name}/v${image.version}/${image.publicId}.${image.format}`
+                : await getAvatar(session.email)
         const data = {
             ...(teamId ? { team_id: teamId === 'None' ? null : parseInt(teamId) } : {}),
             ...(image ? { imageId: image?.id } : {}),
