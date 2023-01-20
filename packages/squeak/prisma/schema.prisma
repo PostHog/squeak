@@ -14,33 +14,33 @@ model pgmigrations {
 }
 
 model SqueakConfig {
-  id                       BigInt       @id @default(autoincrement())
-  preflight_complete       Boolean      @default(false)
-  slack_api_key            String?
-  slack_question_channel   String?
-  slack_signing_secret     String?
-  mailgun_api_key          String?
-  mailgun_domain           String?
-  company_name             String?
-  company_domain           String?
-  organization_id          String       @db.Uuid
-  question_auto_publish    Boolean      @default(true)
-  allowed_origins          String[]
-  reply_auto_publish       Boolean      @default(true)
-  show_slack_user_profiles Boolean      @default(false)
-  mailgun_from_name        String?
-  mailgun_from_email       String?
-  permalink_base           String?
-  permalinks_enabled       Boolean?     @default(false)
-  organization             Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "config_organizations_id_fkey")
-  cloudinary_cloud_name    String?
-  cloudinary_api_key       String?
-  cloudinary_api_secret    String?
+  id                           BigInt       @id @default(autoincrement())
+  preflight_complete           Boolean      @default(false)
+  slack_api_key                String?
+  slack_question_channel       String?
+  slack_signing_secret         String?
+  mailgun_api_key              String?
+  mailgun_domain               String?
+  company_name                 String?
+  company_domain               String?
+  organization_id              String       @db.Uuid
+  question_auto_publish        Boolean      @default(true)
+  allowed_origins              String[]
+  reply_auto_publish           Boolean      @default(true)
+  show_slack_user_profiles     Boolean      @default(false)
+  mailgun_from_name            String?
+  mailgun_from_email           String?
+  permalink_base               String?
+  permalinks_enabled           Boolean?     @default(false)
+  organization                 Organization @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "config_organizations_id_fkey")
+  cloudinary_cloud_name        String?
+  cloudinary_api_key           String?
+  cloudinary_api_secret        String?
   customer_io_app_api_key      String?
-  customer_io_tracking_api_key      String?
-  customer_io_broadcast_id Int?
-  customer_io_site_id String?
-  customer_io_segment_id String?
+  customer_io_tracking_api_key String?
+  customer_io_broadcast_id     Int?
+  customer_io_site_id          String?
+  customer_io_segment_id       String?
 
   @@map("squeak_config")
 }
@@ -194,6 +194,7 @@ model User {
 
   updated_at DateTime? @db.Timestamptz(6)
   created_at DateTime? @default(now()) @db.Timestamptz(6)
+  image      Image[]
 
   @@index([instance_id], map: "users_instance_id_email_idx")
   @@index([instance_id])
@@ -227,6 +228,8 @@ model Profile {
   slack_user_id String?
 
   avatar     String?
+  image      Image?  @relation(fields: [imageId], references: [id])
+  imageId    String?
   first_name String?
   last_name  String?
   email      String?
@@ -301,5 +304,9 @@ model Image {
   version         String
   organization_id String
   cloud_name      String
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  user            User?     @relation(fields: [user_id], references: [id])
+  user_id          String? @db.Uuid
   Roadmap         Roadmap[]
+  Profile         Profile[]
 }
