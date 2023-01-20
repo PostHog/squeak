@@ -98,12 +98,14 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         let avatar =
             image && image?.cloud_name && image?.version && image?.publicId && image?.format
                 ? `https://res.cloudinary.com/${image.cloud_name}/v${image.version}/${image.publicId}.${image.format}`
-                : await getAvatar(session.email)
+                : image === null
+                ? await getAvatar(session.email)
+                : undefined
         const data = {
             ...(teamId ? { team_id: teamId === 'None' ? null : parseInt(teamId) } : {}),
-            ...(image ? { imageId: image?.id } : {}),
+            ...(image?.id ? { imageId: image?.id } : {}),
             ...other,
-            avatar,
+            ...(avatar || avatar === null ? { avatar } : {}),
         }
 
         const profile = await prisma.profile.update({
