@@ -17,6 +17,9 @@ async function getLeaderboard(req, res) {
     const data = await prisma.profile.findMany({
         where: {
             organization_id: organizationId,
+            role: {
+                not: 'admin',
+            },
         },
         select: {
             id: true,
