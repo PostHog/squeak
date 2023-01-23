@@ -34,6 +34,11 @@ async function getLeaderboard(req, res) {
                 },
             },
         },
+        orderBy: {
+            replies: {
+                _count: 'desc',
+            },
+        },
         take: 10,
     })
 
