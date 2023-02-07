@@ -1,4 +1,5 @@
 import prisma from '../lib/db'
+import { marked } from 'marked'
 
 const sendQuestionAlert = async (
     organizationId: string,
@@ -6,7 +7,13 @@ const sendQuestionAlert = async (
     subject: string,
     body: string,
     slug: string,
-    profileId: string
+    profileId: string,
+    permalink: string,
+    siteURL: string,
+    user: {
+        name: string
+        email: string
+    }
 ) => {
     const webhooks = await prisma.webhookConfig.findMany({
         where: { organization_id: organizationId },
@@ -16,12 +23,22 @@ const sendQuestionAlert = async (
             id: true,
         },
     })
-
     Promise.all(
         webhooks.map(async ({ url, type }) => {
             switch (type) {
                 case 'webhook':
-                    return fetch(url, { method: 'POST', body: JSON.stringify({ subject, slug, body }) })
+                    return fetch(url, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            subject,
+                            slug,
+                            body,
+                            html: marked.parse(body),
+                            user,
+                            permalink,
+                            id: messageId + '',
+                        }),
+                    })
                 case 'slack':
                     const profile = await prisma.profile.findFirst({
                         where: {
@@ -72,7 +89,7 @@ const sendQuestionAlert = async (
                                     type: 'section',
                                     text: {
                                         type: 'mrkdwn',
-                                        text: `<https://squeak.cloud/question/${messageId}|View question>`,
+                                        text: `<${siteURL}/${permalink}|View question>`,
                                     },
                                 },
                             ],

@@ -109,7 +109,7 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     // Fetch auto_publish config for this organization
     const config = await prisma.squeakConfig.findFirst({
         where: { organization_id: organizationId },
-        select: { question_auto_publish: true },
+        select: { question_auto_publish: true, permalink_base: true, company_domain: true },
     })
 
     if (!config) {
@@ -190,7 +190,17 @@ async function doPost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     safeJson(res, response, 201)
-    await sendQuestionAlert(organizationId, message.id, subject, body, slug, userProfile.id)
+    await sendQuestionAlert(
+        organizationId,
+        message.id,
+        subject,
+        body,
+        slug,
+        userProfile.id,
+        [config.permalink_base, permalink].filter(Boolean).join('/'),
+        config.company_domain || '',
+        { email: user.email || '', name: [userProfile?.first_name, userProfile?.last_name].filter(Boolean).join(' ') }
+    )
 }
 
 type ReplyWithMetadata = Reply & {
