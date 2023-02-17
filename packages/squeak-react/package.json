@@ -1,6 +1,6 @@
 {
   "name": "squeak-react",
-  "version": "4.3.7",
+  "version": "4.3.8",
   "type": "module",
   "module": "./dist/squeak-react.es.js",
   "types": "./dist/index.d.ts",

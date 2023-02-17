@@ -21,10 +21,9 @@ const SqueakQuestion: any = dynamic(
 
 const Question = ({ question, topics: allTopics, organizationId, permalinkBase }) => {
     const router = useRouter()
-    const {
-        replies,
-        question: { subject, id, published, resolved, permalink, topics },
-    } = question
+    const { replies, question: questionData } = question
+
+    const { subject, id, published, resolved, permalink, topics } = questionData
 
     const refreshQuestion = () => {
         router.replace(router.asPath)
@@ -41,7 +40,7 @@ const Question = ({ question, topics: allTopics, organizationId, permalinkBase }
                         organizationId={organizationId}
                         onResolve={refreshQuestion}
                         onSubmit={refreshQuestion}
-                        question={question}
+                        question={questionData}
                     />
                 </div>
             </div>

@@ -34,5 +34,8 @@ export async function createReply(
             profile_id: userProfile.id,
             published: config.reply_auto_publish,
         },
+        include: {
+            profile: true,
+        },
     })
 }
