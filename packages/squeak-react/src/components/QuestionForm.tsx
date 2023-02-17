@@ -2,6 +2,7 @@ import { Field, Form, Formik } from 'formik'
 import { useState } from 'react'
 
 import { useOrg } from '../hooks/useOrg'
+import {useQuestion} from '../hooks/useQuestion'
 import { useUser } from '../hooks/useUser'
 import { post } from '../lib/api'
 import { Approval } from './Approval'
@@ -136,6 +137,7 @@ export default function QuestionForm({
   const [formValues, setFormValues] = useState(null)
   const [view, setView] = useState<string | null>(initialView || null)
   const [loading, setLoading] = useState(false)
+  const { handleReply } = useQuestion()
   const buttonText =
     formType === 'question' ? (
       <span>Ask a question</span>
@@ -188,11 +190,12 @@ export default function QuestionForm({
       }
 
       if (formType === 'reply' && messageID) {
-        const { published: replyPublished } = await insertReply({
+        const data = await insertReply({
           body: values.question,
           messageID
         })
-        if (!replyPublished) {
+        handleReply(data)
+        if (!data.published) {
           view = 'approval'
         }
       }
