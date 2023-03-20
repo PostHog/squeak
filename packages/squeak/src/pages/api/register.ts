@@ -76,6 +76,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
         res.status(200).json(response)
     } catch (e) {
+        console.error(e)
+
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
             if (e.code === 'P2002') {
                 return res.status(422).json({ error: 'Email address is already taken' })
