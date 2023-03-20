@@ -29,7 +29,7 @@ ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 RUN yarn build
 
 # Production image, copy all the files and run next
-FROM node:18.12-buster AS runner
+FROM node:18.12-alpine3.16 AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
