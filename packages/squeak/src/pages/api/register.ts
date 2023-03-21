@@ -72,7 +72,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         const confirmationUrl = `${origin}/api/user/confirm?token=${user.confirmation_token}&redirect=${redirectUrl}`
 
         await setLoginSession(res, user.id, organizationId, userProfile.id)
-        await sendUserConfirmation(organizationId, user, confirmationUrl)
+        // await sendUserConfirmation(organizationId, user, confirmationUrl)
 
         res.status(200).json(response)
     } catch (e) {
