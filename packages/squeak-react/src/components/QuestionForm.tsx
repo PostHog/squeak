@@ -1,5 +1,5 @@
 import { Field, Form, Formik } from 'formik'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useOrg } from '../hooks/useOrg'
 import {useQuestion} from '../hooks/useQuestion'
@@ -134,7 +134,7 @@ export default function QuestionForm({
 }: QuestionFormProps) {
   const { organizationId, apiHost, profileLink } = useOrg()
   const { user, setUser } = useUser()
-  const [formValues, setFormValues] = useState(null)
+  const [formValues, setFormValues] = useState<any>(null)
   const [view, setView] = useState<string | null>(initialView || null)
   const [loading, setLoading] = useState(false)
   const { handleReply } = useQuestion()
@@ -207,6 +207,13 @@ export default function QuestionForm({
       setView(view)
       setFormValues(null)
     } else {
+      localStorage.setItem(
+        'squeak-initial-values',
+        JSON.stringify({
+          question: values?.question,
+          subject: values?.subject
+        })
+      )
       setFormValues(values)
       setView('auth')
       setLoading(false)
@@ -216,8 +223,25 @@ export default function QuestionForm({
   const doLogout = async () => {
     // @ts-ignore
     await post(apiHost, '/api/logout')
+    localStorage.removeItem('squeak-initial-values')
     setUser(null)
   }
+
+  useEffect(() => {
+    try {
+      const initialValues = JSON.parse(
+        localStorage.getItem('squeak-initial-values') || ''
+      )
+      const subject = initialValues?.subject
+      const question = initialValues?.question
+      if (initialValues && (subject || question)) {
+        setFormValues({ subject, question })
+      }
+    } catch (e) {
+      console.error(e)
+      return
+    }
+  }, [])
 
   return view ? (
     {
