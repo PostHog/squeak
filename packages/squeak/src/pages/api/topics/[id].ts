@@ -59,12 +59,13 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
     if (!user) return orgIdNotFound(res)
 
-    const { id, topicGroupId } = req.body
+    const { id, topicGroupId, label } = req.body
 
     await prisma.topic.updateMany({
         where: { id: parseInt(id), organization_id: user.organizationId },
         data: {
             topic_group_id: topicGroupId && parseInt(topicGroupId),
+            ...(label ? { label } : {}),
         },
     })
 
